@@ -36,6 +36,7 @@
 		<script src="js/loaders/MTLLoader.js"></script>
 		<script src="js/loaders/OBJLoader.js"></script>
     <script src="js/controls/FlyControls.js"></script>
+    <script src="js/oimo.js"></script>
 		<script src="js/Detector.js"></script>
 		<script src="js/libs/stats.min.js"></script>
 
@@ -46,9 +47,29 @@
 			var mouseX = 0, mouseY = 0;
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
+      var world = null;
+      var bodys = [];
+      var fps = [0,0,0,0];
+      var ToRad = 0.0174532925199432957;
+      var type = 1;
+      var infos;
 
       init();
 			animate();
+
+      function initOimoPhysics(){
+
+          // world setting:( TimeStep, BroadPhaseType, Iterations )
+          // BroadPhaseType can be
+          // 1 : BruteForce
+          // 2 : Sweep and prune , the default
+          // 3 : dynamic bounding volume tree
+
+          world = new OIMO.World({info:true, worldscale:100} );
+          //populate(1);
+          //setInterval(updateOimoPhysics, 1000/60);
+
+      }
 			function init() {
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
@@ -78,7 +99,7 @@
 				var mtlLoader = new THREE.MTLLoader();
 				//mtlLoader.setPath( 'obj/male02/' );
         mtlLoader.setPath( 'js/' );
-				mtlLoader.load( 'ship.mtl', function( materials ) {
+				var ship = mtlLoader.load( 'ship.mtl', function( materials ) {
 					materials.preload();
 					var objLoader = new THREE.OBJLoader();
 					objLoader.setMaterials( materials );
@@ -143,6 +164,7 @@
 					scene.add( stars );
 				}
 				window.addEventListener( 'resize', onWindowResize, false );
+        initOimoPhysics();
 			}
 			function onWindowResize() {
 				windowHalfX = window.innerWidth / 2;
@@ -151,13 +173,41 @@
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
-			function onDocumentMouseMove( event ) {
-				mouseX = ( event.clientX - windowHalfX ) / 2;
-				mouseY = ( event.clientY - windowHalfY ) / 2;
-			}
+      function updateOimoPhysics() {
+          if(world==null) return;
+          world.step();
+          var x, y, z, mesh, body, i = bodys.length;
+          while (i--){
+              body = bodys[i];
+              mesh = meshs[i];
+              if(!body.sleeping){
+                  mesh.position.copy(body.getPosition());
+                  mesh.quaternion.copy(body.getQuaternion());
+                  // change material
+                  if(mesh.material.name === 'sbox') mesh.material = mats.box;
+                  if(mesh.material.name === 'ssph') mesh.material = mats.sph;
+                  if(mesh.material.name === 'scyl') mesh.material = mats.cyl;
+                  // reset position
+                  if(mesh.position.y<-100){
+                      x = -100 + Math.random()*200;
+                      z = -100 + Math.random()*200;
+                      y = 100 + Math.random()*1000;
+                      body.resetPosition(x,y,z);
+                  }
+              } else {
+                  if(mesh.material.name === 'box') mesh.material = mats.sbox;
+                  if(mesh.material.name === 'sph') mesh.material = mats.ssph;
+                  if(mesh.material.name === 'cyl') mesh.material = mats.scyl;
+              }
+          }
+
+          //infos.innerHTML = world.getInfo();
+      }
+
 			//
 			function animate() {
 				requestAnimationFrame( animate );
+        updateOimoPhysics();
 				render();
 			}
 			function render() {
