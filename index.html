@@ -84,7 +84,7 @@
 			}
 			function setControls(ship){
 				controls = new THREE.FlyControls( ship );
-				controls.movementSpeed = 100;
+				controls.movementSpeed = 100000;
 				controls.domElement = container;
 				controls.rollSpeed = Math.PI / 12;
 				controls.autoForward = false;
@@ -93,18 +93,18 @@
 			function init() {
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 200000000000000000000000000000000000000000 );
 				camera.position.y = 30;
 				camera.position.z = 100;
 				camera.lookAt(new THREE.Vector3(0,0,0));
 				// scene
 				scene = new THREE.Scene();
-				var ambient = new THREE.AmbientLight( 0x444444 );
+				var ambient = new THREE.AmbientLight( 0x888888 );
 				scene.add( ambient );
 				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
 				directionalLight.position.set( 0, 0, 1 ).normalize();
-        var size = 10000000;
-        var divisions = 100000;
+        var size = 100000000;
+        var divisions = 1000;
 
 				// var helper = new THREE.PolarGridHelper( 2000, 8, 20, 20,0xfffff,0xfffff );
 				// scene.add( helper );
@@ -148,13 +148,14 @@
 				//
 
         //scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
-				var spotLight = new THREE.SpotLight();
-        spotLight.position.set(0, 80, 30);
-        spotLight.castShadow = true;
-        scene.add(spotLight);
+				var pointlight = new THREE.PointLight();
+        pointlight.position.set(0, 0, 0);
+        pointlight.castShadow = true;
+        scene.add(pointlight);
 
 
-				renderer = new THREE.WebGLRenderer();
+
+				renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
@@ -166,43 +167,52 @@
 
 				//document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				//
-        var radius = 5;
-        var i, r = radius, starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ];
-        for ( i = 0; i < 250; i ++ ) {
-          var vertex = new THREE.Vector3();
-          vertex.x = Math.random() * 2 - 1;
-          vertex.y = Math.random() * 2 - 1;
-          vertex.z = Math.random() * 2 - 1;
-          vertex.multiplyScalar( r );
-          starsGeometry[ 0 ].vertices.push( vertex );
-        }
-        for ( i = 0; i < 1500; i ++ ) {
-          var vertex = new THREE.Vector3();
-          vertex.x = Math.random() * 2 - 1;
-          vertex.y = Math.random() * 2 - 1;
-          vertex.z = Math.random() * 2 - 1;
-          vertex.multiplyScalar( r );
-          starsGeometry[ 1 ].vertices.push( vertex );
-        }
-        var stars;
-        var starsMaterials = [
-					new THREE.PointsMaterial( { color: 0x555555, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x555555, size: 1, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x333333, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x3a3a3a, size: 1, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x1a1a1a, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x1a1a1a, size: 1, sizeAttenuation: false } )
-				];
-				for ( i = 10; i < 30; i ++ ) {
-					stars = new THREE.Points( starsGeometry[ i % 2 ], starsMaterials[ i % 6 ] );
-					stars.rotation.x = Math.random() * 6;
-					stars.rotation.y = Math.random() * 6;
-					stars.rotation.z = Math.random() * 6;
-					stars.scale.setScalar( i * 10 );
-					stars.matrixAutoUpdate = false;
-					stars.updateMatrix();
-					scene.add( stars );
-				}
+        // var radius = 500000000;
+        // var i, r = radius, starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ];
+        // for ( i = 0; i < 2500; i ++ ) {
+        //   var vertex = new THREE.Vector3();
+        //   vertex.x = Math.random() * 2 - 1;
+        //   vertex.y = Math.random() * 2 - 1;
+        //   vertex.z = Math.random() * 2 - 1;
+        //   vertex.multiplyScalar( r );
+        //   starsGeometry[ 0 ].vertices.push( vertex );
+        // }
+        // for ( i = 0; i < 1500; i ++ ) {
+        //   var vertex = new THREE.Vector3();
+        //   vertex.x = Math.random() * 2 - 1;
+        //   vertex.y = Math.random() * 2 - 1;
+        //   vertex.z = Math.random() * 2 - 1;
+        //   vertex.multiplyScalar( r );
+        //   starsGeometry[ 1 ].vertices.push( vertex );
+        // }
+        // var stars;
+        // var starsMaterials = [
+				// 	new THREE.PointsMaterial( { color: 0x555555, size: 2, sizeAttenuation: false } ),
+				// 	new THREE.PointsMaterial( { color: 0x555555, size: 1, sizeAttenuation: false } ),
+				// 	new THREE.PointsMaterial( { color: 0x333333, size: 2, sizeAttenuation: false } ),
+				// 	new THREE.PointsMaterial( { color: 0x3a3a3a, size: 1, sizeAttenuation: false } ),
+				// 	new THREE.PointsMaterial( { color: 0x1a1a1a, size: 2, sizeAttenuation: false } ),
+				// 	new THREE.PointsMaterial( { color: 0x1a1a1a, size: 1, sizeAttenuation: false } )
+				// ];
+				// for ( i = 10; i < 30; i ++ ) {
+				// 	stars = new THREE.Points( starsGeometry[ i % 2 ], starsMaterials[ i % 6 ] );
+				// 	stars.rotation.x = Math.random() * 6;
+				// 	stars.rotation.y = Math.random() * 6;
+				// 	stars.rotation.z = Math.random() * 6;
+				// 	stars.scale.setScalar( i * 10 );
+				// 	stars.matrixAutoUpdate = false;
+				// 	stars.updateMatrix();
+				// 	scene.add( stars );
+				// }
+
+
+				var spheregeometry = new THREE.SphereGeometry(10000000000, 36, 30);
+				var spherematerial = new THREE.MeshBasicMaterial({wireframe: true, color: 0xa807b7});
+				var sphere = new THREE.Mesh(spheregeometry, spherematerial);
+
+				sphere.position.set(-2.0, 0, 0);
+
+				scene.add(sphere);
 				window.addEventListener( 'resize', onWindowResize, false );
         initOimoPhysics();
 
