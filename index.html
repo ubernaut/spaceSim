@@ -89,6 +89,8 @@
 				controls.rollSpeed = Math.PI / 3;
 				controls.autoForward = true;
 				controls.dragToLook = true;
+
+				controls.device = new THREE.DeviceOrientationControls(ship, true);
 			}
 			function init() {
 				container = document.createElement( 'div' );
