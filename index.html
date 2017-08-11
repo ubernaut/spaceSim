@@ -92,7 +92,7 @@
 				controls.movementSpeed = 1000000;
 				controls.domElement = container;
 				controls.rollSpeed = Math.PI / 3;
-				controls.autoForward = true;
+				controls.autoForward = false;
 				controls.dragToLook = true;
 			}
 
@@ -217,7 +217,7 @@
 
 
 
-				var galaxyGeometry = new THREE.SphereGeometry(1000000000000000000000/2, 32, 32 );
+				var galaxyGeometry = new THREE.SphereGeometry(500000000000000000000, 32, 32 );
 				var galaxyMaterial = new THREE.MeshBasicMaterial( {color: 0x555555} );
 				var galaxy = new THREE.Mesh( galaxyGeometry, galaxyMaterial );
 				scene.add( galaxy );
@@ -233,7 +233,7 @@
         for ( i = 0; i < 15000; i ++ ) {
           var vertex = new THREE.Vector3();
           vertex.x = (Math.random()*(2-1)) ;
-          vertex.y = (Math.random()*(2-1)) ;
+          vertex.y = (Math.random()*(2-1))/3 ;
           vertex.z = (Math.random()*(2-1)) ;
           vertex.multiplyScalar( r );
 
@@ -243,7 +243,7 @@
         for ( i = 0; i < 15000; i ++ ) {
           var vertex = new THREE.Vector3();
           vertex.x = (Math.random()*(2-1)) ;
-          vertex.y = (Math.random()*(2-1)) ;
+          vertex.y = (Math.random()*(2-1))/3 ;
           vertex.z = (Math.random()*(2-1)) ;
           vertex.multiplyScalar( r );
           starsGeometry[ 1 ].vertices.push( vertex );
@@ -254,9 +254,9 @@
 					new THREE.PointsMaterial( { color: 0xffffff, size: 2, sizeAttenuation: false } ),
 					new THREE.PointsMaterial( { color: 0xaaaaaa, size: 2, sizeAttenuation: false } ),
 					new THREE.PointsMaterial( { color: 0x555555, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x995555, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x777755, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x555577, size: 2, sizeAttenuation: false } )
+					new THREE.PointsMaterial( { color: 0xff0000, size: 2, sizeAttenuation: false } ),
+					new THREE.PointsMaterial( { color: 0xffdddd, size: 2, sizeAttenuation: false } ),
+					new THREE.PointsMaterial( { color: 0xddddff, size: 2, sizeAttenuation: false } )
 				];
 				for ( i = 10; i < 30; i ++ ) {
 					stars = new THREE.Points( starsGeometry[ i % 2 ], starsMaterials[ i % 6 ] );
@@ -265,7 +265,7 @@
 					// stars.rotation.z = Math.random() * 6;
 					//  stars.scale.setScalar( i * 10 );
 					stars.position.x -= radius/2;
-					stars.position.y -= radius/2;
+					stars.position.y -= radius/6;
 					stars.position.z -= radius/2;
 					stars.matrixAutoUpdate = false;
 					stars.updateMatrix();
