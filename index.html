@@ -43,7 +43,7 @@
 		<script>
       var clock = new THREE.Clock();
 			var container, stats;
-			var camera, scene, renderer;
+			var camera, scene, renderer,controls;
 			var mouseX = 0, mouseY = 0;
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -53,6 +53,7 @@
       var ToRad = 0.0174532925199432957;
       var type = 1;
       var infos;
+			var ship;
 
       init();
 			animate();
@@ -65,26 +66,51 @@
           // 2 : Sweep and prune , the default
           // 3 : dynamic bounding volume tree
 
-          world = new OIMO.World({info:true, worldscale:100} );
+          world =  world = new OIMO.World({
+        timestep: 1/60,
+        iterations: 8,
+        broadphase: 2,
+        worldscale: 1,
+        random: true,
+        info:false,
+        gravity: [0,0,0]
+    });
           //populate(1);
           //setInterval(updateOimoPhysics, 1000/60);
 
       }
+			function bindship(){
+
+			}
+			function setControls(ship){
+				controls = new THREE.FlyControls( ship );
+				controls.movementSpeed = 100;
+				controls.domElement = container;
+				controls.rollSpeed = Math.PI / 12;
+				controls.autoForward = false;
+				controls.dragToLook = false;
+			}
 			function init() {
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-				camera.position.z = 250;
+				camera.position.y = 30;
+				camera.position.z = 100;
+				camera.lookAt(new THREE.Vector3(0,0,0));
 				// scene
 				scene = new THREE.Scene();
 				var ambient = new THREE.AmbientLight( 0x444444 );
 				scene.add( ambient );
 				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
 				directionalLight.position.set( 0, 0, 1 ).normalize();
-        var size = 100;
-        var divisions = 10;
+        var size = 1000;
+        var divisions = 100;
 
-         var gridHelper = new THREE.GridHelper( size, divisions );
+				// var helper = new THREE.PolarGridHelper( 2000, 8, 20, 20,0xfffff,0xfffff );
+				// scene.add( helper );
+
+        var gridHelper = new THREE.GridHelper( size, divisions,0xfffff,0xfffff);
+
         scene.add( gridHelper );
 				// scene.add( directionalLight );
 				// model
@@ -99,31 +125,45 @@
 				var mtlLoader = new THREE.MTLLoader();
 				//mtlLoader.setPath( 'obj/male02/' );
         mtlLoader.setPath( 'js/' );
-				var ship = mtlLoader.load( 'ship.mtl', function( materials ) {
+				mtlLoader.load( 'ship.mtl', function( materials ) {
 					materials.preload();
 					var objLoader = new THREE.OBJLoader();
 					objLoader.setMaterials( materials );
 					objLoader.setPath( 'js/' );
 					objLoader.load( 'ship.obj', function ( object ) {
+						object.position.x = 0;
 						object.position.y = 0;
             object.scale.set(8,8,8);
             object.rotation.set(0,0,0);
+						object.name="spaceShip";
+						ship = object;
+						ship.add(camera);
+						camera.position.set( 0, 10, 30 );
+
 						scene.add( object );
+						setControls(ship);
+
 					}, onProgress, onError );
 				});
 				//
-        scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
-				controls = new THREE.FlyControls( camera );
-				controls.movementSpeed = 10;
-				controls.domElement = container;
-				controls.rollSpeed = Math.PI / 24;
-				controls.autoForward = false;
-				controls.dragToLook = false;
+
+        //scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
+				var spotLight = new THREE.SpotLight();
+        spotLight.position.set(0, 80, 30);
+        spotLight.castShadow = true;
+        scene.add(spotLight);
+
 
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
+				// var geometry = new THREE.BoxGeometry(700, 700, 700, 10, 10, 10);
+				// var material = new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true});
+				// var cube = new THREE.Mesh(geometry, material);
+				// scene.add(cube);
+
+
 				//document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				//
         var radius = 5;
@@ -165,6 +205,7 @@
 				}
 				window.addEventListener( 'resize', onWindowResize, false );
         initOimoPhysics();
+
 			}
 			function onWindowResize() {
 				windowHalfX = window.innerWidth / 2;
@@ -209,6 +250,9 @@
 				requestAnimationFrame( animate );
         updateOimoPhysics();
 				render();
+				//camera.lookAt(ship.position);
+
+
 			}
 			function render() {
 				var delta = clock.getDelta();
