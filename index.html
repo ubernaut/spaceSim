@@ -103,7 +103,7 @@
 			  return check;
 			}
 			function onDocumentMouseWheel( event ) {
-			console.log(event.wheelDeltaY);
+
 			var deltay = event.wheelDeltaY;
 	    //fov -= event.wheelDeltaY * 0.05;
 	    //camera.projectionMatrix = THREE.Matrix4.makePerspective( fov, window.innerWidth / window.innerHeight, 1, 1100 );
@@ -173,9 +173,10 @@
 					objLoader.load( 'ship.obj', function ( object ) {
 						object.position.x = 0;
 						object.position.y = 0;
-            object.scale.set(8,8,8);
+            object.scale.set(20,20,20);
             object.rotation.set(0,0,0);
 						object.name="spaceShip";
+						//object.mesh.scale.set(2,2,2);
 						ship = object;
 						ship.add(camera);
 						camera.position.set( 0, 10, 30 );
@@ -183,7 +184,7 @@
 						scene.add( object );
 						setControls(ship);
 
-						var helper = new THREE.PolarGridHelper( 200, 1, 5, 36,0xfffff,0xfffff );
+						var helper = new THREE.PolarGridHelper( 2000, 1, 6, 36,0xfffff,0xfffff );
 						helper.geometry.rotateY( Math.PI );
 	 					scene.add( helper );
 						ship.add(helper);
@@ -199,45 +200,73 @@
         scene.add(pointlight);
 
 
+				var earthGeometry = new THREE.SphereGeometry( 6371000, 32, 32 );
+				var earthMaterial = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
+				var earth = new THREE.Mesh( earthGeometry, earthMaterial );
+				scene.add( earth );695.7
+
+				var sunGeometry = new THREE.SphereGeometry( 695700000, 32, 32 );
+				var sunMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+				var sun = new THREE.Mesh( sunGeometry, sunMaterial );
+				scene.add( sun );
+
+				var oortGeometry = new THREE.SphereGeometry(Math.pow(75,15), 32, 32 );
+				var oortMaterial = new THREE.MeshBasicMaterial( {color:0xffffff} );
+				var oort = new THREE.Mesh( oortGeometry, oortMaterial );
+				scene.add( oort );
+
+
+
+				var galaxyGeometry = new THREE.SphereGeometry(1000000000000000000000/2, 32, 32 );
+				var galaxyMaterial = new THREE.MeshBasicMaterial( {color: 0x555555} );
+				var galaxy = new THREE.Mesh( galaxyGeometry, galaxyMaterial );
+				scene.add( galaxy );
+
 
 				renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
 
-        var radius = 50000000000;
+        var radius = 30000000000000000000000000000;
         var i, r = radius, starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ];
-        for ( i = 0; i < 2500; i ++ ) {
+        for ( i = 0; i < 15000; i ++ ) {
           var vertex = new THREE.Vector3();
-          vertex.x = Math.random() * 2 - 1;
-          vertex.y = Math.random() * 2 - 1;
-          vertex.z = Math.random() * 2 - 1;
+          vertex.x = (Math.random()*(2-1)) ;
+          vertex.y = (Math.random()*(2-1)) ;
+          vertex.z = (Math.random()*(2-1)) ;
           vertex.multiplyScalar( r );
+
+
           starsGeometry[ 0 ].vertices.push( vertex );
         }
-        for ( i = 0; i < 1500; i ++ ) {
+        for ( i = 0; i < 15000; i ++ ) {
           var vertex = new THREE.Vector3();
-          vertex.x = Math.random() * 2 - 1;
-          vertex.y = Math.random() * 2 - 1;
-          vertex.z = Math.random() * 2 - 1;
+          vertex.x = (Math.random()*(2-1)) ;
+          vertex.y = (Math.random()*(2-1)) ;
+          vertex.z = (Math.random()*(2-1)) ;
           vertex.multiplyScalar( r );
           starsGeometry[ 1 ].vertices.push( vertex );
         }
+
         var stars;
         var starsMaterials = [
+					new THREE.PointsMaterial( { color: 0xffffff, size: 2, sizeAttenuation: false } ),
+					new THREE.PointsMaterial( { color: 0xaaaaaa, size: 2, sizeAttenuation: false } ),
 					new THREE.PointsMaterial( { color: 0x555555, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x555555, size: 1, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x333333, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x3a3a3a, size: 1, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x1a1a1a, size: 2, sizeAttenuation: false } ),
-					new THREE.PointsMaterial( { color: 0x1a1a1a, size: 1, sizeAttenuation: false } )
+					new THREE.PointsMaterial( { color: 0x995555, size: 2, sizeAttenuation: false } ),
+					new THREE.PointsMaterial( { color: 0x777755, size: 2, sizeAttenuation: false } ),
+					new THREE.PointsMaterial( { color: 0x555577, size: 2, sizeAttenuation: false } )
 				];
 				for ( i = 10; i < 30; i ++ ) {
 					stars = new THREE.Points( starsGeometry[ i % 2 ], starsMaterials[ i % 6 ] );
-					stars.rotation.x = Math.random() * 6;
-					stars.rotation.y = Math.random() * 6;
-					stars.rotation.z = Math.random() * 6;
-					stars.scale.setScalar( i * 10 );
+					// stars.rotation.x = Math.random() * 6;
+					// stars.rotation.y = Math.random() * 6;
+					// stars.rotation.z = Math.random() * 6;
+					//  stars.scale.setScalar( i * 10 );
+					stars.position.x -= radius/2;
+					stars.position.y -= radius/2;
+					stars.position.z -= radius/2;
 					stars.matrixAutoUpdate = false;
 					stars.updateMatrix();
 					scene.add( stars );
