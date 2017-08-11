@@ -86,9 +86,9 @@
 				controls = new THREE.FlyControls( ship );
 				controls.movementSpeed = 100000;
 				controls.domElement = container;
-				controls.rollSpeed = Math.PI / 12;
-				controls.autoForward = false;
-				controls.dragToLook = false;
+				controls.rollSpeed = Math.PI / 3;
+				controls.autoForward = true;
+				controls.dragToLook = true;
 			}
 			function init() {
 				container = document.createElement( 'div' );
