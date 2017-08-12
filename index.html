@@ -55,6 +55,7 @@
       var type = 1;
       var infos;
 			var ship;
+			var galaxyRadius;
 
       init();
 			animate();
@@ -89,7 +90,7 @@
 					controls = new THREE.DeviceOrientationControls(ship, true);
 				}else{
 				controls = new THREE.FlyControls( ship );
-				controls.movementSpeed = 1000000;
+				controls.movementSpeed = 10000;
 				controls.domElement = container;
 				controls.rollSpeed = Math.PI / 3;
 				controls.autoForward = false;
@@ -110,9 +111,11 @@
 			if(deltay<0){
 			camera.position.y *=1.1;
 			camera.position.z *=1.1;
+			controls.movementSpeed*=1.1;
 		}else{
 			camera.position.y *=.9;
 			camera.position.z *=.9;
+			controls.movementSpeed*=.9;
 		}
 
 			}
@@ -122,7 +125,7 @@
 
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
-				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 200000000000000000000000000000000000000000 );
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 4.4*Math.pow(10,26) );
 				camera.position.y = 30;
 				camera.position.z = 100;
 				camera.lookAt(new THREE.Vector3(0,0,-1000000000000000000));
@@ -210,17 +213,22 @@
 				var sun = new THREE.Mesh( sunGeometry, sunMaterial );
 				scene.add( sun );
 
-				var oortGeometry = new THREE.SphereGeometry(Math.pow(75,15), 32, 32 );
-				var oortMaterial = new THREE.MeshBasicMaterial( {color:0xffffff} );
+				var oortGeometry = new THREE.SphereGeometry(7.5*Math.pow(10,15), 32, 32 );
+				var oortMaterial = new THREE.MeshBasicMaterial( {color:0x555555} );
 				var oort = new THREE.Mesh( oortGeometry, oortMaterial );
 				scene.add( oort );
 
 
-
-				var galaxyGeometry = new THREE.SphereGeometry(500000000000000000000, 32, 32 );
-				var galaxyMaterial = new THREE.MeshBasicMaterial( {color: 0x555555} );
+				galaxyRadius=5*Math.pow(10,20);
+				var galaxyGeometry = new THREE.SphereGeometry(5*Math.pow(10,20), 32, 32 );
+				var galaxyMaterial = new THREE.MeshBasicMaterial( {color: 0xffffff} );
 				var galaxy = new THREE.Mesh( galaxyGeometry, galaxyMaterial );
 				scene.add( galaxy );
+
+				var universeGeometry = new THREE.SphereGeometry(4.4*Math.pow(10,26), 32, 32 );
+				var universeMaterial = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+				var universe = new THREE.Mesh( universeGeometry, universeMaterial );
+				scene.add( universe );
 
 
 				renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
@@ -228,7 +236,7 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
 
-        var radius = 30000000000000000000000000000;
+        var radius = galaxyRadius;
         var i, r = radius, starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ];
         for ( i = 0; i < 15000; i ++ ) {
           var vertex = new THREE.Vector3();
