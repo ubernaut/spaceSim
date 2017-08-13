@@ -140,20 +140,34 @@
 
 
 
-        var gridHelperXY = new THREE.GridHelper( size, divisions,0xfffff,0x9999ff);
+        var gridHelper1 = new THREE.GridHelper( size, divisions,0xffffff,0xfffff);
 
-        scene.add( gridHelperXY );
+        scene.add( gridHelper1 );
 
-				var gridHelperXZ = new THREE.GridHelper( size, divisions,0xfffff,0x99ff99);
+				// size *=100;
+				// var gridHelper = new THREE.GridHelper( size, divisions,0xffffff,0xfffff);
+        // scene.add( gridHelper );
 
-        scene.add( gridHelperXZ );
-				gridHelperXZ.geometry.rotateZ( Math.PI / 2 );
+				// size *=10000;
+				// var gridHelper = new THREE.GridHelper( size, divisions,0xffffff,0xfffff);
+        // scene.add( gridHelper );
 
-				var gridHelperYZ = new THREE.GridHelper( size, divisions,0xfffff,0xff9999);
+				// size *=500;
+				// var gridHelper = new THREE.GridHelper( size, divisions,0xffffff,0xfffff);
+        // scene.add( gridHelper );
 
-        scene.add( gridHelperYZ );
-				gridHelperYZ.geometry.rotateX( Math.PI / 2 );
-				gridHelperYZ.geometry.rotateZ( Math.PI / 2 );
+
+
+				// var gridHelperXZ = new THREE.GridHelper( size, divisions,0xfffff,0x99ff99);
+				//
+        // scene.add( gridHelperXZ );
+				// gridHelperXZ.geometry.rotateZ( Math.PI / 2 );
+				//
+				// var gridHelperYZ = new THREE.GridHelper( size, divisions,0xfffff,0xff9999);
+				//
+        // scene.add( gridHelperYZ );
+				// gridHelperYZ.geometry.rotateX( Math.PI / 2 );
+				// gridHelperYZ.geometry.rotateZ( Math.PI / 2 );
 
 				// scene.add( directionalLight );
 				// model
