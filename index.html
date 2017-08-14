@@ -120,6 +120,15 @@
 
 			}
 
+
+			function wireframeLoader(){
+
+
+			}
+			function objectLoader(){
+
+			}
+
 			function init() {
 				window.addEventListener('mousewheel', onDocumentMouseWheel, false);
 
@@ -144,33 +153,7 @@
 
         scene.add( gridHelper1 );
 
-				// size *=100;
-				// var gridHelper = new THREE.GridHelper( size, divisions,0xffffff,0xfffff);
-        // scene.add( gridHelper );
 
-				// size *=10000;
-				// var gridHelper = new THREE.GridHelper( size, divisions,0xffffff,0xfffff);
-        // scene.add( gridHelper );
-
-				// size *=500;
-				// var gridHelper = new THREE.GridHelper( size, divisions,0xffffff,0xfffff);
-        // scene.add( gridHelper );
-
-
-
-				// var gridHelperXZ = new THREE.GridHelper( size, divisions,0xfffff,0x99ff99);
-				//
-        // scene.add( gridHelperXZ );
-				// gridHelperXZ.geometry.rotateZ( Math.PI / 2 );
-				//
-				// var gridHelperYZ = new THREE.GridHelper( size, divisions,0xfffff,0xff9999);
-				//
-        // scene.add( gridHelperYZ );
-				// gridHelperYZ.geometry.rotateX( Math.PI / 2 );
-				// gridHelperYZ.geometry.rotateZ( Math.PI / 2 );
-
-				// scene.add( directionalLight );
-				// model
 				var onProgress = function ( xhr ) {
 					if ( xhr.lengthComputable ) {
 						var percentComplete = xhr.loaded / xhr.total * 100;
@@ -185,6 +168,7 @@
 				mtlLoader.load( 'ship.mtl', function( materials ) {
 					materials.preload();
 					var objLoader = new THREE.OBJLoader();
+
 					objLoader.setMaterials( materials );
 					objLoader.setPath( 'js/' );
 					objLoader.load( 'ship.obj', function ( object ) {
@@ -193,11 +177,12 @@
             object.scale.set(20,20,20);
             object.rotation.set(0,0,0);
 						object.name="spaceShip";
-						//object.mesh.scale.set(2,2,2);
 						ship = object;
 						ship.add(camera);
 						camera.position.set( 0, 10, 30 );
-
+						 for(var child in object){
+							if(child instanceof THREE.Mesh)child.material.wireframe=true;
+							}
 						scene.add( object );
 						setControls(ship);
 
@@ -208,6 +193,43 @@
 
 					}, onProgress, onError );
 				});
+
+
+
+				//wireframeLoader
+				var Loader = new THREE.OBJMTLLoader();
+				Loader.load( 'ship.obj', 'ship.mtl', function ( object ) {
+														  object.scale.set(23,23,23);
+				                    object.traverse( function ( child ) {
+
+				                    if ( child instanceof THREE.Mesh )
+				                    {
+				                    //child.geometry.computeFaceNormals();
+				                    var  geometry = child.geometry;
+				                    //console.log(geometry);
+				                    //geometry.dynamic = true;
+				                    material = child.material;
+				                     mesh = new THREE.Mesh(geometry, material);
+				                        scene.add(mesh);
+
+				                    var useWireFrame = true;
+				                        if (useWireFrame) {
+				                            mesh.traverse(function (child) {
+				                                if (child instanceof THREE.Mesh)
+				                                {
+				                                child.material.wireframe = true;
+				                                child.material.color = new THREE.Color( 0x6893DE  );
+				                                }
+				                            });
+				                        }
+
+				                    }
+
+				                    //object.position.y = - 80;
+				                    scene.add( object );
+
+													});});
+
 				//
 
         //scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
