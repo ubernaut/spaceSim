@@ -238,345 +238,375 @@ class GridSystem{
                 this.acc.push([0.0,0.0,0.0]);
               }
 }
+var G=2.93558*Math.pow(10,-4);
+var epsilon = 0.01;
 
-// class soPhysics:
-//         constructor(aSystem, maxMark=100000, dt=.02):
-//                 self.dt=dt
-//                 self.system = aSystem
-//                 self.gridSystem = GridSystem(aSystem.bodies)
-//                 self.maxMark=maxMark
-//                 self.fitness=self.system.evaluate()
-//                 self.sumFit=self.fitness
-//                 self.t=0
-//                 self.count=1
-//                 self.collisions=[]
-//
-//         collisionDetected(self, player, names, mass,
-//                               pos, vel, acc, rad, ith, jth):
-//                 if (names[jth]!="player" and
-//                     names[ith]!="player"):
-//                         self.combineBodies(player, names, mass, pos,
-//                                            vel, acc, rad, ith, jth)
-//
-//
-//         combineBodies(self, player, names, mass,
-//                               pos, vel, acc, rad, ith, jth):
-//                 pos[jth][0] = (pos[ith][0]*mass[ith] + pos[jth][0]*mass[jth])/((mass[ith]+mass[jth]))
-//                 pos[jth][1] = (pos[ith][1]*mass[ith] + pos[jth][1]*mass[jth])/((mass[ith]+mass[jth]))
-//                 pos[jth][2] = (pos[ith][2]*mass[ith] + pos[jth][2]*mass[jth])/((mass[ith]+mass[jth]))
-//
-//                 vel[jth][0] = (((mass[ith]*vel[ith][0])+(mass[jth]*vel[jth][0])/((mass[ith]+mass[jth]))))
-//                 vel[jth][1] = (((mass[ith]*vel[ith][1])+(mass[jth]*vel[jth][1])/((mass[ith]+mass[jth]))))
-//                 vel[jth][2] = (((mass[ith]*vel[ith][2])+(mass[jth]*vel[jth][2])/((mass[ith]+mass[jth]))))
-//
-//                 mass[jth] = mass[ith] + mass[jth]
-//                 mass[ith] = 0.00000000000000000000000000000000000000000000000001
-//                 pos[ith][0]=10
-//                 pos[ith][1]=10
-//                 pos[ith][2]=10
-//
-//                 vel[ith][0]=0
-//                 vel[ith][1]=0
-//                 vel[ith][2]=0
-//                 names[ith]= "DELETED"
-//                 self.gridSystem.collisions.append(jth)
-//                 self.gridSystem.removed.append(ith)
-//                 self.gridSystem.getPlayerIndex()
-//
-//         evaluateStep(self):
-//                 self.accelerateCuda()
-//                 for body in self.system.bodies:
-//                         self.calculate_velocity(body,self.dt)
-//                         self.calculate_position(body,self.dt)
-//                         body.acceleration.reset()
-//                         self.sumFit+=self.system.evaluate()
-//                         self.t+=self.dt
-//                 self.count+=1
-//
-//         evaluate(self):
-//                 self.t=0
-//                 self.count=1
-//                 self.accelerateCuda()
-//                 self.sumFit=0
-//                 while self.count<self.maxMark:
-//                         self.evaluateStep()
-//                 self.fitness = self.system.evaluate()
-//                 self.avgStability = self.sumFit/self.count
-//                 return self.avgStability
-//
-//         accGravSingle(self, player, names, mass,
-//                           pos, vel, acc, rad, ith, jth):
-//                 d_x = pos[jth][0] - pos[ith][0]
-//                 d_y = pos[jth][1] - pos[ith][1]
-//                 d_z = pos[jth][2] - pos[ith][2]
-//                 radius = d_x**2 + d_y**2 + d_z**2
-//                 rad2 = math.sqrt(radius)
-//                 grav_mag = 0.0;
-//
-//                 if (rad2 > rad[ith]+rad[jth]):
-//                         grav_mag = G/((radius+epsilon)**(3.0/2.0))
-//                         grav_x=grav_mag*d_x
-//                         grav_y=grav_mag*d_y
-//                         grav_z=grav_mag*d_z
-//
-//                         acc[ith][0] +=grav_x*mass[jth]
-//                         acc[ith][1] +=grav_y*mass[jth]
-//                         acc[ith][2] +=grav_z*mass[jth]
-//
-//                         acc[jth][0] +=grav_x*mass[ith]
-//                         acc[jth][1] +=grav_y*mass[ith]
-//                         acc[jth][2] +=grav_z*mass[ith]
-//                 else:
-//                         grav_mag = 0
-//                         self.collisionDetected(player, names, mass, pos,
-//                                                vel, acc, rad, ith, jth)
-//
-//         accelerateCuda(self):
-//                 G=2.93558*10**-4
-//                 epsilon = 0.01
-//                 for i in range(0,self.gridSystem.count):
-//                         if(self.gridSystem.names[i] != 'DELETED'):
-//                                 for j in range(0,i):
-//                                         if(self.gridSystem.names[j] != 'DELETED'):
-//                                                 self.accGravSingle(self.gridSystem.player,
-//                                                                    self.gridSystem.names,
-//                                                                    self.gridSystem.mass,
-//                                                                    self.gridSystem.pos,
-//                                                                    self.gridSystem.vel,
-//                                                                    self.gridSystem.acc,
-//                                                                    self.gridSystem.rad,
-//                                                                    i, j)
-//                 self.calVelPosCuda()
-//                 self.gridSystem.resetAcc()
-//                 for i in range(0,self.gridSystem.count):
-//                         if self.gridSystem.names[i]=="DELETED":
-//                                 self.gridSystem.removeBody(i)
-//                 self.gridSystem.collisions = []
-//
-//         calVelPosCuda(self):
-//                 for i in range(0,self.gridSystem.count):
-//                         self.gridSystem.vel[i][0]+=self.dt*self.gridSystem.acc[i][0]
-//                         self.gridSystem.vel[i][1]+=self.dt*self.gridSystem.acc[i][1]
-//                         self.gridSystem.vel[i][2]+=self.dt*self.gridSystem.acc[i][2]
-//
-//                         self.gridSystem.pos[i][0]+=self.dt*self.gridSystem.vel[i][0]
-//                         self.gridSystem.pos[i][1]+=self.dt*self.gridSystem.vel[i][1]
-//                         self.gridSystem.pos[i][2]+=self.dt*self.gridSystem.vel[i][2]
-// class System(object):
-//         constructor( seed=1, starcount=1,
-//                      bodycount=1, abodyDistance=.5, abodySpeed=0.03):
-//                 random.seed = seed
-//                 self.seed = seed
-//                 self.star = Star()
-//                 self.starCount=starcount
-//                 self.bodyCount= bodycount
-//                 self.bodies=[]
-//                 self.bodyDistance = abodyDistance
-//                 self.bodySpeed = abodySpeed
-//                 if seed !=0:
-//                         self.build()
-//                 else:
-//                         self.buildSol()
-//                 print "bodyCount: "+`len(self.bodies)`
-//                 self.stability = 0.5 - self.evaluate()
-//                 self.printed=False
-//                 self.avgStability=0.5 - self.evaluate()
-//         makeDefault(self):
-//                 System(1,1,32,.5,.03)
-//         moveToStar(self):
-//                 for body in self.bodies:
-//                         body.position.x += self.star.body.position.x
-//                         body.position.y += self.star.body.position.y
-//                         body.position.z += self.star.body.position.z
-//         getStar(self, body_data):
-//                 body_data.append(random.uniform(.4,1))
-//                 for j in range(0,2):
-//                         body_data.append(0.0)
-//                 body_data.append(0.0)
-//                 for j in range(0,2):
-//                         body_data.append(0.0)
-//                 body_data.append(0.0)
-//                 return body_data
-//
-//         getSymPlanets(self):
-//                 body_data=[]
-//                 body_data.append("body_X")
-//                 body_data.append(random.uniform(.000001,.4))
-//
-//                 if quadrantVar > 0:
-//                         body_data.append(random.uniform(0,self.bodyDistance))
-//                         body_data.append(random.uniform(0,self.bodyDistance))
-//                         body_data.append(0.0)
-//                         body_data.append(random.uniform(0,self.bodySpeed))
-//                         body_data.append(random.uniform(-self.bodySpeed,0))
-//                         body_data.append(0.0)
-//
-//                 if quadrantVar< 0:
-//                         body_data.append(random.uniform(-self.bodyDistance,0))
-//                         body_data.append(random.uniform(-self.bodyDistance,0))
-//                         body_data.append(0.0)
-//                         body_data.append(random.uniform(-self.bodySpeed,0))
-//                         body_data.append(random.uniform(0,self.bodySpeed))
-//                         body_data.append(0.0)
-//
-//         getDirectedPlanet(self):
-//                 quadrantVar =1
-//                 body_data=[]
-//                 body_data.append("body_X")
-//                 body_data.append(random.uniform(.000001,.01))
-//
-//                 if quadrantVar > 0:
-//                         body_data.append(random.uniform(0,self.bodyDistance))
-//                         body_data.append(random.uniform(0,self.bodyDistance))
-//                         body_data.append(random.uniform(0,self.bodyDistance/64))
-//                 if quadrantVar< 0:
-//                         body_data.append(random.uniform(-self.bodyDistance,0))
-//                         body_data.append(random.uniform(-self.bodyDistance,0))
-//                         body_data.append(random.uniform(-self.bodyDistance/64,0))
-//
-//                 if quadrantVar > 0:
-//                         body_data.append(random.uniform(0,self.bodySpeed))
-//                         body_data.append(random.uniform(-self.bodySpeed,0))
-//                         body_data.append(random.uniform(0,self.bodySpeed/32))
-//                 if quadrantVar < 0:
-//                         body_data.append(random.uniform(-self.bodySpeed,0))
-//                         body_data.append(random.uniform(0,self.bodySpeed))
-//                         body_data.append(random.uniform(-self.bodySpeed/32),0)
-//
-//
-//
-//                 return body_data
-//
-//         getPlanet(self, body_data):
-//                 body_data.append(random.uniform(.000001,.01))
-//                 for j in range(0,2):
-//                         body_data.append(random.uniform(-self.bodyDistance,self.bodyDistance))
-//                 body_data.append(0.0)
-//                 for j in range(0,2):
-//                         body_data.append(random.uniform(-self.bodySpeed,self.bodySpeed))
-//                 body_data.append(0.0)
-//                 return body_data
-//
-//         buildSol(self):
-//                 self.bodies=[]
-//                 body_data=["Sol",1,0,0,0,0,0,0,0,0,0]
-//                 self.bodies.append(Body(body_data))
-//                 body_data=["Earth",0.000003,0,1,0,.04,0,0,0,0,0]
-//                 self.bodies.append(Body(body_data))
-//
-//         build(self):
-//                 for i in range(0,self.bodyCount):
-//                         if i < self.starCount:
-//                                 self.addStar()
-//                         else:
-//                                 self.addSinglePlanet()
-//         addStar(self):
-//                 body_data = self.getStar(["star"])
-//                 body = Body(body_data)
-//                 self.bodies.append(body)
-//         reverseBody(self, adata):
-//                 bdata = adata
-//                 bdata[2]= 0 - adata[2]
-//                 bdata[3]= 0 - adata[3]
-//                 bdata[4]= 0 - adata[4]
-//                 bdata[5]= 0 - adata[5]
-//                 bdata[6]= 0 - adata[6]
-//                 bdata[7]= 0 - adata[7]
-//                 return bdata
-//
-//         addSinglePlanet(self):
-//                 print "adding Body"
-//                 body_data = self.getDirectedPlanet()
-//                 aBody = Body(body_data)
-//                 bBody = Body(self.reverseBody(body_data))
-//                 otherBodies = []
-//                 otherBodies.append(self.bodies[0])
-//                 otherBodies.append(aBody)
-//                 otherBodies.append(bBody)
-//                 fitness = self.evaluateN(otherBodies)
-//                 while fitness<.1 or fitness>1:
-//                         print "testing configuration"
-//                         adata = self.getDirectedPlanet()
-//                         aBody = Body(adata)
-//                         bdata = self.reverseBody(adata)
-//                         bBody = Body(bdata)
-//                         otherBodies = []
-//                         otherBodies.append(self.bodies[0])
-//                         otherBodies.append(aBody)
-//                         otherBodies.append(bBody)
-//                         fitness=self.evaluateN(otherBodies)
-//                 self.bodies.append(aBody)
-//                 self.bodies.append(bBody)
-//                 return aBody
-//
-//         addPlanet(self):
-//                 print "adding body"
-//                 body_data = []
-//                 body_data.append("body_X")
-//                 body_data = self.getPlanet(body_data)
-//                 aBody = Body(body_data)
-//                 self.bodies.append(aBody)
-//                 print "new stability"
-//                 print self.evaluate()
-//                 while self.evaluate()>1:
-//                         self.bodies.pop()
-//                         self.addPlanet()
-//                 return
-//
-//
-//         evaluate(self):
-//                 kinetic=0.0
-//                 potential=0.0
-//                 G=2.93558*10**-4
-//                 for body in self.bodies:
-//                         vel = body.velocity
-//                         vel_sq = (vel.x**2 + vel.y**2 + vel.z**2)
-//                         kinetic += 0.5*body.mass*vel_sq
-//                 for i in range(0,len(self.bodies)):
-//                         current_body=self.bodies[i]
-//                         current_position=current_body.position
-//                         for j in range(0,i):
-//                                 other_body=self.bodies[j]
-//                                 other_position=other_body.position
-//                                 d_x=(other_position.x-current_position.x)
-//                                 d_y=(other_position.y-current_position.y)
-//                                 d_z=(other_position.z-current_position.z)
-//                                 radius = (d_x**2 + d_y**2 + d_z**2)**(0.5)
-//                                 if radius >0 :
-//                                         potential -= G*current_body.mass*other_body.mass/radius
-//                 try:
-//                         return abs(kinetic/potential)
-//                 except:
-//                         return 100
-//         evaluateN(self, somebodies):
-//                 tempSys = System()
-//                 tempSys.bodies = somebodies
-//                 tempEval = soPhysics(tempSys,1000000,.01)
-//                 return tempEval.sumFit
-//
-//         evaluateBodies(self, someBodies):
-//                 kinetic=0.0
-//                 potential=0.0
-//                 G=2.93558*10**-4
-//                 for body in someBodies:
-//                         vel = body.velocity
-//                         vel_sq = (vel.x**2 + vel.y**2 + vel.z**2)
-//                         kinetic += 0.5*body.mass*vel_sq
-//                 for i in range(0,len(someBodies)):
-//                         current_body=someBodies[i]
-//                         current_position=current_body.position
-//                         for j in range(0,i):
-//                                 other_body=someBodies[j]
-//                                 other_position=other_body.position
-//                                 d_x=(other_position.x-current_position.x)
-//                                 d_y=(other_position.y-current_position.y)
-//                                 d_z=(other_position.z-current_position.z)
-//                                 radius = (d_x**2 + d_y**2 + d_z**2)**(0.5)
-//                                 if radius >0 :
-//                                         potential -= G*current_body.mass*other_body.mass/radius
-//                 try:
-//                         return abs(kinetic/potential)
-//                 except:
-//                         return 100.0
-//         bodies(self):
-//                 return self.bodies
+class soPhysics{
+        constructor(aSystem, maxMark=100000, dt=.02) {
+                this.dt=dt;
+                this.system = aSystem;
+                this.gridSystem = new GridSystem(aSystem.bodies);
+                this.maxMark=maxMark;
+                this.fitness=this.system.evaluate();
+                this.sumFit=this.fitness;
+                this.t=0;
+                this.count=1;
+                this.collisions=[];
+              }
+
+        collisionDetected( player, names, mass,pos, vel, acc, rad, ith, jth) {
+                if (names[jth]!='player' && names[ith]!='player')) {
+                        this.combineBodies(player, names, mass, pos, vel, acc, rad, ith, jth);
+                }
+        }
+        combineBodies( player, names, mass,pos, vel, acc, rad, ith, jth) {
+                pos[jth][0] = (pos[ith][0]*mass[ith] + pos[jth][0]*mass[jth])/((mass[ith]+mass[jth]));
+                pos[jth][1] = (pos[ith][1]*mass[ith] + pos[jth][1]*mass[jth])/((mass[ith]+mass[jth]));
+                pos[jth][2] = (pos[ith][2]*mass[ith] + pos[jth][2]*mass[jth])/((mass[ith]+mass[jth]));
+                vel[jth][0] = (((mass[ith]*vel[ith][0])+(mass[jth]*vel[jth][0])/((mass[ith]+mass[jth]))));
+                vel[jth][1] = (((mass[ith]*vel[ith][1])+(mass[jth]*vel[jth][1])/((mass[ith]+mass[jth]))));
+                vel[jth][2] = (((mass[ith]*vel[ith][2])+(mass[jth]*vel[jth][2])/((mass[ith]+mass[jth]))));
+                mass[jth] = mass[ith] + mass[jth];
+                mass[ith] = 0.00000000000000000000000000000000000000000000000001;
+                pos[ith][0]=10;
+                pos[ith][1]=10;
+                pos[ith][2]=10;
+                vel[ith][0]=0;
+                vel[ith][1]=0;
+                vel[ith][2]=0;
+                names[ith]= 'DELETED';
+                this.gridSystem.collisions.push(jth);
+                this.gridSystem.removed.push(ith);
+                this.gridSystem.getPlayerIndex();
+
+        }
+        evaluateStep() {
+                this.accelerate();
+                for (body in this.system.bodies) {
+                        this.calculate_velocity(body,this.dt);
+                        this.calculate_position(body,this.dt);
+                        body.acceleration.reset();
+                        this.sumFit+=this.system.evaluate();
+                        this.t+=this.dt;
+                      }
+                this.count+=1;
+        }
+        evaluate() {
+                this.t=0;
+                this.count=1;
+                this.accelerate();
+                this.sumFit=0;
+                while (this.count<this.maxMark) {
+                        this.evaluateStep();
+                }
+                this.fitness = this.system.evaluate();
+                this.avgStability = this.sumFit/this.count;
+                return this.avgStability;
+        }
+
+        accGravSingle( player, names, mass, pos, vel, acc, rad, ith, jth) {
+                d_x = pos[jth][0] - pos[ith][0];
+                d_y = pos[jth][1] - pos[ith][1];
+                d_z = pos[jth][2] - pos[ith][2];
+                radius = Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2);
+                rad2 = math.sqrt(radius);
+                grav_mag = 0.0;
+                if (rad2 > rad[ith]+rad[jth])) {
+                        grav_mag = G/(Math.pow((radius+epsilon),(3.0/2.0)));
+                        grav_x=grav_mag*d_x;
+                        grav_y=grav_mag*d_y;
+                        grav_z=grav_mag*d_z;
+                        acc[ith][0] +=grav_x*mass[jth];
+                        acc[ith][1] +=grav_y*mass[jth];
+                        acc[ith][2] +=grav_z*mass[jth];
+                        acc[jth][0] +=grav_x*mass[ith];
+                        acc[jth][1] +=grav_y*mass[ith];
+                        acc[jth][2] +=grav_z*mass[ith];
+
+                } else {
+                        grav_mag = 0;
+                        this.collisionDetected(player, names, mass, pos,vel, acc, rad, ith, jth);
+
+                }
+        }
+
+        accelerateCuda() {
+                G=2.93558*Math.pow(10,-4);
+                epsilon = 0.01;
+                for (var i=0; i< this.gridSystem.length) {
+                        if(this.gridSystem.names[i] != 'DELETED')) {
+                                for (var j=0; j<i;j++) {
+                                        if(this.gridSystem.names[j] != 'DELETED')) {
+                                                this.accGravSingle(this.gridSystem.player,this.gridSystem.names,this.gridSystem.mass,this.gridSystem.pos,this.gridSystem.vel,this.gridSystem.acc,this.gridSystem.rad,i, j);
+                                        }
+                                }
+
+                        }
+                }
+                this.calVelPosCuda();
+                this.gridSystem.resetAcc();
+                for (var i=0; i< this.gridSystem.length; i++) {
+                        if (this.gridSystem.names[i]=='DELETED') {
+                                this.gridSystem.removeBody(i);
+                        }
+                }
+
+                this.gridSystem.collisions = [];
+             }
+
+
+        calVelPosCuda() {
+                for (var i=0; i< this.gridSystem.length;i++) {
+                        this.gridSystem.vel[i][0]+=this.dt*this.gridSystem.acc[i][0];
+                        this.gridSystem.vel[i][1]+=this.dt*this.gridSystem.acc[i][1];
+                        this.gridSystem.vel[i][2]+=this.dt*this.gridSystem.acc[i][2];
+                        this.gridSystem.pos[i][0]+=this.dt*this.gridSystem.vel[i][0];
+                        this.gridSystem.pos[i][1]+=this.dt*this.gridSystem.vel[i][1];
+                        this.gridSystem.pos[i][2]+=this.dt*this.gridSystem.vel[i][2];
+                }
+        }
+      }
+
+      class System{
+              constructor(seed=0, starcount=1, bodycount=1, abodyDistance=2, abodySpeed=0.05) {
+                      random.seed = seed;
+                      self.seed = seed;
+                      self.star = Star();
+                      self.starCount=starcount;
+                      self.bodyCount= bodycount;
+                      self.bodies=[];
+                      self.bodyDistance = abodyDistance;
+                      self.bodySpeed = abodySpeed;
+                      if (seed !=0) {
+                              self.build();
+                      } else {
+                              self.buildSol();
+                      }
+                      console.log 'bodyCount: '+`len(self.bodies)`;
+                      self.stability = 0.5 - self.evaluate();
+                      self.console.loged=false;
+                      self.avgStability=0.5 - self.evaluate();
+              }
+      moveToStar() {
+              for (body in self.bodies) {
+                      body.position.x += self.star.body.position.x;
+                      body.position.y += self.star.body.position.y;
+                      body.position.z += self.star.body.position.z;
+                    }
+                  }
+      getStar( body_data) {
+              body_data.push(random.uniform(.4,1));
+              for (var j=0 ;j<=2;j++)) {
+                      body_data.push(0.0);
+              }
+              body_data.push(0.0);
+              for (var j=0 ;j<=2;j++))  {
+                      body_data.push(0.0);
+              }
+              body_data.push(0.0);
+              return body_data;
+              }
+  getSymPlanets() {
+          body_data=[];
+          body_data.push('body_X');
+          body_data.push(random.uniform(.000001,.4));
+          if (quadrantVar > 0) {
+                  body_data.push(random.uniform(0,self.bodyDistance));
+                  body_data.push(random.uniform(0,self.bodyDistance));
+                  body_data.push(0.0);
+                  body_data.push(random.uniform(0,self.bodySpeed));
+                  body_data.push(random.uniform(-self.bodySpeed,0));
+                  body_data.push(0.0);
+                }
+          if (quadrantVar< 0) {
+                  body_data.push(random.uniform(-self.bodyDistance,0));
+                  body_data.push(random.uniform(-self.bodyDistance,0));
+                  body_data.push(0.0);
+                  body_data.push(random.uniform(-self.bodySpeed,0));
+                  body_data.push(random.uniform(0,self.bodySpeed));
+                  body_data.push(0.0);
+                }
+    }
+    getDirectedPlanet() {
+            quadrantVar =1;
+            body_data=[];
+            body_data.push('body_X');
+            body_data.push(random.uniform(.000001,.01));
+            if (quadrantVar > 0) {
+                    body_data.push(random.uniform(0,self.bodyDistance));
+                    body_data.push(random.uniform(0,self.bodyDistance));
+                    body_data.push(random.uniform(0,self.bodyDistance/64));}
+            if (quadrantVar< 0) {
+                    body_data.push(random.uniform(-self.bodyDistance,0));
+                    body_data.push(random.uniform(-self.bodyDistance,0));
+                    body_data.push(random.uniform(-self.bodyDistance/64,0));}
+            if (quadrantVar > 0) {
+                    body_data.push(random.uniform(0,self.bodySpeed));
+                    body_data.push(random.uniform(-self.bodySpeed,0));
+                    body_data.push(random.uniform(0,self.bodySpeed/32));}
+            if (quadrantVar < 0) {
+                    body_data.push(random.uniform(-self.bodySpeed,0));
+                    body_data.push(random.uniform(0,self.bodySpeed));
+                    body_data.push(random.uniform(-self.bodySpeed/32),0);}
+            return body_data;
+            }
+
+            getPlanet( body_data) {
+                    body_data.push(random.uniform(.000001,.01));
+                    for (j in range(0,2)) {
+                            body_data.push(random.uniform(-self.bodyDistance,self.bodyDistance));}
+                    body_data.push(0.0);
+                    for (j in range(0,2)) {
+                            body_data.push(random.uniform(-self.bodySpeed,self.bodySpeed));}
+                    body_data.push(0.0);
+                    return body_data;
+                  }
+            buildSol() {
+                    self.bodies=[];
+                    body_data=['Sol',1,0,0,0,0,0,0,0,0,0];
+                    self.bodies.push(Body(body_data));
+                    body_data=['Earth',0.000003,0,1,0,.04,0,0,0,0,0];
+                    self.bodies.push(Body(body_data));
+                  }
+            build() {
+                    for (i in range(0,self.bodyCount)) {
+                            if (i < self.starCount) {
+                                    self.addStar();
+                            } else {
+                                    self.addSinglePlanet();
+
+                            }
+                          }
+                        }
+
+
+        addStar() {
+                body_data = self.getStar(['star']);
+                body = Body(body_data);
+                self.bodies.push(body);
+              }
+        reverseBody( adata) {
+                bdata = adata;
+                bdata[2]= 0 - adata[2];
+                bdata[3]= 0 - adata[3];
+                bdata[4]= 0 - adata[4];
+                bdata[5]= 0 - adata[5];
+                bdata[6]= 0 - adata[6];
+                bdata[7]= 0 - adata[7];
+                return bdata;
+              }
+        addSinglePlanet() {
+                console.log 'adding Body';
+                body_data = self.getDirectedPlanet();
+                aBody = Body(body_data);
+                bBody = Body(self.reverseBody(body_data));
+                otherBodies = [];
+                otherBodies.push(self.bodies[0]);
+                otherBodies.push(aBody);
+                otherBodies.push(bBody);
+                fitness = self.evaluateN(otherBodies);
+                while (fitness<.1 || fitness>1) {
+                        console.log 'testing configuration';
+                        adata = self.getDirectedPlanet();
+                        aBody = Body(adata);
+                        bdata = self.reverseBody(adata);
+                        bBody = Body(bdata);
+                        otherBodies = [];
+                        otherBodies.push(self.bodies[0]);
+                        otherBodies.push(aBody);
+                        otherBodies.push(bBody);
+                        fitness=self.evaluateN(otherBodies);
+                      }
+                self.bodies.push(aBody);
+                self.bodies.push(bBody);
+                return aBody;
+
+                }
+                                            ;
+      addPlanet() {
+              console.log 'adding body';
+              body_data = [];
+              body_data.push('body_X');
+              body_data = self.getPlanet(body_data);
+              aBody = Body(body_data);
+              self.bodies.push(aBody);
+              console.log 'new stability';
+              console.log self.evaluate();
+              while (self.evaluate()>1) {
+                      self.bodies.pop();
+                      self.addPlanet();
+                    }
+              return;
+
+              }
+
+              evaluate() {
+                      kinetic=0.0;
+                      potential=0.0;
+                      G=2.93558*10**-4;
+                      for (body in self.bodies) {
+                              vel = body.velocity;
+                              vel_sq = (vel.x**2 + vel.y**2 + vel.z**2);
+                              kinetic += 0.5*body.mass*vel_sq;
+                            }
+                      for (i in range(0,len(self.bodies))) {
+                              current_body=self.bodies[i];
+                              current_position=current_body.position;
+                              for (j in range(0,i)) {
+                                      other_body=self.bodies[j];
+                                      other_position=other_body.position;
+                                      d_x=(other_position.x-current_position.x);
+                                      d_y=(other_position.y-current_position.y);
+                                      d_z=(other_position.z-current_position.z);
+                                      radius = (d_x**2 + d_y**2 + d_z**2)**(0.5);
+                                      if (radius >0 ) {
+                                              potential -= G*current_body.mass*other_body.mass/radius;}
+                                            }
+                      }
+                      try {
+                              return abs(kinetic/potential);
+                      } catch () {
+                              return 100;
+
+                      }
+              }
+
+              evaluateN( somebodies) {
+                      tempSys = System();
+                      tempSys.bodies = somebodies;
+                      tempEval = new soPhysics(tempSys,1000000,.01);
+                      return tempEval.sumFit;
+                    }
+              evaluateBodies( someBodies) {
+                      kinetic=0.0;
+                      potential=0.0;
+                      G=2.93558*10**-4;
+                      for (body in someBodies) {
+                              vel = body.velocity;
+                              vel_sq = (vel.x**2 + vel.y**2 + vel.z**2);
+                              kinetic += 0.5*body.mass*vel_sq;
+                            }
+                      for (i in range(0,len(someBodies))) {
+                              current_body=someBodies[i];
+                              current_position=current_body.position;
+                              for (j in range(0,i)) {
+                                      other_body=someBodies[j];
+                                      other_position=other_body.position;
+                                      d_x=(other_position.x-current_position.x);
+                                      d_y=(other_position.y-current_position.y);
+                                      d_z=(other_position.z-current_position.z);
+                                      radius = (d_x**2 + d_y**2 + d_z**2)**(0.5);
+                                      if (radius >0 ) {
+                                              potential -= G*current_body.mass*other_body.mass/radius;}
+                                            }
+                      }
+                      try {
+                              return abs(kinetic/potential);
+                      } catch () {
+                              return 100.0;
+                            }}
+              bodies() {
+                      return self.bodies;
+
+              }
+}
