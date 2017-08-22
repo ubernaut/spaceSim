@@ -53,7 +53,7 @@ function setControls(ship){
     controls = new THREE.DeviceOrientationControls(ship, true);
   }else{
   controls = new THREE.FlyControls( ship );
-  controls.movementSpeed = 10000;
+  controls.movementSpeed = 100;
   controls.domElement = container;
   controls.rollSpeed = Math.PI / 3;
   controls.autoForward = false;
