@@ -12,6 +12,13 @@ var type = 1;
 var infos;
 var ship;
 var galaxyRadius;
+var onProgress = function ( xhr ) {
+  if ( xhr.lengthComputable ) {
+    var percentComplete = xhr.loaded / xhr.total * 100;
+    console.log( Math.round(percentComplete, 2) + '% downloaded' );
+  }
+};
+var onError = function ( xhr ) { };
 loadedPlayers=[];
 init();
 animate();
@@ -110,13 +117,7 @@ function init() {
   scene.add( gridHelper1 );
 
 
-  var onProgress = function ( xhr ) {
-    if ( xhr.lengthComputable ) {
-      var percentComplete = xhr.loaded / xhr.total * 100;
-      console.log( Math.round(percentComplete, 2) + '% downloaded' );
-    }
-  };
-  var onError = function ( xhr ) { };
+
   THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
   var mtlLoader = new THREE.MTLLoader();
   //mtlLoader.setPath( 'obj/male02/' );
@@ -136,9 +137,6 @@ function init() {
       ship = object;
       ship.add(camera);
       camera.position.set( 0, 10, 30 );
-       for(var child in object){
-        if(child instanceof THREE.Mesh)child.material.wireframe=true;
-        }
       scene.add( object );
       setControls(ship);
 
