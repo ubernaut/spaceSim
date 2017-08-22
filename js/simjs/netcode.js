@@ -10,47 +10,46 @@ var socket = io('http://thedagda.co:1137');
 socket.on('keypress', function (data) {
 getData(data);
 });
+// socket.on('keypress', function (data) {
+// getData(data);
+// });
+// socket.on('keypress', function (data) {
+// getData(data);
+// });
+// socket.on('keypress', function (data) {
+// getData(data);
+// });
 
 function broadcastUpdate(){
+  console.log("some event");
   var datagram = new Object();
   datagram.position = ship.position;
   datagram.quaternion = ship.quaternion;
-  socket.emit('keypress', JSON.stringify(datagram));
+  socket.emit("keypress", JSON.stringify(datagram));
 }
 
 window.addEventListener('keydown', event => {
+  console.log("keydown");
   broadcastUpdate();
 });
 window.addEventListener('keyup', event => {
+  console.log("keyup");
   broadcastUpdate();
 });
-window.addEventListener('mousedown', event => {
-  broadcastUpdate();
-});
-window.addEventListener('mouseup', event => {
-  broadcastUpdate();
-});
+document.body.addEventListener('mousedown', broadcastUpdate,false);
+document.body.addEventListener('mouseup',  broadcastUpdate,false);
 
 function checkLoadedPlayers(dataObject){
   var newPlayer=true;
-  console.log(loadedPlayers);
   for(var player of loadedPlayers){
-    console.log("ids:");
-    console.log(dataObject.playerId);
-    console.log(player.playerId);
-    console.log(player);
-
     if(player.playerId == dataObject.playerId){
         player.ship.position.x = dataObject.position.x;
         player.ship.position.y = dataObject.position.y;
         player.ship.position.z = dataObject.position.z;
-
         player.ship.quaternion._w = dataObject.quaternion._w;
         player.ship.quaternion._x = dataObject.quaternion._x;
         player.ship.quaternion._y = dataObject.quaternion._y;
         player.ship.quaternion._z = dataObject.quaternion._z;
-        // player.ship.quaternion.y = dataObject.quaternion.y;
-        // player.ship.quaternion.z = dataObject.quaternion.z;
         console.log("player found");
         newPlayer=false;
     }
