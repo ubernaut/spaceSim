@@ -17,8 +17,14 @@ window.addEventListener('keydown', event => {
 
 function checkLoadedPlayers(dataObject){
   var newPlayer=true;
-  for(var player in loadedPlayers){
-    if(player.id == dataObject.playerId){
+  console.log(loadedPlayers);
+  for(var player of loadedPlayers){
+    console.log("ids:");
+    console.log(dataObject.playerId);
+    console.log(player.playerId);
+    console.log(player);
+
+    if(player.playerId == dataObject.playerId){
         player.ship.position.x = dataObject.x;
         player.ship.position.y = dataObject.y;
         player.ship.position.z = dataObject.z;
@@ -33,6 +39,7 @@ function checkLoadedPlayers(dataObject){
 }
 function LoadNewPlayer(dataObject){
   console.log("loading new player");
+  console.log(dataObject);
   var mtlLoader = new THREE.MTLLoader();
   mtlLoader.setPath( '../js/three/' );
   mtlLoader.load( 'ship.mtl', function( materials ) {
