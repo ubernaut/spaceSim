@@ -1,18 +1,34 @@
-var socket = io('http://thedagda.co:1137');
-socket.on('keypress', function (data) {
-  //console.log(data);
 
+function getData(data){
   var dataObject = JSON.parse(data.message);
   console.log(dataObject);
   dataObject.playerId = data.playerId;
   checkLoadedPlayers(dataObject);
-  // document.body.innerHTML = `
-  //   <pre>${JSON.stringify(data, null, 2)}</pre>
-  //   <br/>
-  // ` + document.body.innerHTML
+}
+
+var socket = io('http://thedagda.co:1137');
+socket.on('keypress', function (data) {
+getData(data);
 });
+
+function broadcastUpdate(){
+  var datagram = new Object();
+  datagram.position = ship.position;
+  datagram.quaternion = ship.quaternion;
+  socket.emit('keypress', JSON.stringify(datagram));
+}
+
 window.addEventListener('keydown', event => {
-  socket.emit('keypress', JSON.stringify(ship.position));
+  broadcastUpdate();
+});
+window.addEventListener('keyup', event => {
+  broadcastUpdate();
+});
+window.addEventListener('mousedown', event => {
+  broadcastUpdate();
+});
+window.addEventListener('mouseup', event => {
+  broadcastUpdate();
 });
 
 function checkLoadedPlayers(dataObject){
@@ -25,9 +41,16 @@ function checkLoadedPlayers(dataObject){
     console.log(player);
 
     if(player.playerId == dataObject.playerId){
-        player.ship.position.x = dataObject.x;
-        player.ship.position.y = dataObject.y;
-        player.ship.position.z = dataObject.z;
+        player.ship.position.x = dataObject.position.x;
+        player.ship.position.y = dataObject.position.y;
+        player.ship.position.z = dataObject.position.z;
+
+        player.ship.quaternion._w = dataObject.quaternion._w;
+        player.ship.quaternion._x = dataObject.quaternion._x;
+        player.ship.quaternion._y = dataObject.quaternion._y;
+        player.ship.quaternion._z = dataObject.quaternion._z;
+        // player.ship.quaternion.y = dataObject.quaternion.y;
+        // player.ship.quaternion.z = dataObject.quaternion.z;
         console.log("player found");
         newPlayer=false;
     }
@@ -48,9 +71,16 @@ function LoadNewPlayer(dataObject){
     objLoader.setMaterials( materials );
     objLoader.setPath( '../js/three/' );
     objLoader.load( 'ship.obj', function ( object ) {
-      object.position.x = dataObject.x;
-      object.position.y = dataObject.y;
-      object.position.z = dataObject.z;
+      object.position.x = dataObject.position.x;
+      object.position.y = dataObject.position.y;
+      object.position.z = dataObject.position.z;
+
+      object.quaternion._w = dataObject.quaternion._w;
+      object.quaternion._x = dataObject.quaternion._x;
+      object.quaternion._y = dataObject.quaternion._y;
+      object.quaternion._z = dataObject.quaternion._z;
+
+
       object.scale.set(20,20,20);
       object.rotation.set(0,0,0);
       object.name=dataObject.playerId;
