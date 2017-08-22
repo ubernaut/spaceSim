@@ -12,7 +12,7 @@ var type = 1;
 var infos;
 var ship;
 var galaxyRadius;
-
+loadedPlayers=[];
 init();
 animate();
 
