@@ -120,13 +120,13 @@ function init() {
   THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
   var mtlLoader = new THREE.MTLLoader();
   //mtlLoader.setPath( 'obj/male02/' );
-  mtlLoader.setPath( '/js/three/' );
+  mtlLoader.setPath( 'js/three/' );
   mtlLoader.load( 'ship.mtl', function( materials ) {
     materials.preload();
     var objLoader = new THREE.OBJLoader();
 
     objLoader.setMaterials( materials );
-    objLoader.setPath( '/js/three/' );
+    objLoader.setPath( 'js/three/' );
     objLoader.load( 'ship.obj', function ( object ) {
       object.position.x = 0;
       object.position.y = 0;
