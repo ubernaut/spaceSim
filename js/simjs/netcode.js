@@ -1,7 +1,6 @@
 
 function getData(data){
   var dataObject = JSON.parse(data.message);
-  console.log(dataObject);
   dataObject.playerId = data.playerId;
   checkLoadedPlayers(dataObject);
 }
@@ -10,18 +9,8 @@ var socket = io('http://thedagda.co:1137');
 socket.on('keypress', function (data) {
 getData(data);
 });
-// socket.on('keypress', function (data) {
-// getData(data);
-// });
-// socket.on('keypress', function (data) {
-// getData(data);
-// });
-// socket.on('keypress', function (data) {
-// getData(data);
-// });
 
 function broadcastUpdate(){
-  console.log("some event");
   var datagram = new Object();
   datagram.position = ship.position;
   datagram.quaternion = ship.quaternion;
@@ -29,11 +18,9 @@ function broadcastUpdate(){
 }
 
 window.addEventListener('keydown', event => {
-  console.log("keydown");
   broadcastUpdate();
 });
 window.addEventListener('keyup', event => {
-  console.log("keyup");
   broadcastUpdate();
 });
 document.body.addEventListener('mousedown', broadcastUpdate,false);
@@ -50,7 +37,6 @@ function checkLoadedPlayers(dataObject){
         player.ship.quaternion._x = dataObject.quaternion._x;
         player.ship.quaternion._y = dataObject.quaternion._y;
         player.ship.quaternion._z = dataObject.quaternion._z;
-        console.log("player found");
         newPlayer=false;
     }
   }
@@ -61,7 +47,6 @@ function checkLoadedPlayers(dataObject){
 }
 function LoadNewPlayer(dataObject){
   console.log("loading new player");
-  console.log(dataObject);
   var mtlLoader = new THREE.MTLLoader();
   mtlLoader.setPath( '../js/three/' );
   mtlLoader.load( 'ship.mtl', function( materials ) {
@@ -73,13 +58,10 @@ function LoadNewPlayer(dataObject){
       object.position.x = dataObject.position.x;
       object.position.y = dataObject.position.y;
       object.position.z = dataObject.position.z;
-
       object.quaternion._w = dataObject.quaternion._w;
       object.quaternion._x = dataObject.quaternion._x;
       object.quaternion._y = dataObject.quaternion._y;
       object.quaternion._z = dataObject.quaternion._z;
-
-
       object.scale.set(20,20,20);
       object.rotation.set(0,0,0);
       object.name=dataObject.playerId;
