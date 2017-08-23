@@ -305,12 +305,12 @@ class soPhysics{
         }
 
         accGravSingle( player, names, mass, pos, vel, acc, rad, ith, jth) {
-                d_x = pos[jth][0] - pos[ith][0];
-                d_y = pos[jth][1] - pos[ith][1];
-                d_z = pos[jth][2] - pos[ith][2];
-                radius = Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2);
-                rad2 = math.sqrt(radius);
-                grav_mag = 0.0;
+                var d_x = pos[jth][0] - pos[ith][0];
+                var d_y = pos[jth][1] - pos[ith][1];
+                var d_z = pos[jth][2] - pos[ith][2];
+                var radius = Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2);
+                var rad2 = Math.sqrt(radius);
+                var grav_mag = 0.0;
                 if (rad2 > rad[ith]+rad[jth]) {
                         grav_mag = G/(Math.pow((radius+epsilon),(3.0/2.0)));
                         grav_x=grav_mag*d_x;
@@ -331,8 +331,8 @@ class soPhysics{
         }
 
         accelerateCuda() {
-                G=2.93558*Math.pow(10,-4);
-                epsilon = 0.01;
+                var G=2.93558*Math.pow(10,-4);
+                var epsilon = 0.01;
                 for (var i=0; i< this.gridSystem.length; i++) {
                         if(this.gridSystem.names[i] != 'DELETED') {
                                 for (var j=0; j<i;j++) {
@@ -553,21 +553,21 @@ class soPhysics{
                               kinetic += 0.5*body.mass*vel_sq;
                             }
                       for (var i=0; i<someBodies.length; i++) {
-                              var current_body=this.bodies[i];
+                              var current_body=someBodies[i];
                               var current_position=current_body.position;
                               for (var j=0; j <i; j++) {
-                                      var other_body=this.bodies[j];
+                                      var other_body=someBodies[j];
                                       var other_position=other_body.position;
                                       var d_x=(other_position.x-current_position.x);
                                       var d_y=(other_position.y-current_position.y);
                                       var d_z=(other_position.z-current_position.z);
-                                      var radius = Math.pow((Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2),(0.5)));
+                                      var radius = Math.pow((Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2)),(0.5));
                                       if (radius >0 ) {
                                               potential -= G*current_body.mass*other_body.mass/radius;}
                                             }
                       }
                       try {
-                              return abs(kinetic/potential);
+                              return Math.abs(kinetic/potential);
                       } catch (err) {
                               return 100;
 
@@ -613,5 +613,19 @@ class soPhysics{
               bodies() {
                       return this.bodies;
 
+              }
+              convertToMeters(){
+                for(var body of this.bodies){
+                  body.position.x *= 149600000000;
+                  body.position.y *= 149600000000;
+                  body.position.z *= 149600000000;
+
+                  body.velocity.x *= 149600000000;
+                  body.velocity.y *= 149600000000;
+                  body.velocity.z *= 149600000000;
+
+                  body.radius = ((Math.sqrt(body.mass))/50)+.001;
+                  body.radius *= 149600000000;
+                }
               }
 }

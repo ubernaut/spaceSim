@@ -65,6 +65,18 @@ function LoadNewPlayer(dataObject){
       object.scale.set(20,20,20);
       object.rotation.set(0,0,0);
       object.name=dataObject.playerId;
+      var hudElementX = new THREE.PolarGridHelper( 2000, 4, 1, 36,0xff0000,0xff0000 );
+      hudElementX.geometry.rotateY( Math.PI/2 );
+      object.add(hudElementX);
+
+      var hudElementY = new THREE.PolarGridHelper( 2000, 4, 1, 36,0xff0000,0xff0000 );
+      hudElementY.geometry.rotateX( Math.PI/2 );
+      object.add(hudElementY);
+
+      var hudElementZ = new THREE.PolarGridHelper( 2000, 4, 1, 36,0xff0000,0xff0000 );
+      hudElementZ.geometry.rotateZ( Math.PI/2 );
+      object.add(hudElementZ);
+
       dataObject.ship=object;
       scene.add( object );
       loadedPlayers.push(dataObject);
