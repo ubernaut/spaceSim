@@ -1,0 +1,13 @@
+{
+  "name": "spaceSim",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "graceful-fs": "^4.1.11",
+    "webpack": "^3.5.5"
+  },
+  "scripts": {
+    "dev": "webpack --progress --colors --watch"
+  }
+}
