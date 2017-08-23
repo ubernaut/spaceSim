@@ -42,16 +42,16 @@ class Galaxy{
         this.starDensity = 1;
         while (this.theta< this.maxTheta){
             this.theta+=this.dTheta;
-            var randMax = 2000/(1+this.theta/2);
-            var randMin = 0-randMax;
+            const randMax = 2000/(1+this.theta/2);
+            const randMin = 0-randMax;
             this.starDensity = 10/(1+this.theta/2);
-            for (var i=0; i<=this.starDensity;i++){
-                var xPos = this.alpha*(Math.pow(this.e,(this.beta*this.theta)))*Math.cos(this.theta);
-                var yPos = this.alpha*(Math.pow(this.e,(this.beta*this.theta)))*Math.sin(this.theta);
-                var xPos = xPos+ Math.random() * (randMax - randMin) + randMin;
-                var yPos = yPos+Math.random() * (randMax - randMin) + randMin;
-                var zPos = Math.random() * (randMax - randMin) + randMin;
-                var newStar = new Star(xPos,yPos,zPos, "star", "cos");
+            for (const i=0; i<=this.starDensity;i++){
+                const xPos = this.alpha*(Math.pow(this.e,(this.beta*this.theta)))*Math.cos(this.theta);
+                const yPos = this.alpha*(Math.pow(this.e,(this.beta*this.theta)))*Math.sin(this.theta);
+                const xPos = xPos+ Math.random() * (randMax - randMin) + randMin;
+                const yPos = yPos+Math.random() * (randMax - randMin) + randMin;
+                const zPos = Math.random() * (randMax - randMin) + randMin;
+                const newStar = new Star(xPos,yPos,zPos, "star", "cos");
                 this.stars.push(newStar);
             }
         }
@@ -68,7 +68,7 @@ class Star{
                 this.buildrandom();
               }
             buildrandom(){
-                var starrand = Math.random()*10000;
+                const starrand = Math.random()*10000;
                 if (starrand < 7600){
                         this.mtype();}
                 if (starrand < 8800 && starrand > 7600){
@@ -143,25 +143,25 @@ class GridSystem{
                 this.allocated =1;
                 this.collisions = [];
                 this.removed=[];
-                for (var i = 0; i<this.count; i++){
+                for (const i = 0; i<this.count; i++){
                       this.addSpace();
                       }
-                var i = 0
-                for (var body of bodies){
+                const i = 0
+                for (const body of bodies){
                         if (body.name == "player"){
                                 this.player = i;
                               }
                         this.insertBody(body, i)
                         i+=1;
                       }
-                for(var i =0; i< this.count; i++){
+                for(const i =0; i< this.count; i++){
                         console.log(bodies[i]);
                       }
          }
          getPlayerIndex() {
-                var i=0;
-                var lasti = 0;
-                for (var name of this.names){
+                const i=0;
+                const lasti = 0;
+                for (const name of this.names){
                         if (name == "player"){
                                 this.player = i;
                                 lasti=i;
@@ -211,7 +211,7 @@ class GridSystem{
          removeBody( i){
                 if(i != this.player){
                         if (i == this.count -1){
-                                var foo=1;
+                                const foo=1;
                               }
                         else{
                                 this.moveBody(this.count-1, i);}
@@ -222,7 +222,7 @@ class GridSystem{
                   }
 
          resetAcc(){
-              for (var i = 0; i<this.count; i++){
+              for (const i = 0; i<this.count; i++){
                     this.acc[i] = [0.0,0.0,0.0];
                   }
                   }
@@ -238,8 +238,8 @@ class GridSystem{
                 this.acc.push([0.0,0.0,0.0]);
               }
 }
-var G=2.93558*Math.pow(10,-4);
-var epsilon = 0.01;
+const G=2.93558*Math.pow(10,-4);
+const epsilon = 0.01;
 
 class soPhysics{
         constructor(aSystem, maxMark=100000, dt=.02) {
@@ -282,7 +282,7 @@ class soPhysics{
         }
         evaluateStep() {
                 this.accelerate();
-                for (var body of this.system.bodies) {
+                for (const body of this.system.bodies) {
                         this.calculate_velocity(body,this.dt);
                         this.calculate_position(body,this.dt);
                         body.acceleration.reset();
@@ -305,12 +305,12 @@ class soPhysics{
         }
 
         accGravSingle( player, names, mass, pos, vel, acc, rad, ith, jth) {
-                var d_x = pos[jth][0] - pos[ith][0];
-                var d_y = pos[jth][1] - pos[ith][1];
-                var d_z = pos[jth][2] - pos[ith][2];
-                var radius = Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2);
-                var rad2 = Math.sqrt(radius);
-                var grav_mag = 0.0;
+                const d_x = pos[jth][0] - pos[ith][0];
+                const d_y = pos[jth][1] - pos[ith][1];
+                const d_z = pos[jth][2] - pos[ith][2];
+                const radius = Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2);
+                const rad2 = Math.sqrt(radius);
+                const grav_mag = 0.0;
                 if (rad2 > rad[ith]+rad[jth]) {
                         grav_mag = G/(Math.pow((radius+epsilon),(3.0/2.0)));
                         grav_x=grav_mag*d_x;
@@ -331,11 +331,11 @@ class soPhysics{
         }
 
         accelerateCuda() {
-                var G=2.93558*Math.pow(10,-4);
-                var epsilon = 0.01;
-                for (var i=0; i< this.gridSystem.length; i++) {
+                const G=2.93558*Math.pow(10,-4);
+                const epsilon = 0.01;
+                for (const i=0; i< this.gridSystem.length; i++) {
                         if(this.gridSystem.names[i] != 'DELETED') {
-                                for (var j=0; j<i;j++) {
+                                for (const j=0; j<i;j++) {
                                         if(this.gridSystem.names[j] != 'DELETED') {
                                                 this.accGravSingle(this.gridSystem.player,this.gridSystem.names,this.gridSystem.mass,this.gridSystem.pos,this.gridSystem.vel,this.gridSystem.acc,this.gridSystem.rad,i, j);
                                         }
@@ -345,7 +345,7 @@ class soPhysics{
                 }
                 this.calVelPosCuda();
                 this.gridSystem.resetAcc();
-                for (var i=0; i< this.gridSystem.length; i++) {
+                for (const i=0; i< this.gridSystem.length; i++) {
                         if (this.gridSystem.names[i]=='DELETED') {
                                 this.gridSystem.removeBody(i);
                         }
@@ -356,7 +356,7 @@ class soPhysics{
 
 
         calVelPosCuda() {
-                for (var i=0; i< this.gridSystem.length;i++) {
+                for (const i=0; i< this.gridSystem.length;i++) {
                         this.gridSystem.vel[i][0]+=this.dt*this.gridSystem.acc[i][0];
                         this.gridSystem.vel[i][1]+=this.dt*this.gridSystem.acc[i][1];
                         this.gridSystem.vel[i][2]+=this.dt*this.gridSystem.acc[i][2];
@@ -388,7 +388,7 @@ class soPhysics{
                       this.avgStability=0.5 - this.evaluate(this.bodies);
               }
       moveToStar() {
-              for (var body of this.bodies) {
+              for (const body of this.bodies) {
                       body.position.x += this.star.body.position.x;
                       body.position.y += this.star.body.position.y;
                       body.position.z += this.star.body.position.z;
@@ -396,21 +396,21 @@ class soPhysics{
                   }
       getStar( body_data) {
               body_data.push(randomuniform(.4,1));
-              for (var j=0 ;j<=2;j++) {
+              for (const j=0 ;j<=2;j++) {
                       body_data.push(0.0);
               }
               body_data.push(0.0);
-              for (var j=0 ;j<=2;j++)  {
+              for (const j=0 ;j<=2;j++)  {
                       body_data.push(0.0);
               }
               body_data.push(0.0);
               return body_data;
               }
   getSymPlanets() {
-          var body_data=[];
+          const body_data=[];
           body_data.push('body_X');
           body_data.push(randomuniform(.000001,.4));
-          if (quadrantVar > 0) {
+          if (quadrantconst > 0) {
                   body_data.push(randomuniform(0,this.bodyDistance));
                   body_data.push(randomuniform(0,this.bodyDistance));
                   body_data.push(0.0);
@@ -418,7 +418,7 @@ class soPhysics{
                   body_data.push(randomuniform(-this.bodySpeed,0));
                   body_data.push(0.0);
                 }
-          if (quadrantVar< 0) {
+          if (quadrantconst< 0) {
                   body_data.push(randomuniform(-this.bodyDistance,0));
                   body_data.push(randomuniform(-this.bodyDistance,0));
                   body_data.push(0.0);
@@ -428,23 +428,23 @@ class soPhysics{
                 }
     }
     getDirectedPlanet() {
-            var quadrantVar =1;
-            var body_data=[];
+            const quadrantconst =1;
+            const body_data=[];
             body_data.push('body_X');
             body_data.push(randomuniform(.000001,.01));
-            if (quadrantVar > 0) {
+            if (quadrantconst > 0) {
                     body_data.push(randomuniform(0,this.bodyDistance));
                     body_data.push(randomuniform(0,this.bodyDistance));
                     body_data.push(randomuniform(0,this.bodyDistance/64));}
-            if (quadrantVar< 0) {
+            if (quadrantconst< 0) {
                     body_data.push(randomuniform(-this.bodyDistance,0));
                     body_data.push(randomuniform(-this.bodyDistance,0));
                     body_data.push(randomuniform(-this.bodyDistance/64,0));}
-            if (quadrantVar > 0) {
+            if (quadrantconst > 0) {
                     body_data.push(randomuniform(0,this.bodySpeed));
                     body_data.push(randomuniform(-this.bodySpeed,0));
                     body_data.push(randomuniform(0,this.bodySpeed/32));}
-            if (quadrantVar < 0) {
+            if (quadrantconst < 0) {
                     body_data.push(randomuniform(-this.bodySpeed,0));
                     body_data.push(randomuniform(0,this.bodySpeed));
                     body_data.push(randomuniform(-this.bodySpeed/32),0);}
@@ -453,23 +453,23 @@ class soPhysics{
 
             getPlanet( body_data) {
                     body_data.push(randomuniform(.000001,.01));
-                    for (var j of range(0,2)) {
+                    for (const j of range(0,2)) {
                             body_data.push(randomuniform(-this.bodyDistance,this.bodyDistance));}
                     body_data.push(0.0);
-                    for (var j of range(0,2)) {
+                    for (const j of range(0,2)) {
                             body_data.push(randomuniform(-this.bodySpeed,this.bodySpeed));}
                     body_data.push(0.0);
                     return body_data;
                   }
             buildSol() {
                     this.bodies=[];
-                    var body_data=['Sol',1,0,0,0,0,0,0,0,0,0];
+                    const body_data=['Sol',1,0,0,0,0,0,0,0,0,0];
                     this.bodies.push(Body(body_data));
                     body_data=['Earth',0.000003,0,1,0,.04,0,0,0,0,0];
                     this.bodies.push(Body(body_data));
                   }
             build() {
-                    for (var i=0; i< this.bodyCount; i++) {
+                    for (const i=0; i< this.bodyCount; i++) {
                             if (i < this.starCount) {
                                     this.addStar();
                             } else {
@@ -481,12 +481,12 @@ class soPhysics{
 
 
         addStar() {
-                var body_data = this.getStar(['star']);
-                var body = new Body(body_data);
+                const body_data = this.getStar(['star']);
+                const body = new Body(body_data);
                 this.bodies.push(body);
               }
         reverseBody( adata) {
-                var bdata = adata;
+                const bdata = adata;
                 bdata[2]= 0 - adata[2];
                 bdata[3]= 0 - adata[3];
                 bdata[4]= 0 - adata[4];
@@ -497,21 +497,21 @@ class soPhysics{
               }
         addSinglePlanet() {
                 console.log('adding Body');
-                var body_data = this.getDirectedPlanet();
-                var aBody = new Body(body_data);
-                var bBody = new Body(this.reverseBody(body_data));
-                var otherBodies = [];
+                const body_data = this.getDirectedPlanet();
+                const aBody = new Body(body_data);
+                const bBody = new Body(this.reverseBody(body_data));
+                const otherBodies = [];
                 otherBodies.push(this.bodies[0]);
                 otherBodies.push(aBody);
                 otherBodies.push(bBody);
-                var fitness = this.evaluateN(otherBodies);
+                const fitness = this.evaluateN(otherBodies);
                 while (fitness<.1 || fitness>1) {
                         console.log ('testing configuration');
-                        var adata = this.getDirectedPlanet();
-                        var aBody = new Body(adata);
-                        var bdata = this.reverseBody(adata);
-                        var bBody = new Body(bdata);
-                        var otherBodies = [];
+                        const adata = this.getDirectedPlanet();
+                        const aBody = new Body(adata);
+                        const bdata = this.reverseBody(adata);
+                        const bBody = new Body(bdata);
+                        const otherBodies = [];
                         otherBodies.push(this.bodies[0]);
                         otherBodies.push(aBody);
                         otherBodies.push(bBody);
@@ -525,10 +525,10 @@ class soPhysics{
                                             ;
       addPlanet() {
               console.log('adding body');
-              var body_data = [];
+              const body_data = [];
               body_data.push('body_X');
               body_data = this.getPlanet(body_data);
-              var aBody = new Body(body_data);
+              const aBody = new Body(body_data);
               this.bodies.push(aBody);
               console.log ('new stability');
               console.log (this.evaluate(this.bodies));
@@ -543,25 +543,25 @@ class soPhysics{
               evaluate( someBodies){
                       console.log("bodies");
                       console.log(someBodies);
-                      var kinetic=0.0;
-                      var potential=0.0;
-                      var G=2.93558*Math.pow(10,-4);
-                      for (var body of someBodies) {
+                      const kinetic=0.0;
+                      const potential=0.0;
+                      const G=2.93558*Math.pow(10,-4);
+                      for (const body of someBodies) {
                               console.log(body);
-                              var vel = body.velocity;
-                              var vel_sq = (Math.pow(vel.x,2) + Math.pow(vel.y,2) + Math.pow(vel.z,2));
+                              const vel = body.velocity;
+                              const vel_sq = (Math.pow(vel.x,2) + Math.pow(vel.y,2) + Math.pow(vel.z,2));
                               kinetic += 0.5*body.mass*vel_sq;
                             }
-                      for (var i=0; i<someBodies.length; i++) {
-                              var current_body=someBodies[i];
-                              var current_position=current_body.position;
-                              for (var j=0; j <i; j++) {
-                                      var other_body=someBodies[j];
-                                      var other_position=other_body.position;
-                                      var d_x=(other_position.x-current_position.x);
-                                      var d_y=(other_position.y-current_position.y);
-                                      var d_z=(other_position.z-current_position.z);
-                                      var radius = Math.pow((Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2)),(0.5));
+                      for (const i=0; i<someBodies.length; i++) {
+                              const current_body=someBodies[i];
+                              const current_position=current_body.position;
+                              for (const j=0; j <i; j++) {
+                                      const other_body=someBodies[j];
+                                      const other_position=other_body.position;
+                                      const d_x=(other_position.x-current_position.x);
+                                      const d_y=(other_position.y-current_position.y);
+                                      const d_z=(other_position.z-current_position.z);
+                                      const radius = Math.pow((Math.pow(d_x,2) + Math.pow(d_y,2) + Math.pow(d_z,2)),(0.5));
                                       if (radius >0 ) {
                                               potential -= G*current_body.mass*other_body.mass/radius;}
                                             }
@@ -604,9 +604,9 @@ class soPhysics{
             // }
 
               evaluateN( somebodies) {
-                      var tempSys =new System();
+                      const tempSys =new System();
                       tempSys.bodies = somebodies;
-                      var tempEval = new soPhysics(tempSys,1000000,.01);
+                      const tempEval = new soPhysics(tempSys,1000000,.01);
                       return tempEval.sumFit;
                     }
 
@@ -615,7 +615,7 @@ class soPhysics{
 
               }
               convertToMeters(){
-                for(var body of this.bodies){
+                for(const body of this.bodies){
                   body.position.x *= 149600000000;
                   body.position.y *= 149600000000;
                   body.position.z *= 149600000000;

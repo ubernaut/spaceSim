@@ -1,12 +1,12 @@
 import { onProgress, onError } from './utils'
 
-var socket = io('http://thedagda.co:1137');
+const socket = io('http://thedagda.co:1137');
 socket.on('keypress', function(data) {
   getData(data);
 });
 
 function getData(data) {
-  var dataObject = JSON.parse(data.message);
+  const dataObject = JSON.parse(data.message);
   dataObject.playerId = data.playerId;
   checkLoadedPlayers(dataObject);
 }
@@ -19,8 +19,8 @@ function broadcastUpdate() {
 }
 
 function checkLoadedPlayers(dataObject) {
-  var newPlayer = true;
-  for (var player of loadedPlayers) {
+  let newPlayer = true;
+  for (const player of loadedPlayers) {
     if (player.playerId == dataObject.playerId) {
       player.ship.position.x = dataObject.position.x;
       player.ship.position.y = dataObject.position.y;
@@ -39,11 +39,11 @@ function checkLoadedPlayers(dataObject) {
 
 function LoadNewPlayer(dataObject) {
   console.log("loading new player");
-  var mtlLoader = new THREE.MTLLoader();
+  const mtlLoader = new THREE.MTLLoader();
   mtlLoader.setPath('../js/three/');
   mtlLoader.load('ship.mtl', function(materials) {
     materials.preload();
-    var objLoader = new THREE.OBJLoader();
+    const objLoader = new THREE.OBJLoader();
     objLoader.setMaterials(materials);
     objLoader.setPath('../js/three/');
     objLoader.load('ship.obj', function(object) {
@@ -57,15 +57,15 @@ function LoadNewPlayer(dataObject) {
       object.scale.set(20, 20, 20);
       object.rotation.set(0, 0, 0);
       object.name = dataObject.playerId;
-      var hudElementX = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
+      const hudElementX = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
       hudElementX.geometry.rotateY(Math.PI / 2);
       object.add(hudElementX);
 
-      var hudElementY = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
+      const hudElementY = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
       hudElementY.geometry.rotateX(Math.PI / 2);
       object.add(hudElementY);
 
-      var hudElementZ = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
+      const hudElementZ = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
       hudElementZ.geometry.rotateZ(Math.PI / 2);
       object.add(hudElementZ);
 
