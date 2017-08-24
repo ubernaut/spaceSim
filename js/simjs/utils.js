@@ -11,4 +11,4 @@ const onProgress = function(xhr) {
 
 const onError = function(xhr) {};
 
-export { onProgress, onError }
+export { onProgress, onError, randomuniform }

@@ -1,3 +1,5 @@
+import {randomuniform} from "./utils"
+
 class Body {
   constructor(body_data = []) {
     if (body_data == []) {
@@ -33,33 +35,33 @@ class Point {
   }
 };
 
-class Galaxy {
-  constructor() {
-    this.stars = [];
-    this.theta = 0;
-    this.dTheta = .05;
-    this.maxTheta = 10;
-    this.alpha = 2000;
-    this.beta = 0.25;
-    this.e = 2.71828182845904523536;
-    this.starDensity = 1;
-    while (this.theta < this.maxTheta) {
-      this.theta += this.dTheta;
-      const randMax = 2000 / (1 + this.theta / 2);
-      const randMin = 0 - randMax;
-      this.starDensity = 10 / (1 + this.theta / 2);
-      for (const i = 0; i <= this.starDensity; i++) {
-        const xPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.cos(this.theta);
-        const yPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.sin(this.theta);
-        const xPos = xPos + Math.random() * (randMax - randMin) + randMin;
-        const yPos = yPos + Math.random() * (randMax - randMin) + randMin;
-        const zPos = Math.random() * (randMax - randMin) + randMin;
-        const newStar = new Star(xPos, yPos, zPos, "star", "cos");
-        this.stars.push(newStar);
-      }
-    }
-  }
-}
+// class Galaxy {
+//   constructor() {
+//     this.stars = [];
+//     this.theta = 0;
+//     this.dTheta = .05;
+//     this.maxTheta = 10;
+//     this.alpha = 2000;
+//     this.beta = 0.25;
+//     this.e = 2.71828182845904523536;
+//     this.starDensity = 1;
+//     while (this.theta < this.maxTheta) {
+//       this.theta += this.dTheta;
+//      let randMax = 2000 / (1 + this.theta / 2);
+//      let randMin = 0 - randMax;
+//       this.starDensity = 10 / (1 + this.theta / 2);
+//       for (let i = 0; i <= this.starDensity; i++) {
+//        let xPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.cos(this.theta);
+//        let yPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.sin(this.theta);
+//        let xPos = xPos + Math.random() * (randMax - randMin) + randMin;
+//        let yPos = yPos + Math.random() * (randMax - randMin) + randMin;
+//        let zPos = Math.random() * (randMax - randMin) + randMin;
+//        let newStar = new Star(xPos, yPos, zPos, "star", "cos");
+//         this.stars.push(newStar);
+//       }
+//     }
+//   }
+// }
 
 class Star {
   constructor(xPos = 30000, yPos = 0, zPos = 0, player = "duh", aName = "default") {
@@ -83,7 +85,7 @@ class Star {
     this.buildrandom();
   }
   buildrandom() {
-    const starrand = Math.random() * 10000;
+   let starrand = Math.random() * 10000;
     if (starrand < 7600) {
       this.mtype();
     }
@@ -173,25 +175,25 @@ class GridSystem {
     this.allocated = 1;
     this.collisions = [];
     this.removed = [];
-    for (const i = 0; i < this.count; i++) {
+    for (let i = 0; i < this.count; i++) {
       this.addSpace();
     }
-    const i = 0
-    for (const body of bodies) {
+   let i = 0
+    for (let body of bodies) {
       if (body.name == "player") {
         this.player = i;
       }
       this.insertBody(body, i)
       i += 1;
     }
-    for (const i = 0; i < this.count; i++) {
+    for (let i = 0; i < this.count; i++) {
       console.log(bodies[i]);
     }
   }
   getPlayerIndex() {
-    const i = 0;
-    const lasti = 0;
-    for (const name of this.names) {
+   let i = 0;
+   let lasti = 0;
+    for (let name of this.names) {
       if (name == "player") {
         this.player = i;
         lasti = i;
@@ -238,7 +240,7 @@ class GridSystem {
   removeBody(i) {
     if (i != this.player) {
       if (i == this.count - 1) {
-        const foo = 1;
+       let foo = 1;
       } else {
         this.moveBody(this.count - 1, i);
       }
@@ -249,7 +251,7 @@ class GridSystem {
   }
 
   resetAcc() {
-    for (const i = 0; i < this.count; i++) {
+    for (let i = 0; i < this.count; i++) {
       this.acc[i] = [0.0, 0.0, 0.0];
     }
   }
@@ -309,7 +311,7 @@ class soPhysics {
   }
   evaluateStep() {
     this.accelerate();
-    for (const body of this.system.bodies) {
+    for (let body of this.system.bodies) {
       this.calculate_velocity(body, this.dt);
       this.calculate_position(body, this.dt);
       body.acceleration.reset();
@@ -332,12 +334,12 @@ class soPhysics {
   }
 
   accGravSingle(player, names, mass, pos, vel, acc, rad, ith, jth) {
-    const d_x = pos[jth][0] - pos[ith][0];
-    const d_y = pos[jth][1] - pos[ith][1];
-    const d_z = pos[jth][2] - pos[ith][2];
-    const radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
-    const rad2 = Math.sqrt(radius);
-    const grav_mag = 0.0;
+   let d_x = pos[jth][0] - pos[ith][0];
+   let d_y = pos[jth][1] - pos[ith][1];
+   let d_z = pos[jth][2] - pos[ith][2];
+   let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
+   let rad2 = Math.sqrt(radius);
+   let grav_mag = 0.0;
     if (rad2 > rad[ith] + rad[jth]) {
       grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)));
       grav_x = grav_mag * d_x;
@@ -358,11 +360,11 @@ class soPhysics {
   }
 
   accelerateCuda() {
-    const G = 2.93558 * Math.pow(10, -4);
-    const epsilon = 0.01;
-    for (const i = 0; i < this.gridSystem.length; i++) {
+   let G = 2.93558 * Math.pow(10, -4);
+   let epsilon = 0.01;
+    for (let i = 0; i < this.gridSystem.length; i++) {
       if (this.gridSystem.names[i] != 'DELETED') {
-        for (const j = 0; j < i; j++) {
+        for (let j = 0; j < i; j++) {
           if (this.gridSystem.names[j] != 'DELETED') {
             this.accGravSingle(this.gridSystem.player, this.gridSystem.names, this.gridSystem.mass, this.gridSystem.pos, this.gridSystem.vel, this.gridSystem.acc, this.gridSystem.rad, i, j);
           }
@@ -372,7 +374,7 @@ class soPhysics {
     }
     this.calVelPosCuda();
     this.gridSystem.resetAcc();
-    for (const i = 0; i < this.gridSystem.length; i++) {
+    for (let i = 0; i < this.gridSystem.length; i++) {
       if (this.gridSystem.names[i] == 'DELETED') {
         this.gridSystem.removeBody(i);
       }
@@ -382,7 +384,7 @@ class soPhysics {
   }
 
   calVelPosCuda() {
-    for (const i = 0; i < this.gridSystem.length; i++) {
+    for (let i = 0; i < this.gridSystem.length; i++) {
       this.gridSystem.vel[i][0] += this.dt * this.gridSystem.acc[i][0];
       this.gridSystem.vel[i][1] += this.dt * this.gridSystem.acc[i][1];
       this.gridSystem.vel[i][2] += this.dt * this.gridSystem.acc[i][2];
@@ -414,7 +416,7 @@ class System {
     this.avgStability = 0.5 - this.evaluate(this.bodies);
   }
   moveToStar() {
-    for (const body of this.bodies) {
+    for (let body of this.bodies) {
       body.position.x += this.star.body.position.x;
       body.position.y += this.star.body.position.y;
       body.position.z += this.star.body.position.z;
@@ -422,18 +424,18 @@ class System {
   }
   getStar(body_data) {
     body_data.push(randomuniform(.4, 1));
-    for (const j = 0; j <= 2; j++) {
+    for (let j = 0; j <= 2; j++) {
       body_data.push(0.0);
     }
     body_data.push(0.0);
-    for (const j = 0; j <= 2; j++) {
+    for (let j = 0; j <= 2; j++) {
       body_data.push(0.0);
     }
     body_data.push(0.0);
     return body_data;
   }
   getSymPlanets() {
-    const body_data = [];
+   let body_data = [];
     body_data.push('body_X');
     body_data.push(randomuniform(.000001, .4));
     if (quadrantconst > 0) {
@@ -454,8 +456,8 @@ class System {
     }
   }
   getDirectedPlanet() {
-    const quadrantconst = 1;
-    const body_data = [];
+   let quadrantconst = 1;
+   let body_data = [];
     body_data.push('body_X');
     body_data.push(randomuniform(.000001, .01));
     if (quadrantconst > 0) {
@@ -483,11 +485,11 @@ class System {
 
   getPlanet(body_data) {
     body_data.push(randomuniform(.000001, .01));
-    for (const j of range(0, 2)) {
+    for (let j of range(0, 2)) {
       body_data.push(randomuniform(-this.bodyDistance, this.bodyDistance));
     }
     body_data.push(0.0);
-    for (const j of range(0, 2)) {
+    for (let j of range(0, 2)) {
       body_data.push(randomuniform(-this.bodySpeed, this.bodySpeed));
     }
     body_data.push(0.0);
@@ -495,7 +497,7 @@ class System {
   }
   buildSol() {
     this.bodies = [];
-    const body_data = [
+   let body_data = [
       'Sol',
       1,
       0,
@@ -525,7 +527,7 @@ class System {
     this.bodies.push(Body(body_data));
   }
   build() {
-    for (const i = 0; i < this.bodyCount; i++) {
+    for (let i = 0; i < this.bodyCount; i++) {
       if (i < this.starCount) {
         this.addStar();
       } else {
@@ -536,12 +538,12 @@ class System {
   }
 
   addStar() {
-    const body_data = this.getStar(['star']);
-    const body = new Body(body_data);
+   let body_data = this.getStar(['star']);
+   let body = new Body(body_data);
     this.bodies.push(body);
   }
   reverseBody(adata) {
-    const bdata = adata;
+   let bdata = adata;
     bdata[2] = 0 - adata[2];
     bdata[3] = 0 - adata[3];
     bdata[4] = 0 - adata[4];
@@ -552,21 +554,21 @@ class System {
   }
   addSinglePlanet() {
     console.log('adding Body');
-    const body_data = this.getDirectedPlanet();
-    const aBody = new Body(body_data);
-    const bBody = new Body(this.reverseBody(body_data));
-    const otherBodies = [];
+   let body_data = this.getDirectedPlanet();
+   let aBody = new Body(body_data);
+   let bBody = new Body(this.reverseBody(body_data));
+   let otherBodies = [];
     otherBodies.push(this.bodies[0]);
     otherBodies.push(aBody);
     otherBodies.push(bBody);
-    const fitness = this.evaluateN(otherBodies);
+   let fitness = this.evaluateN(otherBodies);
     while (fitness < .1 || fitness > 1) {
       console.log('testing configuration');
-      const adata = this.getDirectedPlanet();
-      const aBody = new Body(adata);
-      const bdata = this.reverseBody(adata);
-      const bBody = new Body(bdata);
-      const otherBodies = [];
+     let adata = this.getDirectedPlanet();
+     let aBody = new Body(adata);
+     let bdata = this.reverseBody(adata);
+     let bBody = new Body(bdata);
+     let otherBodies = [];
       otherBodies.push(this.bodies[0]);
       otherBodies.push(aBody);
       otherBodies.push(bBody);
@@ -579,10 +581,10 @@ class System {
   };
   addPlanet() {
     console.log('adding body');
-    const body_data = [];
+   let body_data = [];
     body_data.push('body_X');
     body_data = this.getPlanet(body_data);
-    const aBody = new Body(body_data);
+   let aBody = new Body(body_data);
     this.bodies.push(aBody);
     console.log('new stability');
     console.log(this.evaluate(this.bodies));
@@ -597,25 +599,25 @@ class System {
   evaluate(someBodies) {
     console.log("bodies");
     console.log(someBodies);
-    const kinetic = 0.0;
-    const potential = 0.0;
-    const G = 2.93558 * Math.pow(10, -4);
-    for (const body of someBodies) {
+   let kinetic = 0.0;
+   let potential = 0.0;
+   let G = 2.93558 * Math.pow(10, -4);
+    for (let body of someBodies) {
       console.log(body);
-      const vel = body.velocity;
-      const vel_sq = (Math.pow(vel.x, 2) + Math.pow(vel.y, 2) + Math.pow(vel.z, 2));
+     let vel = body.velocity;
+     let vel_sq = (Math.pow(vel.x, 2) + Math.pow(vel.y, 2) + Math.pow(vel.z, 2));
       kinetic += 0.5 * body.mass * vel_sq;
     }
-    for (const i = 0; i < someBodies.length; i++) {
-      const current_body = someBodies[i];
-      const current_position = current_body.position;
-      for (const j = 0; j < i; j++) {
-        const other_body = someBodies[j];
-        const other_position = other_body.position;
-        const d_x = (other_position.x - current_position.x);
-        const d_y = (other_position.y - current_position.y);
-        const d_z = (other_position.z - current_position.z);
-        const radius = Math.pow((Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)), (0.5));
+    for (let i = 0; i < someBodies.length; i++) {
+     let current_body = someBodies[i];
+     let current_position = current_body.position;
+      for (let j = 0; j < i; j++) {
+       let other_body = someBodies[j];
+       let other_position = other_body.position;
+       let d_x = (other_position.x - current_position.x);
+       let d_y = (other_position.y - current_position.y);
+       let d_z = (other_position.z - current_position.z);
+       let radius = Math.pow((Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)), (0.5));
         if (radius > 0) {
           potential -= G * current_body.mass * other_body.mass / radius;
         }
@@ -659,9 +661,9 @@ class System {
   // }
 
   evaluateN(somebodies) {
-    const tempSys = new System();
+   let tempSys = new System();
     tempSys.bodies = somebodies;
-    const tempEval = new soPhysics(tempSys, 1000000, .01);
+   let tempEval = new soPhysics(tempSys, 1000000, .01);
     return tempEval.sumFit;
   }
 
@@ -670,7 +672,7 @@ class System {
 
   }
   convertToMeters() {
-    for (const body of this.bodies) {
+    for (let body of this.bodies) {
       body.position.x *= 149600000000;
       body.position.y *= 149600000000;
       body.position.z *= 149600000000;
@@ -684,3 +686,4 @@ class System {
     }
   }
 }
+export {System}

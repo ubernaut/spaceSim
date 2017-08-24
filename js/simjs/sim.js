@@ -1,4 +1,5 @@
 import { onProgress, onError } from './utils'
+import { System } from './systemBuilder'
 
 const clock = new THREE.Clock();
 let container,
@@ -19,6 +20,31 @@ const type = 1;
 let infos;
 
 let galaxyRadius;
+function loadSystem() {
+  const thisSystem = new System(1, 1, 32, .5, .03);
+  thisSystem.convertToMeters();
+  const texLoader = new THREE.TextureLoader();
+  for (const body of thisSystem.bodies) {
+    const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32);
+    let bodyMaterial;
+    // texLoader.load('js/models/Gstar.jpg',
+    // function(texture){
+    //    bodyMaterial = new THREE.MeshPhongMaterial({color: (Math.random() * 0xffffff)});
+    // }
+    // );
+    bodyMaterial = new THREE.MeshPhongMaterial({
+      color: (Math.random() * 0xffffff)
+    });
+    const planet = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    planet.position.x = body.position.x;
+    planet.position.y = body.position.y;
+    planet.position.z = body.position.z;
+    window.scene.add(planet);
+    //const bodyMaterial = new THREE.MeshPhongMaterial(   );
+    //const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
+
+  }
+}
 
 function initOimoPhysics() {
 
@@ -137,7 +163,7 @@ function init() {
       window.ship.add(helper);
 
     }, onProgress, onError);
-    loadSystem();
+
   });
 
   //wireframeLoader
@@ -267,6 +293,7 @@ function init() {
   //scene.add(sphere);
   window.addEventListener('resize', onWindowResize, false);
   initOimoPhysics();
+  loadSystem();
 
 }
 function onWindowResize() {
@@ -379,30 +406,6 @@ function render() {
 //
 //   }
 // }
-function loadSystem() {
-  const thisSystem = new System(1, 1, 32, .5, .03);
-  thisSystem.convertToMeters();
-  const texLoader = new THREE.TextureLoader();
-  for (const body of thisSystem.bodies) {
-    const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32);
-    let bodyMaterial;
-    // texLoader.load('js/models/Gstar.jpg',
-    // function(texture){
-    //    bodyMaterial = new THREE.MeshPhongMaterial({color: (Math.random() * 0xffffff)});
-    // }
-    // );
-    bodyMaterial = new THREE.MeshPhongMaterial({
-      color: (Math.random() * 0xffffff)
-    });
-    const planet = new THREE.Mesh(bodyGeometry, bodyMaterial);
-    planet.position.x = body.position.x;
-    planet.position.y = body.position.y;
-    planet.position.z = body.position.z;
-    window.scene.add(planet);
-    //const bodyMaterial = new THREE.MeshPhongMaterial(   );
-    //const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
 
-  }
-}
 
-export { init, animate, globals }
+export { init, animate, globals, loadSystem }
