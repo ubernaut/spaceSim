@@ -137,6 +137,7 @@ function init() {
       window.ship.add(helper);
 
     }, onProgress, onError);
+    loadSystem();
   });
 
   //wireframeLoader
