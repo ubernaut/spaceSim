@@ -1,14 +1,16 @@
-function randomuniform(min, max) {
-    return Math.random() * (max - min) + min;
-}
-
-const onProgress = function(xhr) {
+const onProgress = xhr => {
   if (xhr.lengthComputable) {
     const percentComplete = xhr.loaded / xhr.total * 100;
-    console.log(Math.round(percentComplete, 2) + '% downloaded');
+    console.log(`${Math.round(percentComplete, 2)}% downloaded`);
   }
-};
+}
 
-const onError = function(xhr) {};
+const onError = xhr => {}
 
-export { onProgress, onError, randomuniform }
+const randomUniform = (min, max) => Math.random() * (max - min) + min
+
+export {
+  onProgress,
+  onError,
+  randomUniform
+}
