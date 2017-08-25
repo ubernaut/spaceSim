@@ -1,17 +1,18 @@
 import { onProgress, onError } from './utils'
 
-const socket = io('http://thedagda.co:1137');
-socket.on('keypress', function(data) {
-  getData(data);
-});
-
-function getData(data) {
+const getData = socket => data => {
   const dataObject = JSON.parse(data.message);
   dataObject.playerId = data.playerId;
   checkLoadedPlayers(dataObject);
 }
 
-function broadcastUpdate() {
+const init = server => {
+  const socket = io(`${server.host}:${server.port}`);
+  socket.on('keypress', getData(socket));
+  return socket;
+}
+
+function broadcastUpdate(socket, ship) {
   socket.emit("keypress", JSON.stringify({
     position: ship.position,
     quaternion: ship.quaternion
@@ -76,4 +77,4 @@ function LoadNewPlayer(dataObject) {
   });
 }
 
-export { getData, broadcastUpdate }
+export { init, getData, broadcastUpdate }
