@@ -1,6 +1,8 @@
 import { onProgress, onError } from './utils'
 import { System } from './systemBuilder'
-
+// import {THREEx, THREEx.LaserBeam} from '../threex/threex.laserbeam'
+// import {THREEx.LaserCooked} from '../threex/threex.laserCooked'
+// var THREEx = THREEx || {}
 const clock = new THREE.Clock();
 let container,
   stats;
@@ -10,8 +12,8 @@ let camera,
   controls;
 let mouseX = 0,
   mouseY = 0;
-const windowHalfX = window.innerWidth / 2;
-const windowHalfY = window.innerHeight / 2;
+let windowHalfX = window.innerWidth / 2;
+let windowHalfY = window.innerHeight / 2;
 let world = null;
 const bodys = [];
 const fps = [0, 0, 0, 0];
@@ -156,11 +158,28 @@ function init() {
       camera.position.set(0, 10, 30);
       window.scene.add(object);
       setControls(window.ship);
+      const laserBeam	= new THREEx.LaserBeam();
+      // var laserCooked	= new THREEx.LaserCooked(laserBeam);
+      laserBeam.object3d.position.z-=10;
+      laserBeam.object3d.scale.set(Math.pow(10, 12),60,60);
+      laserBeam.object3d.rotation.y += Math.PI/2;
+
+      let laserCooked = new THREEx.LaserCooked(laserBeam);
+      window.ship.add(laserBeam.object3d);
+      window.ship.laserCooked=laserCooked;
+      window.ship.add(window.ship.laserCooked);
 
       const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff);
       helper.geometry.rotateY(Math.PI);
       window.scene.add(helper);
       window.ship.add(helper);
+
+
+    	// onRenderFcts.push(function(delta, now){
+    	// 	var object3d	= laserBeam.object3d
+    	// 	object3d.rotation.x	+= 1 * delta;
+    	// 	object3d.rotation.y	+= 0.01 * delta;
+    	// })
 
     }, onProgress, onError);
 
@@ -359,7 +378,7 @@ function render() {
   const delta = clock.getDelta();
   window.controls.update(delta);
 
-
+  //window.ship.laserCooked.update(delta, clock.elapsedTime);
   renderer.render(window.scene, camera);
 }
 
@@ -408,4 +427,4 @@ function render() {
 // }
 
 
-export { init, animate, globals, loadSystem }
+export { init, animate, globals, loadSystem, THREE }
