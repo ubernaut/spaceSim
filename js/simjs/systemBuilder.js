@@ -1,4 +1,4 @@
-import {randomuniform} from "./utils"
+import { randomUniform } from "./utils"
 
 class Body {
   constructor(body_data = []) {
@@ -423,7 +423,7 @@ class System {
     }
   }
   getStar(body_data) {
-    body_data.push(randomuniform(.4, 1));
+    body_data.push(randomUniform(.4, 1));
     for (let j = 0; j <= 2; j++) {
       body_data.push(0.0);
     }
@@ -437,21 +437,21 @@ class System {
   getSymPlanets() {
    let body_data = [];
     body_data.push('body_X');
-    body_data.push(randomuniform(.000001, .4));
+    body_data.push(randomUniform(.000001, .4));
     if (quadrantconst > 0) {
-      body_data.push(randomuniform(0, this.bodyDistance));
-      body_data.push(randomuniform(0, this.bodyDistance));
+      body_data.push(randomUniform(0, this.bodyDistance));
+      body_data.push(randomUniform(0, this.bodyDistance));
       body_data.push(0.0);
-      body_data.push(randomuniform(0, this.bodySpeed));
-      body_data.push(randomuniform(-this.bodySpeed, 0));
+      body_data.push(randomUniform(0, this.bodySpeed));
+      body_data.push(randomUniform(-this.bodySpeed, 0));
       body_data.push(0.0);
     }
     if (quadrantconst < 0) {
-      body_data.push(randomuniform(-this.bodyDistance, 0));
-      body_data.push(randomuniform(-this.bodyDistance, 0));
+      body_data.push(randomUniform(-this.bodyDistance, 0));
+      body_data.push(randomUniform(-this.bodyDistance, 0));
       body_data.push(0.0);
-      body_data.push(randomuniform(-this.bodySpeed, 0));
-      body_data.push(randomuniform(0, this.bodySpeed));
+      body_data.push(randomUniform(-this.bodySpeed, 0));
+      body_data.push(randomUniform(0, this.bodySpeed));
       body_data.push(0.0);
     }
   }
@@ -459,38 +459,38 @@ class System {
    let quadrantconst = 1;
    let body_data = [];
     body_data.push('body_X');
-    body_data.push(randomuniform(.000001, .01));
+    body_data.push(randomUniform(.000001, .01));
     if (quadrantconst > 0) {
-      body_data.push(randomuniform(0, this.bodyDistance));
-      body_data.push(randomuniform(0, this.bodyDistance));
-      body_data.push(randomuniform(0, this.bodyDistance / 64));
+      body_data.push(randomUniform(0, this.bodyDistance));
+      body_data.push(randomUniform(0, this.bodyDistance));
+      body_data.push(randomUniform(0, this.bodyDistance / 64));
     }
     if (quadrantconst < 0) {
-      body_data.push(randomuniform(-this.bodyDistance, 0));
-      body_data.push(randomuniform(-this.bodyDistance, 0));
-      body_data.push(randomuniform(-this.bodyDistance / 64, 0));
+      body_data.push(randomUniform(-this.bodyDistance, 0));
+      body_data.push(randomUniform(-this.bodyDistance, 0));
+      body_data.push(randomUniform(-this.bodyDistance / 64, 0));
     }
     if (quadrantconst > 0) {
-      body_data.push(randomuniform(0, this.bodySpeed));
-      body_data.push(randomuniform(-this.bodySpeed, 0));
-      body_data.push(randomuniform(0, this.bodySpeed / 32));
+      body_data.push(randomUniform(0, this.bodySpeed));
+      body_data.push(randomUniform(-this.bodySpeed, 0));
+      body_data.push(randomUniform(0, this.bodySpeed / 32));
     }
     if (quadrantconst < 0) {
-      body_data.push(randomuniform(-this.bodySpeed, 0));
-      body_data.push(randomuniform(0, this.bodySpeed));
-      body_data.push(randomuniform(-this.bodySpeed / 32), 0);
+      body_data.push(randomUniform(-this.bodySpeed, 0));
+      body_data.push(randomUniform(0, this.bodySpeed));
+      body_data.push(randomUniform(-this.bodySpeed / 32), 0);
     }
     return body_data;
   }
 
   getPlanet(body_data) {
-    body_data.push(randomuniform(.000001, .01));
+    body_data.push(randomUniform(.000001, .01));
     for (let j of range(0, 2)) {
-      body_data.push(randomuniform(-this.bodyDistance, this.bodyDistance));
+      body_data.push(randomUniform(-this.bodyDistance, this.bodyDistance));
     }
     body_data.push(0.0);
     for (let j of range(0, 2)) {
-      body_data.push(randomuniform(-this.bodySpeed, this.bodySpeed));
+      body_data.push(randomUniform(-this.bodySpeed, this.bodySpeed));
     }
     body_data.push(0.0);
     return body_data;
