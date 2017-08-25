@@ -3,78 +3,98 @@ import { onProgress, onError } from './utils'
 const getData = socket => data => {
   const dataObject = JSON.parse(data.message);
   dataObject.playerId = data.playerId;
-  checkLoadedPlayers(dataObject);
+  loadOrUpdatePlayer(dataObject);
 }
 
-const init = server => {
-  const socket = io(`${server.host}:${server.port}`);
-  socket.on('keypress', getData(socket));
-  return socket;
-}
-
-function broadcastUpdate(socket, ship) {
+const broadcastUpdate = (socket, ship) => {
   socket.emit("keypress", JSON.stringify({
     position: ship.position,
     quaternion: ship.quaternion
   }));
 }
 
-function checkLoadedPlayers(dataObject) {
-  let newPlayer = true;
-  for (const player of loadedPlayers) {
-    if (player.playerId == dataObject.playerId) {
-      player.ship.position.x = dataObject.position.x;
-      player.ship.position.y = dataObject.position.y;
-      player.ship.position.z = dataObject.position.z;
-      player.ship.quaternion._w = dataObject.quaternion._w;
-      player.ship.quaternion._x = dataObject.quaternion._x;
-      player.ship.quaternion._y = dataObject.quaternion._y;
-      player.ship.quaternion._z = dataObject.quaternion._z;
-      newPlayer = false;
-    }
-  }
-  if (newPlayer == true) {
-    LoadNewPlayer(dataObject);
+/**
+ * Set position, orientation, etc
+ */
+const setShipProps = (ship, dataObject) => {
+  ship.position.x = dataObject.position.x;
+  ship.position.y = dataObject.position.y;
+  ship.position.z = dataObject.position.z;
+  ship.quaternion._w = dataObject.quaternion._w;
+  ship.quaternion._x = dataObject.quaternion._x;
+  ship.quaternion._y = dataObject.quaternion._y;
+  ship.quaternion._z = dataObject.quaternion._z;
+}
+
+/**
+ * Load a new player or update an existing one based on a socket message
+ */
+const loadOrUpdatePlayer = socketDataObject => {
+  const player = loadedPlayers.find(p => p.playerId === socketDataObject.playerId)
+
+  if (player) {
+    setShipProps(player.ship, socketDataObject)
+  } else {
+    loadNewPlayer(socketDataObject)
   }
 }
 
-function LoadNewPlayer(dataObject) {
-  console.log("loading new player");
-  const mtlLoader = new THREE.MTLLoader();
-  mtlLoader.setPath('js/models/');
-  mtlLoader.load('ship.mtl', function(materials) {
+const mtlLoader = new THREE.MTLLoader();
+const objLoader = new THREE.OBJLoader();
+mtlLoader.setPath('js/models/');
+objLoader.setPath('js/models/');
+
+const createHudElement = () => {
+  const hudElementX = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
+  hudElementX.geometry.rotateY(Math.PI / 2);
+
+  const hudElementY = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
+  hudElementY.geometry.rotateX(Math.PI / 2);
+
+  const hudElementZ = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
+  hudElementZ.geometry.rotateZ(Math.PI / 2);
+
+  return {
+    x: hudElementX,
+    y: hudElementY,
+    z: hudElementZ
+  }
+}
+
+const loadNewPlayer = dataObject => {
+  console.log('loading new player...');
+
+  const onShipObjLoaded = object => {
+    // meta
+    object.name = dataObject.playerId;
+    // position, orientation
+    setShipProps(object, dataObject)
+    object.scale.set(20, 20, 20);
+    object.rotation.set(0, 0, 0);
+    // hud element
+    const hudElement = createHudElement()
+    object.add(hudElement.x);
+    object.add(hudElement.y);
+    object.add(hudElement.z);
+
+    dataObject.ship = object;
+    window.scene.add(object);
+    window.loadedPlayers.push(dataObject);
+  }
+
+  const onShipMaterialsLoaded = materials => {
     materials.preload();
-    const objLoader = new THREE.OBJLoader();
     objLoader.setMaterials(materials);
-    objLoader.setPath('js/models/');
-    objLoader.load('ship.obj', function(object) {
-      object.position.x = dataObject.position.x;
-      object.position.y = dataObject.position.y;
-      object.position.z = dataObject.position.z;
-      object.quaternion._w = dataObject.quaternion._w;
-      object.quaternion._x = dataObject.quaternion._x;
-      object.quaternion._y = dataObject.quaternion._y;
-      object.quaternion._z = dataObject.quaternion._z;
-      object.scale.set(20, 20, 20);
-      object.rotation.set(0, 0, 0);
-      object.name = dataObject.playerId;
-      const hudElementX = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
-      hudElementX.geometry.rotateY(Math.PI / 2);
-      object.add(hudElementX);
+    objLoader.load('ship.obj', onShipObjLoaded);
+  }
 
-      const hudElementY = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
-      hudElementY.geometry.rotateX(Math.PI / 2);
-      object.add(hudElementY);
+  mtlLoader.load('ship.mtl', onShipMaterialsLoaded, onProgress, onError);
+}
 
-      const hudElementZ = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000);
-      hudElementZ.geometry.rotateZ(Math.PI / 2);
-      object.add(hudElementZ);
-
-      dataObject.ship = object;
-      window.scene.add(object);
-      loadedPlayers.push(dataObject);
-    }, onProgress, onError);
-  });
+const init = server => {
+  const socket = io(`${server.host}:${server.port}`);
+  socket.on('keypress', getData(socket));
+  return socket;
 }
 
 export { init, getData, broadcastUpdate }
