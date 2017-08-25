@@ -41,12 +41,12 @@ function checkLoadedPlayers(dataObject) {
 function LoadNewPlayer(dataObject) {
   console.log("loading new player");
   const mtlLoader = new THREE.MTLLoader();
-  mtlLoader.setPath('../js/three/');
+  mtlLoader.setPath('js/models/');
   mtlLoader.load('ship.mtl', function(materials) {
     materials.preload();
     const objLoader = new THREE.OBJLoader();
     objLoader.setMaterials(materials);
-    objLoader.setPath('../js/three/');
+    objLoader.setPath('js/models/');
     objLoader.load('ship.obj', function(object) {
       object.position.x = dataObject.position.x;
       object.position.y = dataObject.position.y;
