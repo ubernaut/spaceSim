@@ -1,32 +1,32 @@
 import { onProgress, onError } from './utils'
 import { System } from './systemBuilder'
 
-const clock = new THREE.Clock();
+const clock = new THREE.Clock()
 let container,
-  stats;
+  stats
 let camera,
   scene,
   renderer,
-  controls;
+  controls
 let mouseX = 0,
-  mouseY = 0;
-const windowHalfX = window.innerWidth / 2;
-const windowHalfY = window.innerHeight / 2;
-let world = null;
-const bodys = [];
-const fps = [0, 0, 0, 0];
-const ToRad = 0.0174532925199432957;
-const type = 1;
-let infos;
+  mouseY = 0
+const windowHalfX = window.innerWidth / 2
+const windowHalfY = window.innerHeight / 2
+let world = null
+const bodys = []
+const fps = [0, 0, 0, 0]
+const ToRad = 0.0174532925199432957
+const type = 1
+let infos
 
-let galaxyRadius;
-function loadSystem() {
-  const thisSystem = new System(1, 1, 32, .5, .03);
-  thisSystem.convertToMeters();
-  const texLoader = new THREE.TextureLoader();
+let galaxyRadius
+function loadSystem () {
+  const thisSystem = new System(1, 1, 32, 0.5, 0.03)
+  thisSystem.convertToMeters()
+  const texLoader = new THREE.TextureLoader()
   for (const body of thisSystem.bodies) {
-    const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32);
-    let bodyMaterial;
+    const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
+    let bodyMaterial
     // texLoader.load('js/models/Gstar.jpg',
     // function(texture){
     //    bodyMaterial = new THREE.MeshPhongMaterial({color: (Math.random() * 0xffffff)});
@@ -34,20 +34,18 @@ function loadSystem() {
     // );
     bodyMaterial = new THREE.MeshPhongMaterial({
       color: (Math.random() * 0xffffff)
-    });
-    const planet = new THREE.Mesh(bodyGeometry, bodyMaterial);
-    planet.position.x = body.position.x;
-    planet.position.y = body.position.y;
-    planet.position.z = body.position.z;
-    window.scene.add(planet);
-    //const bodyMaterial = new THREE.MeshPhongMaterial(   );
-    //const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
-
+    })
+    const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
+    planet.position.x = body.position.x
+    planet.position.y = body.position.y
+    planet.position.z = body.position.z
+    window.scene.add(planet)
+    // const bodyMaterial = new THREE.MeshPhongMaterial(   );
+    // const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
   }
 }
 
-function initOimoPhysics() {
-
+function initOimoPhysics () {
   // world setting:( TimeStep, BroadPhaseType, Iterations )
   // BroadPhaseType can be
   // 1 : BruteForce
@@ -62,111 +60,102 @@ function initOimoPhysics() {
     random: true,
     info: false,
     gravity: [0, 0, 0]
-  });
-  //populate(1);
-  //setInterval(updateOimoPhysics, 1000/60);
-
+  })
+  // populate(1);
+  // setInterval(updateOimoPhysics, 1000/60);
 }
-function bindship() {}
-function setControls(ship) {
-
+function bindship () {}
+function setControls (ship) {
   if (checkMobile()) {
-    window.controls = new THREE.DeviceOrientationControls(ship, true);
+    window.controls = new THREE.DeviceOrientationControls(ship, true)
   } else {
-    window.controls = new THREE.FlyControls(ship);
-    window.controls.movementSpeed = 100;
-    window.controls.domElement = container;
-    window.controls.rollSpeed = Math.PI / 3;
-    window.controls.autoForward = false;
-    window.controls.dragToLook = true;
+    window.controls = new THREE.FlyControls(ship)
+    window.controls.movementSpeed = 100
+    window.controls.domElement = container
+    window.controls.rollSpeed = Math.PI / 3
+    window.controls.autoForward = false
+    window.controls.dragToLook = true
   }
-
 }
-function checkMobile() {
+function checkMobile () {
   const check = false;
-  (function(a) {
-    if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4)))
-      check = true;
-    }
-  )(navigator.userAgent || navigator.vendor || window.opera);
-  return check;
-}
-function onDocumentMouseWheel(event) {
-
-  const deltay = event.wheelDeltaY;
-  //fov -= event.wheelDeltaY * 0.05;
-  //camera.projectionMatrix = THREE.Matrix4.makePerspective( fov, window.innerWidth / window.innerHeight, 1, 1100 );
-  if (deltay < 0) {
-    camera.position.y *= 1.1;
-    camera.position.z *= 1.1;
-    window.controls.movementSpeed *= 1.1;
-  } else {
-    camera.position.y *= .9;
-    camera.position.z *= .9;
-    window.controls.movementSpeed *= .9;
+  (function (a) {
+    if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) { check = true }
   }
-
+  )(navigator.userAgent || navigator.vendor || window.opera)
+  return check
+}
+function onDocumentMouseWheel (event) {
+  const deltay = event.wheelDeltaY
+  // fov -= event.wheelDeltaY * 0.05;
+  // camera.projectionMatrix = THREE.Matrix4.makePerspective( fov, window.innerWidth / window.innerHeight, 1, 1100 );
+  if (deltay < 0) {
+    camera.position.y *= 1.1
+    camera.position.z *= 1.1
+    window.controls.movementSpeed *= 1.1
+  } else {
+    camera.position.y *= 0.9
+    camera.position.z *= 0.9
+    window.controls.movementSpeed *= 0.9
+  }
 }
 
-function wireframeLoader() {}
-function objectLoader() {}
+function wireframeLoader () {}
+function objectLoader () {}
 
-function init() {
+function init () {
+  window.addEventListener('mousewheel', onDocumentMouseWheel, false)
 
-  window.addEventListener('mousewheel', onDocumentMouseWheel, false);
-
-  container = document.createElement('div');
-  document.body.appendChild(container);
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26));
-  camera.position.y = 30;
-  camera.position.z = 100;
-  camera.lookAt(new THREE.Vector3(0, 0, -1000000000000000000));
+  container = document.createElement('div')
+  document.body.appendChild(container)
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26))
+  camera.position.y = 30
+  camera.position.z = 100
+  camera.lookAt(new THREE.Vector3(0, 0, -1000000000000000000))
   // scene
-  window.scene = new THREE.Scene();
-  const ambient = new THREE.AmbientLight(0x888888);
-  window.scene.add(ambient);
-  const directionalLight = new THREE.DirectionalLight(0xffeedd);
-  directionalLight.position.set(0, 0, 1).normalize();
-  const size = 100000000;
-  const divisions = 1000;
+  window.scene = new THREE.Scene()
+  const ambient = new THREE.AmbientLight(0x888888)
+  window.scene.add(ambient)
+  const directionalLight = new THREE.DirectionalLight(0xffeedd)
+  directionalLight.position.set(0, 0, 1).normalize()
+  const size = 100000000
+  const divisions = 1000
 
-  const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff);
+  const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff)
 
-  window.scene.add(gridHelper1);
+  window.scene.add(gridHelper1)
 
-  THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
-  const mtlLoader = new THREE.MTLLoader();
-  //mtlLoader.setPath( 'obj/male02/' );
-  mtlLoader.setPath('js/models/');
-  mtlLoader.load('ship.mtl', function(materials) {
-    materials.preload();
-    const objLoader = new THREE.OBJLoader();
+  THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
+  const mtlLoader = new THREE.MTLLoader()
+  // mtlLoader.setPath( 'obj/male02/' );
+  mtlLoader.setPath('js/models/')
+  mtlLoader.load('ship.mtl', function (materials) {
+    materials.preload()
+    const objLoader = new THREE.OBJLoader()
 
-    objLoader.setMaterials(materials);
-    objLoader.setPath('js/models/');
-    objLoader.load('ship.obj', function(object) {
-      object.position.x = 0;
-      object.position.y = 0;
-      object.scale.set(20, 20, 20);
-      object.rotation.set(0, 0, 0);
-      object.name = "spaceShip";
+    objLoader.setMaterials(materials)
+    objLoader.setPath('js/models/')
+    objLoader.load('ship.obj', function (object) {
+      object.position.x = 0
+      object.position.y = 0
+      object.scale.set(20, 20, 20)
+      object.rotation.set(0, 0, 0)
+      object.name = 'spaceShip'
 
-      window.ship = object;
-      window.ship.add(camera);
-      camera.position.set(0, 10, 30);
-      window.scene.add(object);
-      setControls(window.ship);
+      window.ship = object
+      window.ship.add(camera)
+      camera.position.set(0, 10, 30)
+      window.scene.add(object)
+      setControls(window.ship)
 
-      const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff);
-      helper.geometry.rotateY(Math.PI);
-      window.scene.add(helper);
-      window.ship.add(helper);
+      const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
+      helper.geometry.rotateY(Math.PI)
+      window.scene.add(helper)
+      window.ship.add(helper)
+    }, onProgress, onError)
+  })
 
-    }, onProgress, onError);
-
-  });
-
-  //wireframeLoader
+  // wireframeLoader
   // const Loader = new THREE.OBJMTLLoader();
   // Loader.load( 'ship.obj', 'ship.mtl', function ( object ) {
   // 										  object.scale.set(23,23,23);
@@ -202,11 +191,11 @@ function init() {
 
   //
 
-  //scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
-  const pointlight = new THREE.PointLight();
-  pointlight.position.set(0, 0, 0);
-  pointlight.castShadow = true;
-  window.scene.add(pointlight);
+  // scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
+  const pointlight = new THREE.PointLight()
+  pointlight.position.set(0, 0, 0)
+  pointlight.castShadow = true
+  window.scene.add(pointlight)
 
   // const earthGeometry = new THREE.SphereGeometry( 6371000, 32, 32 );
   // const earthMaterial = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
@@ -218,50 +207,50 @@ function init() {
   // const sun = new THREE.Mesh( sunGeometry, sunMaterial );
   // scene.add( sun );
 
-  const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32);
-  const oortMaterial = new THREE.MeshBasicMaterial({color: 0x555555});
-  const oort = new THREE.Mesh(oortGeometry, oortMaterial);
-  window.scene.add(oort);
+  const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
+  const oortMaterial = new THREE.MeshBasicMaterial({color: 0x555555})
+  const oort = new THREE.Mesh(oortGeometry, oortMaterial)
+  window.scene.add(oort)
 
-  galaxyRadius = 5 * Math.pow(10, 20);
-  const galaxyGeometry = new THREE.SphereGeometry(5 * Math.pow(10, 20), 32, 32);
-  const galaxyMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
-  const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
-  window.scene.add(galaxy);
+  galaxyRadius = 5 * Math.pow(10, 20)
+  const galaxyGeometry = new THREE.SphereGeometry(5 * Math.pow(10, 20), 32, 32)
+  const galaxyMaterial = new THREE.MeshBasicMaterial({color: 0xffffff})
+  const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
+  window.scene.add(galaxy)
 
-  const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32);
-  const universeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
-  const universe = new THREE.Mesh(universeGeometry, universeMaterial);
-  window.scene.add(universe);
+  const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32)
+  const universeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000})
+  const universe = new THREE.Mesh(universeGeometry, universeMaterial)
+  window.scene.add(universe)
 
-  renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true});
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  container.appendChild(renderer.domElement);
+  renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true})
+  renderer.setPixelRatio(window.devicePixelRatio)
+  renderer.setSize(window.innerWidth, window.innerHeight)
+  container.appendChild(renderer.domElement)
 
-  const radius = galaxyRadius;
+  const radius = galaxyRadius
   let i,
     r = radius,
-    starsGeometry = [new THREE.Geometry(), new THREE.Geometry()];
+    starsGeometry = [new THREE.Geometry(), new THREE.Geometry()]
   for (i = 0; i < 15000; i++) {
-    const vertex = new THREE.Vector3();
-    vertex.x = (Math.random() * (2 - 1));
-    vertex.y = (Math.random() * (2 - 1)) / 3;
-    vertex.z = (Math.random() * (2 - 1));
-    vertex.multiplyScalar(r);
+    const vertex = new THREE.Vector3()
+    vertex.x = (Math.random() * (2 - 1))
+    vertex.y = (Math.random() * (2 - 1)) / 3
+    vertex.z = (Math.random() * (2 - 1))
+    vertex.multiplyScalar(r)
 
-    starsGeometry[0].vertices.push(vertex);
+    starsGeometry[0].vertices.push(vertex)
   }
   for (i = 0; i < 15000; i++) {
-    const vertex = new THREE.Vector3();
-    vertex.x = (Math.random() * (2 - 1));
-    vertex.y = (Math.random() * (2 - 1)) / 3;
-    vertex.z = (Math.random() * (2 - 1));
-    vertex.multiplyScalar(r);
-    starsGeometry[1].vertices.push(vertex);
+    const vertex = new THREE.Vector3()
+    vertex.x = (Math.random() * (2 - 1))
+    vertex.y = (Math.random() * (2 - 1)) / 3
+    vertex.z = (Math.random() * (2 - 1))
+    vertex.multiplyScalar(r)
+    starsGeometry[1].vertices.push(vertex)
   }
 
-  let stars;
+  let stars
   const starsMaterials = [
     new THREE.PointsMaterial({color: 0xffffff, size: 2, sizeAttenuation: false}),
     new THREE.PointsMaterial({color: 0xaaaaaa, size: 2, sizeAttenuation: false}),
@@ -269,98 +258,88 @@ function init() {
     new THREE.PointsMaterial({color: 0xff0000, size: 2, sizeAttenuation: false}),
     new THREE.PointsMaterial({color: 0xffdddd, size: 2, sizeAttenuation: false}),
     new THREE.PointsMaterial({color: 0xddddff, size: 2, sizeAttenuation: false})
-  ];
+  ]
   for (i = 10; i < 30; i++) {
-    stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6]);
+    stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
     // stars.rotation.x = Math.random() * 6;
     // stars.rotation.y = Math.random() * 6;
     // stars.rotation.z = Math.random() * 6;
     //  stars.scale.setScalar( i * 10 );
-    stars.position.x -= radius / 2;
-    stars.position.y -= radius / 6;
-    stars.position.z -= radius / 2;
-    stars.matrixAutoUpdate = false;
-    stars.updateMatrix();
-    window.scene.add(stars);
+    stars.position.x -= radius / 2
+    stars.position.y -= radius / 6
+    stars.position.z -= radius / 2
+    stars.matrixAutoUpdate = false
+    stars.updateMatrix()
+    window.scene.add(stars)
   }
 
-  const spheregeometry = new THREE.SphereGeometry(10000000000, 36, 30);
-  const spherematerial = new THREE.MeshBasicMaterial({wireframe: true, color: 0xa807b7});
-  const sphere = new THREE.Mesh(spheregeometry, spherematerial);
+  const spheregeometry = new THREE.SphereGeometry(10000000000, 36, 30)
+  const spherematerial = new THREE.MeshBasicMaterial({wireframe: true, color: 0xa807b7})
+  const sphere = new THREE.Mesh(spheregeometry, spherematerial)
 
-  sphere.position.set(-2.0, 0, 0);
+  sphere.position.set(-2.0, 0, 0)
 
-  //scene.add(sphere);
-  window.addEventListener('resize', onWindowResize, false);
-  initOimoPhysics();
-  loadSystem();
-
+  // scene.add(sphere);
+  window.addEventListener('resize', onWindowResize, false)
+  initOimoPhysics()
+  loadSystem()
 }
-function onWindowResize() {
-  windowHalfX = window.innerWidth / 2;
-  windowHalfY = window.innerHeight / 2;
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+function onWindowResize () {
+  windowHalfX = window.innerWidth / 2
+  windowHalfY = window.innerHeight / 2
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
 }
-function updateOimoPhysics() {
-  if (world == null)
-    return;
-  world.step();
+function updateOimoPhysics () {
+  if (world == null) { return }
+  world.step()
   let x,
     y,
     z,
     mesh,
     body,
-    i = bodys.length;
+    i = bodys.length
   while (i--) {
-    body = bodys[i];
-    mesh = meshs[i];
+    body = bodys[i]
+    mesh = meshs[i]
     if (!body.sleeping) {
-      mesh.position.copy(body.getPosition());
-      mesh.quaternion.copy(body.getQuaternion());
+      mesh.position.copy(body.getPosition())
+      mesh.quaternion.copy(body.getQuaternion())
       // change material
-      if (mesh.material.name === 'sbox')
-        mesh.material = mats.box;
-      if (mesh.material.name === 'ssph')
-        mesh.material = mats.sph;
-      if (mesh.material.name === 'scyl')
-        mesh.material = mats.cyl;
+      if (mesh.material.name === 'sbox') { mesh.material = mats.box }
+      if (mesh.material.name === 'ssph') { mesh.material = mats.sph }
+      if (mesh.material.name === 'scyl') { mesh.material = mats.cyl }
 
       // reset position
       if (mesh.position.y < -100) {
-        x = -100 + Math.random() * 200;
-        z = -100 + Math.random() * 200;
-        y = 100 + Math.random() * 1000;
-        body.resetPosition(x, y, z);
+        x = -100 + Math.random() * 200
+        z = -100 + Math.random() * 200
+        y = 100 + Math.random() * 1000
+        body.resetPosition(x, y, z)
       }
     } else {
-      if (mesh.material.name === 'box')
-        mesh.material = mats.sbox;
-      if (mesh.material.name === 'sph')
-        mesh.material = mats.ssph;
-      if (mesh.material.name === 'cyl')
-        mesh.material = mats.scyl;
-      }
+      if (mesh.material.name === 'box') { mesh.material = mats.sbox }
+      if (mesh.material.name === 'sph') { mesh.material = mats.ssph }
+      if (mesh.material.name === 'cyl') { mesh.material = mats.scyl }
     }
+  }
 
-  //infos.innerHTML = world.getInfo();
+  // infos.innerHTML = world.getInfo();
 }
 
 //
-function animate() {
-  requestAnimationFrame(animate);
-  updateOimoPhysics();
-  render();
-  //camera.lookAt(ship.position);
-
+function animate () {
+  requestAnimationFrame(animate)
+  updateOimoPhysics()
+  render()
+  // camera.lookAt(ship.position);
 }
-function render() {
-  const delta = clock.getDelta();
-  window.controls.update(delta);
+function render () {
+  const delta = clock.getDelta()
+  window.controls.update(delta)
 
-
-  renderer.render(window.scene, camera);
+  renderer.render(window.scene, camera)
 }
 
 // function getTexture(body){
@@ -406,6 +385,5 @@ function render() {
 //
 //   }
 // }
-
 
 export { init, animate, globals, loadSystem }
