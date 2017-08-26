@@ -319,7 +319,9 @@ function animate () {
 }
 function render () {
   const delta = clock.getDelta()
-  Void.controls.update(delta)
+  if (Void.controls) {
+    Void.controls.update(delta)
+  }
 
   renderer.render(Void.scene, camera)
 }

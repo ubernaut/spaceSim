@@ -186,9 +186,7 @@ class GridSystem {
       this.insertBody(body, i)
       i += 1
     }
-    for (let i = 0; i < this.count; i++) {
-      console.log(bodies[i])
-    }
+    // Void.log.debug(bodies)
   }
   getPlayerIndex () {
     let i = 0
@@ -404,7 +402,7 @@ class System {
     } else {
       this.buildSol()
     }
-    console.log('bodyCount: ' + this.bodies.length)
+    // Void.log.debug('bodyCount: ' + this.bodies.length)
     this.stability = 0.5 - this.evaluate(this.bodies)
 
     this.avgStability = 0.5 - this.evaluate(this.bodies)
@@ -546,7 +544,7 @@ class System {
     return bdata
   }
   addSinglePlanet () {
-    console.log('adding Body')
+    // Void.log.debug('adding Body')
     let body_data = this.getDirectedPlanet()
     let aBody = new Body(body_data)
     let bBody = new Body(this.reverseBody(body_data))
@@ -556,7 +554,7 @@ class System {
     otherBodies.push(bBody)
     let fitness = this.evaluateN(otherBodies)
     while (fitness < 0.1 || fitness > 1) {
-      console.log('testing configuration')
+      // Void.log.debug('testing configuration')
       let adata = this.getDirectedPlanet()
       let aBody = new Body(adata)
       let bdata = this.reverseBody(adata)
@@ -572,14 +570,14 @@ class System {
     return aBody
   };
   addPlanet () {
-    console.log('adding body')
+    // Void.log.debug('adding body')
     let body_data = []
     body_data.push('body_X')
     body_data = this.getPlanet(body_data)
     let aBody = new Body(body_data)
     this.bodies.push(aBody)
-    console.log('new stability')
-    console.log(this.evaluate(this.bodies))
+    // Void.log.debug('new stability')
+    // Void.log.debug(this.evaluate(this.bodies))
     while (this.evaluate(this.bodies) > 1) {
       this.bodies.pop()
       this.addPlanet()
@@ -587,13 +585,13 @@ class System {
   }
 
   evaluate (someBodies) {
-    console.log('bodies')
-    console.log(someBodies)
+    // Void.log.debug('bodies')
+    // Void.log.debug(someBodies)
     let kinetic = 0.0
     let potential = 0.0
     let G = 2.93558 * Math.pow(10, -4)
     for (let body of someBodies) {
-      console.log(body)
+      // Void.log.debug(body)
       let vel = body.velocity
       let vel_sq = (Math.pow(vel.x, 2) + Math.pow(vel.y, 2) + Math.pow(vel.z, 2))
       kinetic += 0.5 * body.mass * vel_sq

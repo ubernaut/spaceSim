@@ -62,7 +62,7 @@ const createHudElement = () => {
 }
 
 const loadNewPlayer = dataObject => {
-  console.log('loading new player...')
+  Void.log.debug('loading new player...')
 
   const onShipObjLoaded = object => {
     // meta
