@@ -368,4 +368,4 @@ function render () {
 //   }
 // }
 
-export { init, animate, loadSystem }
+export { init, animate, loadSystem, world }
