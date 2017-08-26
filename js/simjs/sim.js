@@ -1,4 +1,4 @@
-import { onProgress, onError, isMobile } from './utils'
+import { onProgress, onError} from './utils'
 import { System } from './systemBuilder'
 
 const clock = new THREE.Clock()
@@ -41,7 +41,7 @@ function initOimoPhysics () {
   // 2 : Sweep and prune , the default
   // 3 : dynamic bounding volume tree
 
-  world = new OIMO.World({
+    world = new OIMO.World({
     timestep: 1 / 60,
     iterations: 8,
     broadphase: 2,
@@ -55,16 +55,16 @@ function initOimoPhysics () {
 }
 // function bindship () {}
 function setControls (ship) {
-  if (isMobile()) {
-    Void.controls = new THREE.DeviceOrientationControls(ship, true)
-  } else {
+  // if (isMobile()) {
+  //   Void.controls = new THREE.DeviceOrientationControls(ship, true)
+  // } else {
     Void.controls = new THREE.FlyControls(ship)
     Void.controls.movementSpeed = 100
     Void.controls.domElement = container
     Void.controls.rollSpeed = Math.PI / 3
     Void.controls.autoForward = false
     Void.controls.dragToLook = true
-  }
+  //}
 }
 
 function onDocumentMouseWheel (event) {
@@ -86,6 +86,7 @@ function onDocumentMouseWheel (event) {
 // function objectLoader () {}
 
 function init () {
+
   window.addEventListener('mousewheel', onDocumentMouseWheel, false)
 
   container = document.createElement('div')
@@ -137,57 +138,12 @@ function init () {
     }, onProgress, onError)
   })
 
-  // wireframeLoader
-  // const Loader = new THREE.OBJMTLLoader();
-  // Loader.load( 'ship.obj', 'ship.mtl', function ( object ) {
-  // 										  object.scale.set(23,23,23);
-  //                     object.traverse( function ( child ) {
-  //
-  //                     if ( child instanceof THREE.Mesh )
-  //                     {
-  //                     //child.geometry.computeFaceNormals();
-  //                     const  geometry = child.geometry;
-  //                     //console.log(geometry);
-  //                     //geometry.dynamic = true;
-  //                     material = child.material;
-  //                      mesh = new THREE.Mesh(geometry, material);
-  //                         scene.add(mesh);
-  //
-  //                     const useWireFrame = true;
-  //                         if (useWireFrame) {
-  //                             mesh.traverse(function (child) {
-  //                                 if (child instanceof THREE.Mesh)
-  //                                 {
-  //                                 child.material.wireframe = true;
-  //                                 child.material.color = new THREE.Color( 0x6893DE  );
-  //                                 }
-  //                             });
-  //                         }
-  //
-  //                     }
-  //
-  //                     //object.position.y = - 80;
-  //                     scene.add( object );
-  //
-  // 									});});
-
-  //
 
   // scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
   const pointlight = new THREE.PointLight()
   pointlight.position.set(0, 0, 0)
   pointlight.castShadow = true
   Void.scene.add(pointlight)
-
-  // const earthGeometry = new THREE.SphereGeometry( 6371000, 32, 32 );
-  // const earthMaterial = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
-  // const earth = new THREE.Mesh( earthGeometry, earthMaterial );
-  // scene.add( earth );
-  //
-  // const sunGeometry = new THREE.SphereGeometry( 695700000, 32, 32 );
-  // const sunMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-  // const sun = new THREE.Mesh( sunGeometry, sunMaterial );
-  // scene.add( sun );
 
   const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
   const oortMaterial = new THREE.MeshBasicMaterial({color: 0x555555})
@@ -264,6 +220,7 @@ function init () {
   // scene.add(sphere);
   window.addEventListener('resize', onWindowResize, false)
   initOimoPhysics()
+  Void.world = world
   loadSystem()
 }
 function onWindowResize () {

@@ -18,7 +18,8 @@ const Void = window.Void = {
     ship: null
   },
   socket: null,
-  scene: null
+  scene: null,
+  world : null
 }
 
 /**
@@ -60,5 +61,5 @@ document.body.addEventListener('mouseup', e => net.broadcastUpdate(Void.socket, 
  * Init
  */
 
-sim.init()
+sim.init(Void.world)
 sim.animate()
