@@ -10,5 +10,8 @@
   },
   "scripts": {
     "dev": "webpack --progress --colors --watch"
+  },
+  "dependencies": {
+    "browser-bunyan": "^0.4.0"
   }
 }

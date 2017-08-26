@@ -30,7 +30,7 @@ const setShipProps = (ship, dataObject) => {
  * Load a new player or update an existing one based on a socket message
  */
 const loadOrUpdatePlayer = socketDataObject => {
-  const player = loadedPlayers.find(p => p.playerId === socketDataObject.playerId)
+  const player = Void.players.find(p => p.playerId === socketDataObject.playerId)
 
   if (player) {
     setShipProps(player.ship, socketDataObject)
@@ -78,8 +78,8 @@ const loadNewPlayer = dataObject => {
     object.add(hudElement.z)
 
     dataObject.ship = object
-    window.scene.add(object)
-    window.loadedPlayers.push(dataObject)
+    Void.scene.add(object)
+    Void.players.push(dataObject)
   }
 
   const onShipMaterialsLoaded = materials => {

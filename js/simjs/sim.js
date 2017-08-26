@@ -3,27 +3,16 @@ import { System } from './systemBuilder'
 
 const clock = new THREE.Clock()
 let container,
-  stats
-let camera,
-  scene,
-  renderer,
-  controls
-let mouseX = 0,
-  mouseY = 0
-const windowHalfX = window.innerWidth / 2
-const windowHalfY = window.innerHeight / 2
+  camera,
+  renderer
 let world = null
 const bodys = []
-const fps = [0, 0, 0, 0]
-const ToRad = 0.0174532925199432957
-const type = 1
-let infos
 
 let galaxyRadius
 function loadSystem () {
   const thisSystem = new System(1, 1, 32, 0.5, 0.03)
   thisSystem.convertToMeters()
-  const texLoader = new THREE.TextureLoader()
+  // const texLoader = new THREE.TextureLoader()
   for (const body of thisSystem.bodies) {
     const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
     let bodyMaterial
@@ -39,7 +28,7 @@ function loadSystem () {
     planet.position.x = body.position.x
     planet.position.y = body.position.y
     planet.position.z = body.position.z
-    window.scene.add(planet)
+    Void.scene.add(planet)
     // const bodyMaterial = new THREE.MeshPhongMaterial(   );
     // const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
   }
@@ -64,17 +53,17 @@ function initOimoPhysics () {
   // populate(1);
   // setInterval(updateOimoPhysics, 1000/60);
 }
-function bindship () {}
+// function bindship () {}
 function setControls (ship) {
   if (checkMobile()) {
-    window.controls = new THREE.DeviceOrientationControls(ship, true)
+    Void.controls = new THREE.DeviceOrientationControls(ship, true)
   } else {
-    window.controls = new THREE.FlyControls(ship)
-    window.controls.movementSpeed = 100
-    window.controls.domElement = container
-    window.controls.rollSpeed = Math.PI / 3
-    window.controls.autoForward = false
-    window.controls.dragToLook = true
+    Void.controls = new THREE.FlyControls(ship)
+    Void.controls.movementSpeed = 100
+    Void.controls.domElement = container
+    Void.controls.rollSpeed = Math.PI / 3
+    Void.controls.autoForward = false
+    Void.controls.dragToLook = true
   }
 }
 function checkMobile () {
@@ -92,16 +81,16 @@ function onDocumentMouseWheel (event) {
   if (deltay < 0) {
     camera.position.y *= 1.1
     camera.position.z *= 1.1
-    window.controls.movementSpeed *= 1.1
+    Void.controls.movementSpeed *= 1.1
   } else {
     camera.position.y *= 0.9
     camera.position.z *= 0.9
-    window.controls.movementSpeed *= 0.9
+    Void.controls.movementSpeed *= 0.9
   }
 }
 
-function wireframeLoader () {}
-function objectLoader () {}
+// function wireframeLoader () {}
+// function objectLoader () {}
 
 function init () {
   window.addEventListener('mousewheel', onDocumentMouseWheel, false)
@@ -113,9 +102,9 @@ function init () {
   camera.position.z = 100
   camera.lookAt(new THREE.Vector3(0, 0, -1000000000000000000))
   // scene
-  window.scene = new THREE.Scene()
+  Void.scene = new THREE.Scene()
   const ambient = new THREE.AmbientLight(0x888888)
-  window.scene.add(ambient)
+  Void.scene.add(ambient)
   const directionalLight = new THREE.DirectionalLight(0xffeedd)
   directionalLight.position.set(0, 0, 1).normalize()
   const size = 100000000
@@ -123,7 +112,7 @@ function init () {
 
   const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff)
 
-  window.scene.add(gridHelper1)
+  Void.scene.add(gridHelper1)
 
   THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
   const mtlLoader = new THREE.MTLLoader()
@@ -142,16 +131,16 @@ function init () {
       object.rotation.set(0, 0, 0)
       object.name = 'spaceShip'
 
-      window.ship = object
-      window.ship.add(camera)
+      Void.ship = object
+      Void.ship.add(camera)
       camera.position.set(0, 10, 30)
-      window.scene.add(object)
-      setControls(window.ship)
+      Void.scene.add(object)
+      setControls(Void.ship)
 
       const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
       helper.geometry.rotateY(Math.PI)
-      window.scene.add(helper)
-      window.ship.add(helper)
+      Void.scene.add(helper)
+      Void.ship.add(helper)
     }, onProgress, onError)
   })
 
@@ -195,7 +184,7 @@ function init () {
   const pointlight = new THREE.PointLight()
   pointlight.position.set(0, 0, 0)
   pointlight.castShadow = true
-  window.scene.add(pointlight)
+  Void.scene.add(pointlight)
 
   // const earthGeometry = new THREE.SphereGeometry( 6371000, 32, 32 );
   // const earthMaterial = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
@@ -210,18 +199,18 @@ function init () {
   const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
   const oortMaterial = new THREE.MeshBasicMaterial({color: 0x555555})
   const oort = new THREE.Mesh(oortGeometry, oortMaterial)
-  window.scene.add(oort)
+  Void.scene.add(oort)
 
   galaxyRadius = 5 * Math.pow(10, 20)
   const galaxyGeometry = new THREE.SphereGeometry(5 * Math.pow(10, 20), 32, 32)
   const galaxyMaterial = new THREE.MeshBasicMaterial({color: 0xffffff})
   const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
-  window.scene.add(galaxy)
+  Void.scene.add(galaxy)
 
   const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32)
   const universeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000})
   const universe = new THREE.Mesh(universeGeometry, universeMaterial)
-  window.scene.add(universe)
+  Void.scene.add(universe)
 
   renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true})
   renderer.setPixelRatio(window.devicePixelRatio)
@@ -270,7 +259,7 @@ function init () {
     stars.position.z -= radius / 2
     stars.matrixAutoUpdate = false
     stars.updateMatrix()
-    window.scene.add(stars)
+    Void.scene.add(stars)
   }
 
   const spheregeometry = new THREE.SphereGeometry(10000000000, 36, 30)
@@ -285,8 +274,8 @@ function init () {
   loadSystem()
 }
 function onWindowResize () {
-  windowHalfX = window.innerWidth / 2
-  windowHalfY = window.innerHeight / 2
+  // windowHalfX = window.innerWidth / 2
+  // windowHalfY = window.innerHeight / 2
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight)
@@ -337,9 +326,9 @@ function animate () {
 }
 function render () {
   const delta = clock.getDelta()
-  window.controls.update(delta)
+  Void.controls.update(delta)
 
-  renderer.render(window.scene, camera)
+  renderer.render(Void.scene, camera)
 }
 
 // function getTexture(body){
@@ -386,4 +375,4 @@ function render () {
 //   }
 // }
 
-export { init, animate, globals, loadSystem }
+export { init, animate, loadSystem }
