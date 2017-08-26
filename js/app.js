@@ -28,17 +28,17 @@ app.socket = net.init(app.server)
  */
 
 window.addEventListener('keydown', event => {
-  net.broadcastUpdate(app.socket, window.ship);
-});
+  net.broadcastUpdate(app.socket, window.ship)
+})
 window.addEventListener('keyup', event => {
-  net.broadcastUpdate(app.socket, window.ship);
-});
-document.body.addEventListener('mousedown', e => net.broadcastUpdate(app.socket, ship), false);
-document.body.addEventListener('mouseup', e => net.broadcastUpdate(app.socket, ship), false);
+  net.broadcastUpdate(app.socket, window.ship)
+})
+document.body.addEventListener('mousedown', e => net.broadcastUpdate(app.socket, ship), false)
+document.body.addEventListener('mouseup', e => net.broadcastUpdate(app.socket, ship), false)
 
 /**
  * Init
  */
 
-sim.init();
-sim.animate();
+sim.init()
+sim.animate()
