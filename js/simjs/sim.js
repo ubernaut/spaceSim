@@ -5,7 +5,7 @@ const clock = new THREE.Clock()
 let container,
   camera,
   renderer
-let world = null
+//let Void.world = null
 const bodys = []
 
 let galaxyRadius
@@ -41,7 +41,7 @@ function initOimoPhysics () {
   // 2 : Sweep and prune , the default
   // 3 : dynamic bounding volume tree
 
-    world = new OIMO.World({
+    Void.world = new OIMO.World({
     timestep: 1 / 60,
     iterations: 8,
     broadphase: 2,
@@ -220,7 +220,7 @@ function init () {
   // scene.add(sphere);
   window.addEventListener('resize', onWindowResize, false)
   initOimoPhysics()
-  Void.world = world
+
   loadSystem()
 }
 function onWindowResize () {
@@ -231,8 +231,8 @@ function onWindowResize () {
   renderer.setSize(window.innerWidth, window.innerHeight)
 }
 function updateOimoPhysics () {
-  if (world == null) { return }
-  world.step()
+  if (Void.world == null) { return }
+  Void.world.step()
   let x,
     y,
     z,
@@ -264,7 +264,7 @@ function updateOimoPhysics () {
     }
   }
 
-  // infos.innerHTML = world.getInfo();
+  // infos.innerHTML = Void.world.getInfo();
 }
 
 //
@@ -327,4 +327,4 @@ function render () {
 //   }
 // }
 
-export { init, animate, loadSystem, world }
+export { init, animate, loadSystem }
