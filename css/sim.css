@@ -1,0 +1,22 @@
+#terminal{
+  background-color: rgba(0,0,0,0.4);
+  width:100vw !important;
+}
+
+.terminalBig{
+  height:66vh !important;
+}
+
+.terminalSmall{
+  height:25vh !important;
+}
+
+.cmd {
+  background-color: rgba(0, 0, 0, 0.0) !important;
+}
+
+
+
+.shorter{
+  height:10vh !important;
+}

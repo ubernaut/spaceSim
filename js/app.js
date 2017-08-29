@@ -63,3 +63,44 @@ document.body.addEventListener('mouseup', e => net.broadcastUpdate(Void.socket, 
 
 sim.init(Void.world)
 sim.animate()
+
+jQuery(function($, undefined) {
+  var viewPortWidth;
+  var viewPortHeight;
+
+    // the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
+    if (typeof window.innerWidth != 'undefined') {
+      viewPortWidth = window.innerWidth,
+      viewPortHeight = window.innerHeight
+    }
+    $('#terminal').terminal(function(command) {
+
+        if (command !== '') {
+            var result = window.eval(command);
+            if (result != undefined) {
+                this.echo(String(result));
+            }
+        }
+    }, {
+        greetings: 'Eternal Void Console:',
+        name: 'player',
+        height: viewPortHeight/4,
+        width: viewPortWidth,
+        prompt: 'root#',
+        login: function(user, password){this.echo("welcome, "+user);}
+    });
+
+
+    $(document.documentElement).keydown(function(e) {
+       if (e.keyCode == 27) {
+         // $("#voidConsole").addClass("shorter");
+         if(!$("#terminal").hasClass("terminalBig")){
+           $("#terminal").addClass("terminalBig");
+           $("#terminal").removeClass("terminalSmall");
+         }else{
+           $("#terminal").removeClass("terminalBig");
+           $("#terminal").addClass("terminalSmall");
+       }
+       }
+     });
+});
