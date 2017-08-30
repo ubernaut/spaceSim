@@ -12,10 +12,10 @@ const bodys = []
 
 let galaxyRadius
 function loadSystem () {
-  Void.thisSystem = new System(1, 1, 256, 0.5, 0.02)
+  Void.thisSystem = new System(1, 1, 256, 1, 0.02)
   //console.log(Void.thisSystem);
   Void.thisSystem.convertToMeters();
-  Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.02)
+  Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005)
 
   // const texLoader = new THREE.TextureLoader()
   for (const body of Void.thisSystem.bodies) {
@@ -29,6 +29,7 @@ function loadSystem () {
     bodyMaterial = new THREE.MeshPhongMaterial({
       color: (Math.random() * 0xffffff)
     })
+    // if (body.name=="star"){bodyMaterial.side = THREE.DoubleSide}
     const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
     planet.position.x = body.position.x
     planet.position.y = body.position.y
