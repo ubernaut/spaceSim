@@ -12,7 +12,7 @@ const bodys = []
 
 let galaxyRadius
 function loadSystem () {
-  Void.thisSystem = new System(1, 1, 64, 0.2, 0.02)
+  Void.thisSystem = new System(1, 1, 256, 0.5, 0.02)
   //console.log(Void.thisSystem);
   Void.thisSystem.convertToMeters();
   Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.02)
