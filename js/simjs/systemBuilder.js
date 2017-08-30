@@ -35,33 +35,33 @@ class Point {
   }
 };
 
-// class Galaxy {
-//   constructor() {
-//     this.stars = [];
-//     this.theta = 0;
-//     this.dTheta = .05;
-//     this.maxTheta = 10;
-//     this.alpha = 2000;
-//     this.beta = 0.25;
-//     this.e = 2.71828182845904523536;
-//     this.starDensity = 1;
-//     while (this.theta < this.maxTheta) {
-//       this.theta += this.dTheta;
-//      let randMax = 2000 / (1 + this.theta / 2);
-//      let randMin = 0 - randMax;
-//       this.starDensity = 10 / (1 + this.theta / 2);
-//       for (let i = 0; i <= this.starDensity; i++) {
-//        let xPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.cos(this.theta);
-//        let yPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.sin(this.theta);
-//        let xPos = xPos + Math.random() * (randMax - randMin) + randMin;
-//        let yPos = yPos + Math.random() * (randMax - randMin) + randMin;
-//        let zPos = Math.random() * (randMax - randMin) + randMin;
-//        let newStar = new Star(xPos, yPos, zPos, "star", "cos");
-//         this.stars.push(newStar);
-//       }
-//     }
-//   }
-// }
+class Galaxy {
+  constructor() {
+    this.stars = [];
+    this.theta = 0;
+    this.dTheta = .05;
+    this.maxTheta = 10;
+    this.alpha = 2000;
+    this.beta = 0.25;
+    this.e = 2.71828182845904523536;
+    this.starDensity = 1;
+    while (this.theta < this.maxTheta) {
+      this.theta += this.dTheta;
+     let randMax = 2000 / (1 + this.theta / 2);
+     let randMin = 0 - randMax;
+      this.starDensity = 10 / (1 + this.theta / 2);
+      for (let i = 0; i <= this.starDensity; i++) {
+       let xPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.cos(this.theta);
+       let yPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.sin(this.theta);
+       xPos = xPos + Math.random() * (randMax - randMin) + randMin;
+       yPos = yPos + Math.random() * (randMax - randMin) + randMin;
+       let zPos = Math.random() * (randMax - randMin) + randMin;
+       let newStar = new Star(xPos, yPos, zPos, "star", "cos");
+        this.stars.push(newStar);
+      }
+    }
+  }
+}
 
 class Star {
   constructor (xPos = 30000, yPos = 0, zPos = 0, player = 'duh', aName = 'default') {
@@ -338,9 +338,9 @@ class soPhysics {
     let grav_mag = 0.0
     if (rad2 > rad[ith] + rad[jth]) {
       grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)))
-      grav_x = grav_mag * d_x
-      grav_y = grav_mag * d_y
-      grav_z = grav_mag * d_z
+      let grav_x = grav_mag * d_x
+      let grav_y = grav_mag * d_y
+      let grav_z = grav_mag * d_z
       acc[ith][0] += grav_x * mass[jth]
       acc[ith][1] += grav_y * mass[jth]
       acc[ith][2] += grav_z * mass[jth]
@@ -356,7 +356,7 @@ class soPhysics {
   accelerateCuda () {
     let G = 2.93558 * Math.pow(10, -4)
     let epsilon = 0.01
-    for (let i = 0; i < this.gridSystem.length; i++) {
+    for (let i = 0; i < this.gridSystem.count; i++) {
       if (this.gridSystem.names[i] != 'DELETED') {
         for (let j = 0; j < i; j++) {
           if (this.gridSystem.names[j] != 'DELETED') {
@@ -377,7 +377,7 @@ class soPhysics {
   }
 
   calVelPosCuda () {
-    for (let i = 0; i < this.gridSystem.length; i++) {
+    for (let i = 0; i < this.gridSystem.count; i++) {
       this.gridSystem.vel[i][0] += this.dt * this.gridSystem.acc[i][0]
       this.gridSystem.vel[i][1] += this.dt * this.gridSystem.acc[i][1]
       this.gridSystem.vel[i][2] += this.dt * this.gridSystem.acc[i][2]
@@ -672,4 +672,4 @@ class System {
     }
   }
 }
-export {System}
+export {System, GridSystem, soPhysics}

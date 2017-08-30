@@ -1,19 +1,24 @@
 import { onProgress, onError} from './utils'
-import { System } from './systemBuilder'
+import { System, GridSystem, soPhysics } from './systemBuilder'
+
+
 
 const clock = new THREE.Clock()
 let container,
   camera,
   renderer
-//let Void.world = null
+let world = null
 const bodys = []
 
 let galaxyRadius
 function loadSystem () {
-  const thisSystem = new System(1, 1, 32, 0.5, 0.03)
-  thisSystem.convertToMeters()
+  Void.thisSystem = new System(1, 1, 64, 0.2, 0.02)
+  //console.log(Void.thisSystem);
+  Void.thisSystem.convertToMeters();
+  Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.02)
+
   // const texLoader = new THREE.TextureLoader()
-  for (const body of thisSystem.bodies) {
+  for (const body of Void.thisSystem.bodies) {
     const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
     let bodyMaterial
     // texLoader.load('js/models/Gstar.jpg',
@@ -28,10 +33,21 @@ function loadSystem () {
     planet.position.x = body.position.x
     planet.position.y = body.position.y
     planet.position.z = body.position.z
+    body.object = planet
     Void.scene.add(planet)
     // const bodyMaterial = new THREE.MeshPhongMaterial(   );
     // const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
   }
+}
+function updateSystem(){
+    let i =0;
+    for (const body of Void.thisSystem.bodies) {
+        body.object.position.x=Void.soPhysics.gridSystem.pos[i][0]
+        body.object.position.y=Void.soPhysics.gridSystem.pos[i][1]
+        body.object.position.z=Void.soPhysics.gridSystem.pos[i][2]
+        i++
+    }
+
 }
 
 function initOimoPhysics () {
@@ -41,7 +57,7 @@ function initOimoPhysics () {
   // 2 : Sweep and prune , the default
   // 3 : dynamic bounding volume tree
 
-    Void.world = new OIMO.World({
+    world = new OIMO.World({
     timestep: 1 / 60,
     iterations: 8,
     broadphase: 2,
@@ -190,12 +206,12 @@ function init () {
 
   let stars
   const starsMaterials = [
-    new THREE.PointsMaterial({color: 0xffffff, size: 2, sizeAttenuation: false}),
-    new THREE.PointsMaterial({color: 0xaaaaaa, size: 2, sizeAttenuation: false}),
-    new THREE.PointsMaterial({color: 0x555555, size: 2, sizeAttenuation: false}),
-    new THREE.PointsMaterial({color: 0xff0000, size: 2, sizeAttenuation: false}),
-    new THREE.PointsMaterial({color: 0xffdddd, size: 2, sizeAttenuation: false}),
-    new THREE.PointsMaterial({color: 0xddddff, size: 2, sizeAttenuation: false})
+    new THREE.PointsMaterial({color: 0xffffff, size: 10000000000000000, sizeAttenuation: true}),
+    new THREE.PointsMaterial({color: 0xaaaaaa, size: 10000000000000000, sizeAttenuation: true}),
+    new THREE.PointsMaterial({color: 0x555555, size: 10000000000000000, sizeAttenuation: true}),
+    new THREE.PointsMaterial({color: 0xff0000, size: 10000000000000000, sizeAttenuation: true}),
+    new THREE.PointsMaterial({color: 0xffdddd, size: 10000000000000000, sizeAttenuation: true}),
+    new THREE.PointsMaterial({color: 0xddddff, size: 10000000000000000, sizeAttenuation: true})
   ]
   for (i = 10; i < 30; i++) {
     stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
@@ -220,7 +236,7 @@ function init () {
   // scene.add(sphere);
   window.addEventListener('resize', onWindowResize, false)
   initOimoPhysics()
-
+  Void.world = world
   loadSystem()
 }
 function onWindowResize () {
@@ -231,8 +247,8 @@ function onWindowResize () {
   renderer.setSize(window.innerWidth, window.innerHeight)
 }
 function updateOimoPhysics () {
-  if (Void.world == null) { return }
-  Void.world.step()
+  if (world == null) { return }
+  world.step()
   let x,
     y,
     z,
@@ -264,13 +280,15 @@ function updateOimoPhysics () {
     }
   }
 
-  // infos.innerHTML = Void.world.getInfo();
+  // infos.innerHTML = world.getInfo();
 }
 
 //
 function animate () {
   requestAnimationFrame(animate)
   updateOimoPhysics()
+  Void.soPhysics.accelerateCuda()
+  updateSystem()
   render()
   // camera.lookAt(ship.position);
 }
@@ -327,4 +345,4 @@ function render () {
 //   }
 // }
 
-export { init, animate, loadSystem }
+export { init, animate, loadSystem, world }
