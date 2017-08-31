@@ -39,10 +39,6 @@ Void.log = bunyan.createLogger({
 })
 Void.log.debug('starting up...')
 
-// Websocket connection
-Void.log.debug('opening websocket')
-Void.socket = net.init(Void.server)
-
 /**
  * Event Listeners
  */
@@ -62,3 +58,7 @@ document.body.addEventListener('mouseup', e => net.broadcastUpdate(Void.socket, 
 
 sim.init(Void.world)
 sim.animate()
+
+// Websocket connection
+Void.log.debug('opening websocket')
+Void.socket = net.init(Void.server)

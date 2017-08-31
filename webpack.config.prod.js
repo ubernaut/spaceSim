@@ -39,15 +39,7 @@ module.exports = {
     ]
   },
 
-  devServer: {
-    contentBase: __dirname,
-    publicPath: '/dist/',
-    compress: true,
-    port: 8000,
-    hot: true
-  },
-
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.optimize.UglifyJsPlugin()
   ]
 }

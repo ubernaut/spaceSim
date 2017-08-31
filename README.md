@@ -1,7 +1,12 @@
+**Dev**:
+```
+npm install -g yarn
+yarn install
+yarn run dev
+```
+Then hit http://localhost:8080 in your browser
 
-npm install
-
-npm run dev
-
-
-Host it however you want then hit it with your browser. 
+**Build**:
+```
+yarn run build
+```
