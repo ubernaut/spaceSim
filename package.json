@@ -7,11 +7,14 @@
     "graceful-fs": "^4.1.11",
     "standard": "^10.0.3",
     "webpack": "^3.5.5",
-    "webpack-dev-server": "^2.7.1"
+    "webpack-dev-server": "^2.7.1",
+    "worker-loader": "^0.8.1"
   },
   "dependencies": {
     "browser-bunyan": "^0.4.0",
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.0.3",
+    "three": "^0.87.1",
+    "three.js": "^0.77.1"
   },
   "scripts": {
     "dev": "./node_modules/.bin/webpack-dev-server",

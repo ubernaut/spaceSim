@@ -273,7 +273,7 @@ class soPhysics {
     this.system = aSystem
     this.gridSystem = new GridSystem(aSystem.bodies)
     this.maxMark = maxMark
-    this.fitness = this.system.evaluate(this.system.bodies)
+    this.fitness = evaluate(this.system.bodies)
     this.sumFit = this.fitness
     this.t = 0
     this.count = 1
@@ -311,7 +311,7 @@ class soPhysics {
       this.calculate_velocity(body, this.dt)
       this.calculate_position(body, this.dt)
       body.acceleration.reset()
-      this.sumFit += this.system.evaluate(this.system.bodies)
+      this.sumFit += evaluate(this.system.bodies)
       this.t += this.dt
     }
     this.count += 1
@@ -324,7 +324,7 @@ class soPhysics {
     while (this.count < this.maxMark) {
       this.evaluateStep()
     }
-    this.fitness = this.system.evaluate(this.bodies)
+    this.fitness = evaluate(this.bodies)
     this.avgStability = this.sumFit / this.count
     return this.avgStability
   }
@@ -403,9 +403,9 @@ class System {
       this.buildSol()
     }
     // Void.log.debug('bodyCount: ' + this.bodies.length)
-    this.stability = 0.5 - this.evaluate(this.bodies)
+    this.stability = 0.5 - evaluate(this.bodies)
 
-    this.avgStability = 0.5 - this.evaluate(this.bodies)
+    this.avgStability = 0.5 - evaluate(this.bodies)
   }
   moveToStar () {
     for (let body of this.bodies) {
@@ -584,39 +584,7 @@ class System {
     }
   }
 
-  evaluate (someBodies) {
-    // Void.log.debug('bodies')
-    // Void.log.debug(someBodies)
-    let kinetic = 0.0
-    let potential = 0.0
-    let G = 2.93558 * Math.pow(10, -4)
-    for (let body of someBodies) {
-      // Void.log.debug(body)
-      let vel = body.velocity
-      let vel_sq = (Math.pow(vel.x, 2) + Math.pow(vel.y, 2) + Math.pow(vel.z, 2))
-      kinetic += 0.5 * body.mass * vel_sq
-    }
-    for (let i = 0; i < someBodies.length; i++) {
-      let current_body = someBodies[i]
-      let current_position = current_body.position
-      for (let j = 0; j < i; j++) {
-        let other_body = someBodies[j]
-        let other_position = other_body.position
-        let d_x = (other_position.x - current_position.x)
-        let d_y = (other_position.y - current_position.y)
-        let d_z = (other_position.z - current_position.z)
-        let radius = Math.pow((Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)), (0.5))
-        if (radius > 0) {
-          potential -= G * current_body.mass * other_body.mass / radius
-        }
-      }
-    }
-    try {
-      return Math.abs(kinetic / potential)
-    } catch (err) {
-      return 100
-    }
-  }
+
   //   evaluateBodies( someBodies) {
   //           kinetic=0.0;
   //           potential=0.0;
@@ -657,19 +625,62 @@ class System {
   bodies () {
     return this.bodies
   }
-  convertToMeters () {
-    for (let body of this.bodies) {
-      body.position.x *= 149600000000
-      body.position.y *= 149600000000
-      body.position.z *= 149600000000
+}
 
-      body.velocity.x *= 149600000000
-      body.velocity.y *= 149600000000
-      body.velocity.z *= 149600000000
-
-      body.radius = ((Math.sqrt(body.mass)) / 50) + 0.001
-      body.radius *= 149600000000
+const evaluate = someBodies => {
+  // Void.log.debug('bodies')
+  // Void.log.debug(someBodies)
+  let kinetic = 0.0
+  let potential = 0.0
+  let G = 2.93558 * Math.pow(10, -4)
+  for (let body of someBodies) {
+    // Void.log.debug(body)
+    let vel = body.velocity
+    let vel_sq = (Math.pow(vel.x, 2) + Math.pow(vel.y, 2) + Math.pow(vel.z, 2))
+    kinetic += 0.5 * body.mass * vel_sq
+  }
+  for (let i = 0; i < someBodies.length; i++) {
+    let current_body = someBodies[i]
+    let current_position = current_body.position
+    for (let j = 0; j < i; j++) {
+      let other_body = someBodies[j]
+      let other_position = other_body.position
+      let d_x = (other_position.x - current_position.x)
+      let d_y = (other_position.y - current_position.y)
+      let d_z = (other_position.z - current_position.z)
+      let radius = Math.pow((Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)), (0.5))
+      if (radius > 0) {
+        potential -= G * current_body.mass * other_body.mass / radius
+      }
     }
   }
+  try {
+    return Math.abs(kinetic / potential)
+  } catch (err) {
+    return 100
+  }
 }
-export {System, GridSystem, soPhysics}
+
+const convertSystemToMeters = system => {
+  return system.bodies.map(body => {
+    body.position.x *= 149600000000
+    body.position.y *= 149600000000
+    body.position.z *= 149600000000
+
+    body.velocity.x *= 149600000000
+    body.velocity.y *= 149600000000
+    body.velocity.z *= 149600000000
+
+    body.radius = ((Math.sqrt(body.mass)) / 50) + 0.001
+    body.radius *= 149600000000
+    return body
+  })
+}
+
+export {
+  System,
+  GridSystem,
+  soPhysics,
+  convertSystemToMeters,
+  evaluate
+}

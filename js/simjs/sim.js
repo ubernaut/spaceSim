@@ -1,5 +1,6 @@
 import { onProgress, onError} from './utils'
-import { System, GridSystem, soPhysics } from './systemBuilder'
+import { System, GridSystem, soPhysics, convertSystemToMeters } from './systemBuilder'
+import SystemBuilderWorker from 'worker-loader?inline!./systemBuilderWorker'
 
 const clock = new THREE.Clock()
 let container,
@@ -10,32 +11,38 @@ const bodys = []
 
 let galaxyRadius
 function loadSystem () {
-  Void.thisSystem = new System(1, 1, 256, 1, 0.02)
-  // console.log(Void.thisSystem);
-  Void.thisSystem.convertToMeters()
-  Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005)
+  const systemWorker = new SystemBuilderWorker()
+  systemWorker.postMessage('!')
+  systemWorker.onmessage = e => {
+    Void.thisSystem = e.data
 
-  // const texLoader = new THREE.TextureLoader()
-  for (const body of Void.thisSystem.bodies) {
-    const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
-    let bodyMaterial
-    // texLoader.load('js/models/Gstar.jpg',
-    // function(texture){
-    //    bodyMaterial = new THREE.MeshPhongMaterial({color: (Math.random() * 0xffffff)});
-    // }
-    // );
-    bodyMaterial = new THREE.MeshPhongMaterial({
-      color: (Math.random() * 0xffffff)
-    })
-    // if (body.name=="star"){bodyMaterial.side = THREE.DoubleSide}
-    const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
-    planet.position.x = body.position.x
-    planet.position.y = body.position.y
-    planet.position.z = body.position.z
-    body.object = planet
-    Void.scene.add(planet)
-    // const bodyMaterial = new THREE.MeshPhongMaterial(   );
-    // const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
+    // console.log(Void.thisSystem);
+    const metersBodies = convertSystemToMeters(Void.thisSystem)
+    Void.thisSystem.bodies = metersBodies
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005)
+
+    // const texLoader = new THREE.TextureLoader()
+    for (const body of Void.thisSystem.bodies) {
+      const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
+      let bodyMaterial
+      // texLoader.load('js/models/Gstar.jpg',
+      // function(texture){
+      //    bodyMaterial = new THREE.MeshPhongMaterial({color: (Math.random() * 0xffffff)});
+      // }
+      // );
+      bodyMaterial = new THREE.MeshPhongMaterial({
+        color: (Math.random() * 0xffffff)
+      })
+      // if (body.name=="star"){bodyMaterial.side = THREE.DoubleSide}
+      const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
+      planet.position.x = body.position.x
+      planet.position.y = body.position.y
+      planet.position.z = body.position.z
+      body.object = planet
+      Void.scene.add(planet)
+      // const bodyMaterial = new THREE.MeshPhongMaterial(   );
+      // const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
+    }
   }
 }
 function updateSystem () {
@@ -283,8 +290,10 @@ function updateOimoPhysics () {
 function animate () {
   requestAnimationFrame(animate)
   updateOimoPhysics()
-  Void.soPhysics.accelerateCuda()
-  updateSystem()
+  if (Void.soPhysics) {
+    Void.soPhysics.accelerateCuda()
+    updateSystem()
+  }
   render()
   // camera.lookAt(ship.position);
 }
