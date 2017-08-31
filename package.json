@@ -24,5 +24,8 @@
       "THREE": false,
       "OIMO": false
     }
+  },
+  "babel": {
+    "presets": [ "env" ]
   }
 }
