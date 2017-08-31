@@ -74,9 +74,9 @@ const loadNewPlayer = dataObject => {
     object.rotation.set(0, 0, 0)
     // hud element
     const hudElement = createHudElement()
-    object.add(hudElement.x)
-    object.add(hudElement.y)
-    object.add(hudElement.z)
+    // object.add(hudElement.x)
+    // object.add(hudElement.y)
+    // object.add(hudElement.z)
 
     dataObject.ship = object
     Void.scene.add(object)
