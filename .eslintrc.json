@@ -1,8 +1,0 @@
-{
-	"extends": "standard",
-  "globals": {
-    "Void": true,
-    "THREE": false,
-    "OIMO": false
-  }
-}
