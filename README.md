@@ -1,12 +1,12 @@
-**Dev**:
+**Dev**
 ```
 npm install -g yarn
 yarn install
 yarn run dev
 ```
-Then hit http://localhost:8080 in your browser
+Then hit http://localhost:8000 in your browser
 
-**Build**:
+**Build**
 ```
 yarn run build
 ```
