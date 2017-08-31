@@ -1,6 +1,7 @@
 import { onProgress, onError} from './utils'
 import { System, GridSystem, soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from 'worker-loader?inline!./systemBuilderWorker'
+import Promise from 'bluebird'
 
 const clock = new THREE.Clock()
 let container,
@@ -22,7 +23,7 @@ function loadSystem () {
     Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005)
 
     // const texLoader = new THREE.TextureLoader()
-    for (const body of Void.thisSystem.bodies) {
+    const mkPlanet = body => {
       const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
       let bodyMaterial
       // texLoader.load('js/models/Gstar.jpg',
@@ -39,18 +40,21 @@ function loadSystem () {
       planet.position.y = body.position.y
       planet.position.z = body.position.z
       body.object = planet
-      Void.scene.add(planet)
       // const bodyMaterial = new THREE.MeshPhongMaterial(   );
       // const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
+      Void.scene.add(planet)
     }
+    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkPlanet(body)).delay(200), { concurrency: 10 })
   }
 }
 function updateSystem () {
   let i = 0
   for (const body of Void.thisSystem.bodies) {
-    body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
-    body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
-    body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+    if (body.object) {
+      body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
+      body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
+      body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+    }
     i++
   }
 }

@@ -11,6 +11,7 @@
     "worker-loader": "^0.8.1"
   },
   "dependencies": {
+    "bluebird": "^3.5.0",
     "browser-bunyan": "^0.4.0",
     "socket.io": "^2.0.3",
     "three": "^0.87.1",
