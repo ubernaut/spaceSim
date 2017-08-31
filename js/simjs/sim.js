@@ -1,8 +1,6 @@
 import { onProgress, onError} from './utils'
 import { System, GridSystem, soPhysics } from './systemBuilder'
 
-
-
 const clock = new THREE.Clock()
 let container,
   camera,
@@ -13,8 +11,8 @@ const bodys = []
 let galaxyRadius
 function loadSystem () {
   Void.thisSystem = new System(1, 1, 256, 1, 0.02)
-  //console.log(Void.thisSystem);
-  Void.thisSystem.convertToMeters();
+  // console.log(Void.thisSystem);
+  Void.thisSystem.convertToMeters()
   Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005)
 
   // const texLoader = new THREE.TextureLoader()
@@ -40,15 +38,14 @@ function loadSystem () {
     // const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
   }
 }
-function updateSystem(){
-    let i =0;
-    for (const body of Void.thisSystem.bodies) {
-        body.object.position.x=Void.soPhysics.gridSystem.pos[i][0]
-        body.object.position.y=Void.soPhysics.gridSystem.pos[i][1]
-        body.object.position.z=Void.soPhysics.gridSystem.pos[i][2]
-        i++
-    }
-
+function updateSystem () {
+  let i = 0
+  for (const body of Void.thisSystem.bodies) {
+    body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
+    body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
+    body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+    i++
+  }
 }
 
 function initOimoPhysics () {
@@ -58,7 +55,7 @@ function initOimoPhysics () {
   // 2 : Sweep and prune , the default
   // 3 : dynamic bounding volume tree
 
-    world = new OIMO.World({
+  world = new OIMO.World({
     timestep: 1 / 60,
     iterations: 8,
     broadphase: 2,
@@ -75,13 +72,13 @@ function setControls (ship) {
   // if (isMobile()) {
   //   Void.controls = new THREE.DeviceOrientationControls(ship, true)
   // } else {
-    Void.controls = new THREE.FlyControls(ship)
-    Void.controls.movementSpeed = 100
-    Void.controls.domElement = container
-    Void.controls.rollSpeed = Math.PI / 3
-    Void.controls.autoForward = false
-    Void.controls.dragToLook = true
-  //}
+  Void.controls = new THREE.FlyControls(ship)
+  Void.controls.movementSpeed = 100
+  Void.controls.domElement = container
+  Void.controls.rollSpeed = Math.PI / 3
+  Void.controls.autoForward = false
+  Void.controls.dragToLook = true
+  // }
 }
 
 function onDocumentMouseWheel (event) {
@@ -103,7 +100,6 @@ function onDocumentMouseWheel (event) {
 // function objectLoader () {}
 
 function init () {
-
   window.addEventListener('mousewheel', onDocumentMouseWheel, false)
 
   container = document.createElement('div')
@@ -154,7 +150,6 @@ function init () {
       Void.ship.add(helper)
     }, onProgress, onError)
   })
-
 
   // scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
   const pointlight = new THREE.PointLight()

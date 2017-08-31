@@ -2,7 +2,6 @@ import bunyan from 'browser-bunyan'
 
 import * as net from './simjs/netcode'
 import * as sim from './simjs/sim'
-import * as utils from './simjs/utils'
 
 /**
  * App State
@@ -19,7 +18,7 @@ const Void = window.Void = {
   },
   socket: null,
   scene: null,
-  world : null
+  world: null
 }
 
 /**

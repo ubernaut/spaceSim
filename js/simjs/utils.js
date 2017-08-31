@@ -9,8 +9,6 @@ const onError = xhr => {}
 
 const randomUniform = (min, max) => Math.random() * (max - min) + min
 
-
-
 export {
   onProgress,
   onError,
