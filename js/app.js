@@ -2,6 +2,7 @@ import bunyan from 'browser-bunyan'
 
 import * as net from './simjs/netcode'
 import * as sim from './simjs/sim'
+import { shoot } from './simjs/weapons'
 
 /**
  * App State
@@ -42,8 +43,13 @@ Void.log.debug('starting up...')
 /**
  * Event Listeners
  */
-
+const keys = {
+  SPACE: 32
+}
 window.addEventListener('keydown', event => {
+  if (event.keyCode === keys.SPACE) {
+    shoot(Void.ship, 'machineGun')
+  }
   net.broadcastUpdate(Void.socket, Void.ship)
 })
 window.addEventListener('keyup', event => {
