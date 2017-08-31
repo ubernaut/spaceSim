@@ -1,3 +1,4 @@
+import io from 'socket.io-client'
 import { onProgress, onError } from './utils'
 
 const getData = socket => data => {
@@ -93,7 +94,10 @@ const loadNewPlayer = dataObject => {
 
 const init = server => {
   const socket = io(`${server.host}:${server.port}`)
-  socket.on('keypress', getData(socket))
+  socket.on('connect', () => {
+    Void.log.debug('websocket connected')
+    socket.on('keypress', getData(socket))
+  })
   return socket
 }
 

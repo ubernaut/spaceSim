@@ -9,13 +9,14 @@
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1"
   },
+  "dependencies": {
+    "browser-bunyan": "^0.4.0",
+    "socket.io": "^2.0.3"
+  },
   "scripts": {
     "dev": "./node_modules/.bin/webpack-dev-server",
     "build": "./node_modules/.bin/webpack --progress --colors  --config webpack.config.prod.js",
     "clean": "rm -rf dist/"
-  },
-  "dependencies": {
-    "browser-bunyan": "^0.4.0"
   },
   "eslintConfig": {
     "extends": "standard",
@@ -26,6 +27,8 @@
     }
   },
   "babel": {
-    "presets": [ "env" ]
+    "presets": [
+      "env"
+    ]
   }
 }
