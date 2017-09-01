@@ -1,14 +1,15 @@
 import io from 'socket.io-client'
+import msgpack from 'msgpack-lite'
 import { onProgress, onError } from './utils'
 
 const getData = socket => data => {
-  const dataObject = JSON.parse(data.message)
+  const dataObject = msgpack.decode(new Uint8Array(data))
   dataObject.playerId = data.playerId
-  loadOrUpdatePlayer(dataObject)
+  loadOrUpdatePlayer(dataObject.message)
 }
 
 const broadcastUpdate = (socket, ship) => {
-  socket.emit('keypress', JSON.stringify({
+  socket.emit('events', msgpack.encode({
     position: ship.position,
     quaternion: ship.quaternion
   }))
@@ -96,7 +97,7 @@ const init = server => {
   const socket = io(`${server.host}:${server.port}`)
   socket.on('connect', () => {
     Void.log.debug('websocket connected')
-    socket.on('keypress', getData(socket))
+    socket.on('events', getData(socket))
   })
   return socket
 }
