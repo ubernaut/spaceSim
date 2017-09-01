@@ -7,3 +7,5 @@ dist/
 yarn.lock
 
 *.lock
+
+yarn.lock
