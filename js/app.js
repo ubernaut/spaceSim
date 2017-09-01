@@ -10,7 +10,8 @@ import { shoot } from './simjs/weapons'
 
 const Void = window.Void = {
   server: {
-    host: 'http://thedagda.co',
+    // host: 'http://thedagda.co',
+    host: 'http://localhost',
     port: '1137'
   },
   players: [],

@@ -4,8 +4,7 @@ import { onProgress, onError } from './utils'
 
 const getData = socket => data => {
   const dataObject = msgpack.decode(new Uint8Array(data))
-  dataObject.playerId = data.playerId
-  loadOrUpdatePlayer(dataObject.message)
+  loadOrUpdatePlayer(dataObject)
 }
 
 const broadcastUpdate = (socket, ship) => {
@@ -35,7 +34,7 @@ const loadOrUpdatePlayer = socketDataObject => {
   const player = Void.players.find(p => p.playerId === socketDataObject.playerId)
 
   if (player) {
-    setShipProps(player.ship, socketDataObject)
+    setShipProps(player.ship, socketDataObject.message)
   } else {
     loadNewPlayer(socketDataObject)
   }
@@ -70,7 +69,7 @@ const loadNewPlayer = dataObject => {
     // meta
     object.name = dataObject.playerId
     // position, orientation
-    setShipProps(object, dataObject)
+    setShipProps(object, dataObject.message)
     object.scale.set(20, 20, 20)
     object.rotation.set(0, 0, 0)
     // hud element
