@@ -54,6 +54,12 @@ function updateSystem () {
       body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
       body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
       body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+
+    if(Void.soPhysics.gridSystem.names[i]=="DELETED"){
+      Void.scene.remove(body.object)
+      console.log("removed body")
+      body.object = ""
+    }
     }
     i++
   }
@@ -193,7 +199,7 @@ function init () {
   let i,
     r = radius,
     starsGeometry = [new THREE.Geometry(), new THREE.Geometry()]
-  for (i = 0; i < 15000; i++) {
+  for (i = 0; i < 5000; i++) {
     const vertex = new THREE.Vector3()
     vertex.x = (Math.random() * (2 - 1))
     vertex.y = (Math.random() * (2 - 1)) / 3
@@ -202,7 +208,7 @@ function init () {
 
     starsGeometry[0].vertices.push(vertex)
   }
-  for (i = 0; i < 15000; i++) {
+  for (i = 0; i < 5000; i++) {
     const vertex = new THREE.Vector3()
     vertex.x = (Math.random() * (2 - 1))
     vertex.y = (Math.random() * (2 - 1)) / 3
