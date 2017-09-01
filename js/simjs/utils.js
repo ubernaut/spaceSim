@@ -13,5 +13,4 @@ export {
   onProgress,
   onError,
   randomUniform
-
 }

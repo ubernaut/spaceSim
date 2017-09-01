@@ -49,12 +49,15 @@ const keys = {
 }
 window.addEventListener('keydown', event => {
   if (event.keyCode === keys.SPACE) {
-    shoot(Void.ship, 'machineGun')
+    const { quaternion, position } = Void.ship
+    const { color, velocity } = shoot({ quaternion, position, weaponType: 'planetCannon' })
+    const payload = { quaternion, position, color, velocity, weaponType: 'planetCannon' }
+    net.broadcastUpdate(Void.socket, { type: 'shotFired', payload })
+  } else {
+    const { quaternion, position } = Void.ship
+    const payload = { quaternion, position }
+    net.broadcastUpdate(Void.socket, { type: 'playerMove', payload })
   }
-  net.broadcastUpdate(Void.socket, Void.ship)
-})
-window.addEventListener('keyup', event => {
-  net.broadcastUpdate(Void.socket, Void.ship)
 })
 document.body.addEventListener('mousedown', e => net.broadcastUpdate(Void.socket, Void.ship), false)
 document.body.addEventListener('mouseup', e => net.broadcastUpdate(Void.socket, Void.ship), false)
