@@ -310,7 +310,23 @@ class soPhysics {
       vel[jth][0] = 0
       vel[jth][1] = 0
       vel[jth][2] = 0
+      acc[jth][0] = 0
+      acc[jth][1] = 0
+      acc[jth][2] = 0
     }
+    if(names[ith]=='star'){
+      pos[ith][0] = 0
+      pos[ith][1] = 0
+      pos[ith][2] = 0
+      vel[ith][0] = 0
+      vel[ith][1] = 0
+      vel[ith][2] = 0
+      acc[ith][0] = 0
+      acc[ith][1] = 0
+      acc[ith][2] = 0
+    }
+    console.log("ith "+names[ith])
+    console.log("jth "+names[jth])
     names[ith] = 'DELETED'
     this.gridSystem.collisions.push(jth)
     this.gridSystem.removed.push(ith)
