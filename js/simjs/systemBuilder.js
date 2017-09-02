@@ -268,9 +268,10 @@ const G = 2.93558 * Math.pow(10, -4)
 const epsilon = 0.01
 
 class soPhysics {
-  constructor (aSystem, maxMark = 100000, dt = 0.02) {
+  constructor (aSystem, maxMark = 100000, dt = 0.02, metric=false) {
     this.dt = dt
     this.system = aSystem
+    this.metric=metric
     this.gridSystem = new GridSystem(aSystem.bodies)
     this.maxMark = maxMark
     this.fitness = evaluate(this.system.bodies)
@@ -278,6 +279,7 @@ class soPhysics {
     this.t = 0
     this.count = 1
     this.collisions = []
+
   }
 
   collisionDetected (player, names, mass, pos, vel, acc, rad, ith, jth) {
@@ -328,7 +330,6 @@ class soPhysics {
     this.avgStability = this.sumFit / this.count
     return this.avgStability
   }
-
   accGravSingle (player, names, mass, pos, vel, acc, rad, ith, jth) {
     let d_x = pos[jth][0] - pos[ith][0]
     let d_y = pos[jth][1] - pos[ith][1]
@@ -353,9 +354,69 @@ class soPhysics {
     }
   }
 
+  accGravSingle (player, names, mass, pos, vel, acc, rad, ith, jth) {
+    let d_x = pos[jth][0] - pos[ith][0]
+    let d_y = pos[jth][1] - pos[ith][1]
+    let d_z = pos[jth][2] - pos[ith][2]
+    let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
+    let rad2 = Math.sqrt(radius)
+    let grav_mag = 0.0
+    if (rad2 > rad[ith] + rad[jth]) {
+      grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)))
+      let grav_x = grav_mag * d_x
+      let grav_y = grav_mag * d_y
+      let grav_z = grav_mag * d_z
+      acc[ith][0] += grav_x * mass[jth]
+      acc[ith][1] += grav_y * mass[jth]
+      acc[ith][2] += grav_z * mass[jth]
+      acc[jth][0] += grav_x * mass[ith]
+      acc[jth][1] += grav_y * mass[ith]
+      acc[jth][2] += grav_z * mass[ith]
+    } else {
+      grav_mag = 0
+      this.collisionDetected(player, names, mass, pos, vel, acc, rad, ith, jth)
+    }
+  }
+  convertToMetric(){
+    for (let i = 0; i < this.gridSystem.count; i++) {
+      this.gridSystem.rad[i]*= 149600000000
+
+      this.gridSystem.pos[i][0]*= 149600000000
+      this.gridSystem.pos[i][1]*= 149600000000
+      this.gridSystem.pos[i][2]*= 149600000000
+
+      this.gridSystem.vel[i][0]*= 149600000000
+      this.gridSystem.vel[i][1]*= 149600000000
+      this.gridSystem.vel[i][2]*= 149600000000
+
+
+      this.gridSystem.acc[i][0]*= 149600000000
+      this.gridSystem.acc[i][1]*= 149600000000
+      this.gridSystem.acc[i][2]*= 149600000000
+    }
+  }
+  convertToStellar(){
+    for (let i = 0; i < this.gridSystem.count; i++) {
+      this.gridSystem.rad[i]/= 149600000000
+
+      this.gridSystem.pos[i][0]/= 149600000000
+      this.gridSystem.pos[i][1]/= 149600000000
+      this.gridSystem.pos[i][2]/= 149600000000
+
+      this.gridSystem.vel[i][0]/= 149600000000
+      this.gridSystem.vel[i][1]/= 149600000000
+      this.gridSystem.vel[i][2]/= 149600000000
+
+      this.gridSystem.acc[i][0]/= 149600000000
+      this.gridSystem.acc[i][1]/= 149600000000
+      this.gridSystem.acc[i][2]/= 149600000000
+    }
+  }
+
   accelerateCuda () {
     let G = 2.93558 * Math.pow(10, -4)
     let epsilon = 0.01
+    if(this.metric){this.convertToStellar()}
     for (let i = 0; i < this.gridSystem.count; i++) {
       if (this.gridSystem.names[i] != 'DELETED') {
         for (let j = 0; j < i; j++) {
@@ -372,7 +433,7 @@ class soPhysics {
         this.gridSystem.removeBody(i)
       }
     }
-
+    if(this.metric){this.convertToMetric()}
     this.gridSystem.collisions = []
   }
 

@@ -20,7 +20,7 @@ function loadSystem () {
     // console.log(Void.thisSystem);
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.01)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005, true)
 
     // const texLoader = new THREE.TextureLoader()
     const mkPlanet = body => {
