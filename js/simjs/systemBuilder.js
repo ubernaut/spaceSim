@@ -296,9 +296,9 @@ class soPhysics {
     vel[jth][2] = (((mass[ith] * vel[ith][2]) + (mass[jth] * vel[jth][2]) / ((mass[ith] + mass[jth]))))
     mass[jth] = mass[ith] + mass[jth]
     mass[ith] = 0.00000000000000000000000000000000000000000000000001
-    pos[ith][0] = 10
-    pos[ith][1] = 10
-    pos[ith][2] = 10
+    pos[ith][0] = 0
+    pos[ith][1] = 0
+    pos[ith][2] = 0
     vel[ith][0] = 0
     vel[ith][1] = 0
     vel[ith][2] = 0
@@ -386,17 +386,22 @@ class soPhysics {
     let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
     let rad2 = Math.sqrt(radius)
     let grav_mag = 0.0
-    if (rad2 > rad[ith] + rad[jth]) {
+    if (rad2 > .666*(rad[ith] + rad[jth])) {
       grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)))
       let grav_x = grav_mag * d_x
       let grav_y = grav_mag * d_y
       let grav_z = grav_mag * d_z
+      if(names[ith]!="star"){
       acc[ith][0] += grav_x * mass[jth]
       acc[ith][1] += grav_y * mass[jth]
       acc[ith][2] += grav_z * mass[jth]
+      }
+      if(names[jth]!="star"){
       acc[jth][0] += grav_x * mass[ith]
       acc[jth][1] += grav_y * mass[ith]
       acc[jth][2] += grav_z * mass[ith]
+      }
+
     } else {
       grav_mag = 0
       this.collisionDetected(player, names, mass, pos, vel, acc, rad, ith, jth)
@@ -501,7 +506,7 @@ class System {
     }
   }
   getStar (body_data) {
-    body_data.push(randomUniform(0.4, 1))
+    body_data.push(randomUniform(0.4, 4))
     for (let j = 0; j <= 2; j++) {
       body_data.push(0.0)
     }
@@ -515,7 +520,7 @@ class System {
   getSymPlanets () {
     let body_data = []
     body_data.push('body_X')
-    body_data.push(randomUniform(0.000001, 0.4))
+    body_data.push(randomUniform(0.00000001, 0.1))
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodyDistance))
       body_data.push(randomUniform(0, this.bodyDistance))
@@ -537,7 +542,7 @@ class System {
     let quadrantconst = 1
     let body_data = []
     body_data.push('body_X')
-    body_data.push(randomUniform(0.000001, 0.01))
+    body_data.push(randomUniform(0.00000001, 0.01))
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodyDistance))
       body_data.push(randomUniform(0, this.bodyDistance))
