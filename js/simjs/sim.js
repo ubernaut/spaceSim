@@ -27,16 +27,17 @@ function loadSystem () {
 
     // const texLoader = new THREE.TextureLoader()
     const mkBody = body => {
-      const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
       let bodyMaterial
+      let bodyGeometry
 
       if (body.name === 'star') {
+        bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
         const uniforms = {
-          noiseScale: { value: 5 },
-          noiseJitter: { value: 1 },
-          patternType: { value: 10 },
+          noiseScale: { value: 120 / body.radius },
+          noiseJitter: { value: 2 },
           manhattanDistance: { value: false },
-          noiseStrength: { value: 1 }
+          noiseStrength: { value: 1 },
+          time: Void.time
         }
         bodyMaterial = new THREE.ShaderMaterial({
           uniforms,
@@ -44,6 +45,7 @@ function loadSystem () {
           fragmentShader: worleyFragShader
         })
       } else {
+        bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
         bodyMaterial = new THREE.MeshPhongMaterial({
           color: randomUniform(0.5, 1) * 0xffffff
         })
@@ -324,6 +326,7 @@ function animate () {
 function render () {
   const delta = clock.getDelta()
   if (Void.controls) {
+    Void.time.value = clock.getElapsedTime()
     Void.controls.update(delta)
   }
 

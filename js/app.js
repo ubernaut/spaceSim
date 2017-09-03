@@ -18,6 +18,7 @@ const Void = window.Void = {
   player: {
     ship: null
   },
+  time: { value: 1 },
   socket: null,
   scene: null,
   world: null
