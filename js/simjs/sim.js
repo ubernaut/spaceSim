@@ -15,6 +15,7 @@ const bodys = []
 
 let galaxyRadius
 function loadSystem () {
+  Void.systemLoaded = false
   const systemWorker = new SystemBuilderWorker()
   systemWorker.postMessage('!')
   systemWorker.onmessage = e => {
@@ -80,6 +81,7 @@ function loadSystem () {
     }
     Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(200), { concurrency: 10 })
   }
+  Void.systemLoaded =true
 }
 function updateSystem () {
   let i = 0
@@ -368,8 +370,11 @@ function animate () {
   requestAnimationFrame(animate)
   updateOimoPhysics()
   if (Void.soPhysics) {
+
+    if(Void.systemLoaded){
     Void.soPhysics.accelerateCuda()
     updateSystem()
+    }
   }
   render()
   // camera.lookAt(ship.position);
