@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 import worleyFragShader from '../shaders/worley-sphere-frag.glsl'
 import worleyVertShader from '../shaders/worley-sphere-vert.glsl'
 
-import { onProgress, onError,randomUniform} from './utils'
+import { onProgress, onError,randomUniform,getUrlParameter} from './utils'
 import { System, GridSystem, soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from 'worker-loader?inline!./systemBuilderWorker'
 
@@ -228,49 +228,11 @@ function init () {
   renderer.setSize(window.innerWidth, window.innerHeight)
   container.appendChild(renderer.domElement)
 
-  const radius = galaxyRadius
-  let i,
-    r = radius,
-    starsGeometry = [new THREE.Geometry(), new THREE.Geometry()]
-  for (i = 0; i < 5000; i++) {
-    const vertex = new THREE.Vector3()
-    vertex.x = (Math.random() * (2 - 1))
-    vertex.y = (Math.random() * (2 - 1)) / 3
-    vertex.z = (Math.random() * (2 - 1))
-    vertex.multiplyScalar(r)
-
-    starsGeometry[0].vertices.push(vertex)
-  }
-  for (i = 0; i < 5000; i++) {
-    const vertex = new THREE.Vector3()
-    vertex.x = (Math.random() * (2 - 1))
-    vertex.y = (Math.random() * (2 - 1)) / 3
-    vertex.z = (Math.random() * (2 - 1))
-    vertex.multiplyScalar(r)
-    starsGeometry[1].vertices.push(vertex)
-  }
-
-  let stars
-  const starsMaterials = [
-    new THREE.PointsMaterial({color: 0xffffff, size: 10000000000000000, sizeAttenuation: true}),
-    new THREE.PointsMaterial({color: 0xaaaaaa, size: 10000000000000000, sizeAttenuation: true}),
-    new THREE.PointsMaterial({color: 0x555555, size: 10000000000000000, sizeAttenuation: true}),
-    new THREE.PointsMaterial({color: 0xff0000, size: 10000000000000000, sizeAttenuation: true}),
-    new THREE.PointsMaterial({color: 0xffdddd, size: 10000000000000000, sizeAttenuation: true}),
-    new THREE.PointsMaterial({color: 0xddddff, size: 10000000000000000, sizeAttenuation: true})
-  ]
-  for (i = 10; i < 30; i++) {
-    stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
-    // stars.rotation.x = Math.random() * 6;
-    // stars.rotation.y = Math.random() * 6;
-    // stars.rotation.z = Math.random() * 6;
-    //  stars.scale.setScalar( i * 10 );
-    stars.position.x -= radius / 2
-    stars.position.y -= radius / 6
-    stars.position.z -= radius / 2
-    stars.matrixAutoUpdate = false
-    stars.updateMatrix()
-    Void.scene.add(stars)
+  let stars =getUrlParameter('nostars')
+  if(stars=='true'){
+    //don't andd stars
+  }else{
+    addStars()
   }
 
   const spheregeometry = new THREE.SphereGeometry(10000000000, 36, 30)
@@ -284,6 +246,53 @@ function init () {
   initOimoPhysics()
   Void.world = world
   loadSystem()
+}
+function addStars(){
+
+const radius = galaxyRadius
+let i,
+  r = radius,
+  starsGeometry = [new THREE.Geometry(), new THREE.Geometry()]
+for (i = 0; i < 5000; i++) {
+  const vertex = new THREE.Vector3()
+  vertex.x = (Math.random() * (2 - 1))
+  vertex.y = (Math.random() * (2 - 1)) / 3
+  vertex.z = (Math.random() * (2 - 1))
+  vertex.multiplyScalar(r)
+
+  starsGeometry[0].vertices.push(vertex)
+}
+for (i = 0; i < 5000; i++) {
+  const vertex = new THREE.Vector3()
+  vertex.x = (Math.random() * (2 - 1))
+  vertex.y = (Math.random() * (2 - 1)) / 3
+  vertex.z = (Math.random() * (2 - 1))
+  vertex.multiplyScalar(r)
+  starsGeometry[1].vertices.push(vertex)
+}
+
+let stars
+const starsMaterials = [
+  new THREE.PointsMaterial({color: 0xffffff, size: 10000000000000000, sizeAttenuation: true}),
+  new THREE.PointsMaterial({color: 0xaaaaaa, size: 10000000000000000, sizeAttenuation: true}),
+  new THREE.PointsMaterial({color: 0x555555, size: 10000000000000000, sizeAttenuation: true}),
+  new THREE.PointsMaterial({color: 0xff0000, size: 10000000000000000, sizeAttenuation: true}),
+  new THREE.PointsMaterial({color: 0xffdddd, size: 10000000000000000, sizeAttenuation: true}),
+  new THREE.PointsMaterial({color: 0xddddff, size: 10000000000000000, sizeAttenuation: true})
+]
+for (i = 10; i < 30; i++) {
+  stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
+  // stars.rotation.x = Math.random() * 6;
+  // stars.rotation.y = Math.random() * 6;
+  // stars.rotation.z = Math.random() * 6;
+  //  stars.scale.setScalar( i * 10 );
+  stars.position.x -= radius / 2
+  stars.position.y -= radius / 6
+  stars.position.z -= radius / 2
+  stars.matrixAutoUpdate = false
+  stars.updateMatrix()
+  Void.scene.add(stars)
+}
 }
 function onWindowResize () {
   // windowHalfX = window.innerWidth / 2
