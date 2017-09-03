@@ -1,4 +1,4 @@
-import { randomUniform } from './utils'
+import { randomUniform , guid} from './utils'
 import uuid from 'uuid/v4'
 
 class Body {
@@ -273,13 +273,14 @@ class soPhysics {
     this.dt = dt
     this.system = aSystem
     this.metric=metric
+    this.collisions = []
     this.gridSystem = new GridSystem(aSystem.bodies)
     this.maxMark = maxMark
     this.fitness = evaluate(this.system.bodies)
     this.sumFit = this.fitness
     this.t = 0
     this.count = 1
-    this.collisions = []
+
 
   }
 
@@ -296,6 +297,7 @@ class soPhysics {
     vel[jth][1] = (((mass[ith] * vel[ith][1]) + (mass[jth] * vel[jth][1]) / ((mass[ith] + mass[jth]))))
     vel[jth][2] = (((mass[ith] * vel[ith][2]) + (mass[jth] * vel[jth][2]) / ((mass[ith] + mass[jth]))))
     mass[jth] = mass[ith] + mass[jth]
+    rad[jth] = ((Math.sqrt(mass[jth])) / 50) + 0.001
     mass[ith] = 0.00000000000000000000000000000000000000000000000001
     pos[ith][0] = 0
     pos[ith][1] = 0
@@ -329,6 +331,8 @@ class soPhysics {
     // console.log("ith "+names[ith])
     // console.log("jth "+names[jth])
     names[ith] = 'DELETED'
+    this.collisions.push(names[jth])
+
     this.gridSystem.collisions.push(jth)
     this.gridSystem.removed.push(ith)
     this.gridSystem.getPlayerIndex()
@@ -355,29 +359,6 @@ class soPhysics {
     this.fitness = evaluate(this.bodies)
     this.avgStability = this.sumFit / this.count
     return this.avgStability
-  }
-  accGravSingle (player, names, mass, pos, vel, acc, rad, ith, jth) {
-    let d_x = pos[jth][0] - pos[ith][0]
-    let d_y = pos[jth][1] - pos[ith][1]
-    let d_z = pos[jth][2] - pos[ith][2]
-    let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
-    let rad2 = Math.sqrt(radius)
-    let grav_mag = 0.0
-    if (rad2 > rad[ith] + rad[jth]) {
-      grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)))
-      let grav_x = grav_mag * d_x
-      let grav_y = grav_mag * d_y
-      let grav_z = grav_mag * d_z
-      acc[ith][0] += grav_x * mass[jth]
-      acc[ith][1] += grav_y * mass[jth]
-      acc[ith][2] += grav_z * mass[jth]
-      acc[jth][0] += grav_x * mass[ith]
-      acc[jth][1] += grav_y * mass[ith]
-      acc[jth][2] += grav_z * mass[ith]
-    } else {
-      grav_mag = 0
-      this.collisionDetected(player, names, mass, pos, vel, acc, rad, ith, jth)
-    }
   }
 
   accGravSingle (player, names, mass, pos, vel, acc, rad, ith, jth) {
@@ -680,7 +661,7 @@ class System {
   addPlanet () {
     // Void.log.debug('adding body')
     let body_data = []
-    body_data.push('body_X')
+    body_data.push(guid())
     body_data = this.getPlanet(body_data)
     let aBody = new Body(body_data)
     this.bodies.push(aBody)
