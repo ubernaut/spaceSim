@@ -166,9 +166,12 @@ void main() {
    F = worley(vPosition * noiseScale * (1.5 + (cos(time * 0.035) * 0.25)), noiseJitter, manhattanDistance);
    float val = F.y * noiseStrength;
 
+   float redMod = ((sin(vPosition.y * pow(noiseScale, .875) / time) + 1.0) * 0.5)
+    + ((cos(vPosition.x * pow(noiseScale, .875) / time) + 1.0) * .5);
+
    gl_FragColor = vec4(
-     0.7 * val,
-     0.25 * val,
+     0.65 * val - clamp(redMod, -0.35, 0.1),
+     0.15,
      0.1,
     // clamp(sin(time) * val, 0.7, 1.0),
     // clamp(cos(time) * val, 0.0, 0.2),

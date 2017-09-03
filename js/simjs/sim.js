@@ -35,7 +35,7 @@ function loadSystem () {
         const uniforms = {
           noiseScale: { value: 35 / body.radius },
           noiseJitter: { value: 2 },
-          manhattanDistance: { value: false },
+          manhattanDistance: { value: true },
           noiseStrength: { value: 1 },
           time: Void.time
         }
@@ -323,10 +323,12 @@ function animate () {
   render()
   // camera.lookAt(ship.position);
 }
+
+const initialTime = 100
 function render () {
   const delta = clock.getDelta()
   if (Void.controls) {
-    Void.time.value = clock.getElapsedTime()
+    Void.time.value = initialTime + clock.getElapsedTime()
     Void.controls.update(delta)
   }
 
