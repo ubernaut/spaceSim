@@ -165,6 +165,7 @@ void main() {
    vec2 F;
    F = worley(vPosition * noiseScale * (1.5 + cos(time * 0.035)), noiseJitter, manhattanDistance);
    float val = F.y * noiseStrength;
+
    gl_FragColor = vec4(
      1.0 * val,
      0.6 * val,
