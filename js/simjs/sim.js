@@ -29,9 +29,12 @@ function loadSystem () {
     const mkBody = body => {
       let bodyMaterial
       let bodyGeometry
+      let surfaceMaterial
+      let surfaceGeometry
 
       if (body.name === 'star') {
-        bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
+        bodyGeometry = new THREE.SphereGeometry(body.radius * .99, 8, 8)
+        surfaceGeometry = new THREE.SphereGeometry(body.radius, 64, 64)
         const uniforms = {
           noiseScale: { value: 35 / body.radius },
           noiseJitter: { value: 2 },
@@ -39,26 +42,40 @@ function loadSystem () {
           noiseStrength: { value: 1 },
           time: Void.time
         }
-        bodyMaterial = new THREE.ShaderMaterial({
+        surfaceMaterial = new THREE.ShaderMaterial({
           uniforms,
           vertexShader: worleyVertShader,
-          fragmentShader: worleyFragShader
+          fragmentShader: worleyFragShader,
+          depthTest: false
         })
+        bodyMaterial = new THREE.MeshPhongMaterial({
+          color: 0 * 0xffffff
+        })
+        const starSurface = new THREE.Mesh(surfaceGeometry, surfaceMaterial)
+        starSurface.position.x = body.position.x
+        starSurface.position.y = body.position.y
+        starSurface.position.z = body.position.z
+        body.object = starSurface
+        Void.scene.add(starSurface)
+
+        const starCore = new THREE.Mesh(bodyGeometry, bodyMaterial)
+        starCore.position.x = body.position.x
+        starCore.position.y = body.position.y
+        starCore.position.z = body.position.z
+        body.object = starCore
+        Void.scene.add(starCore)
       } else {
         bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
         bodyMaterial = new THREE.MeshPhongMaterial({
           color: randomUniform(0.5, 1) * 0xffffff
         })
+        const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
+        planet.position.x = body.position.x
+        planet.position.y = body.position.y
+        planet.position.z = body.position.z
+        body.object = planet
+        Void.scene.add(planet)
       }
-
-      // if (body.name=="star"){bodyMaterial.side = THREE.DoubleSide}
-      const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
-      planet.position.x = body.position.x
-      planet.position.y = body.position.y
-      planet.position.z = body.position.z
-      body.object = planet
-
-      Void.scene.add(planet)
     }
     Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(200), { concurrency: 10 })
   }
