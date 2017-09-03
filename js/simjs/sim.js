@@ -1,7 +1,10 @@
+import Promise from 'bluebird'
+import worleyFragShader from '../shaders/worley-sphere-frag.glsl'
+import worleyVertShader from '../shaders/worley-sphere-vert.glsl'
+
 import { onProgress, onError,randomUniform} from './utils'
 import { System, GridSystem, soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from 'worker-loader?inline!./systemBuilderWorker'
-import Promise from 'bluebird'
 
 const clock = new THREE.Clock()
 let container,
@@ -23,28 +26,39 @@ function loadSystem () {
     Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true)
 
     // const texLoader = new THREE.TextureLoader()
-    const mkPlanet = body => {
+    const mkBody = body => {
       const bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
       let bodyMaterial
-      // texLoader.load('js/models/Gstar.jpg',
-      // function(texture){
-      //    bodyMaterial = new THREE.MeshPhongMaterial({color: (Math.random() * 0xffffff)});
-      // }
-      // );
-      bodyMaterial = new THREE.MeshPhongMaterial({
-        color: (randomUniform(.5,1) * 0xffffff)
-      })
+
+      if (body.name === 'star') {
+        const uniforms = {
+          noiseScale: { value: 5 },
+          noiseJitter: { value: 1 },
+          patternType: { value: 10 },
+          manhattanDistance: { value: false },
+          noiseStrength: { value: 1 }
+        }
+        bodyMaterial = new THREE.ShaderMaterial({
+          uniforms,
+          vertexShader: worleyVertShader,
+          fragmentShader: worleyFragShader
+        })
+      } else {
+        bodyMaterial = new THREE.MeshPhongMaterial({
+          color: randomUniform(0.5, 1) * 0xffffff
+        })
+      }
+
       // if (body.name=="star"){bodyMaterial.side = THREE.DoubleSide}
       const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
       planet.position.x = body.position.x
       planet.position.y = body.position.y
       planet.position.z = body.position.z
       body.object = planet
-      // const bodyMaterial = new THREE.MeshPhongMaterial(   );
-      // const bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
+
       Void.scene.add(planet)
     }
-    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkPlanet(body)).delay(200), { concurrency: 10 })
+    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(200), { concurrency: 10 })
   }
 }
 function updateSystem () {

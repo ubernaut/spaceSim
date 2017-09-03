@@ -1,4 +1,5 @@
 import { randomUniform } from './utils'
+import uuid from 'uuid/v4'
 
 class Body {
   constructor (body_data = []) {
@@ -519,7 +520,9 @@ class System {
   }
   getSymPlanets () {
     let body_data = []
-    body_data.push('body_X')
+
+    // body name
+    body_data.push(`body ${uuid()}`)
     body_data.push(randomUniform(0., 0.1))
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodyDistance))
@@ -541,7 +544,9 @@ class System {
   getDirectedPlanet () {
     let quadrantconst = 1
     let body_data = []
-    body_data.push('body_X')
+
+    // body name
+    body_data.push(`body ${uuid()}`)
     let min = 8.6 *Math.pow(10,-11)
     let max = .00001
 

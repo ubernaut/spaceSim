@@ -35,6 +35,12 @@ module.exports = {
         loaders: [
           'babel-loader'
         ]
+      },
+      {
+        test: /\.(glsl|md|obj)$/i,
+        loaders: [
+          'raw-loader'
+        ]
       }
     ]
   },
