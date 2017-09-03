@@ -162,19 +162,19 @@ vec2 worley(vec3 P, float jitter, bool manhattanDistance) {
 }
 
 void main() {
-   vec2 F;
-   F = worley(vPosition * noiseScale * (1.5 + (cos(time * 0.035) * 0.25)), noiseJitter, manhattanDistance);
-   float val = F.y * noiseStrength;
+  vec2 base = worley(vPosition * noiseScale * (1.5 + (cos(time * 0.035) * 0.25)), noiseJitter, manhattanDistance);
+  float baseVal = base.y * noiseStrength;
 
-   float redMod = ((sin(vPosition.y * pow(noiseScale, .875) / time) + 1.0) * 0.5)
-    + ((cos(vPosition.x * pow(noiseScale, .875) / time) + 1.0) * .5);
+  vec2 hotSpot = worley(vPosition * pow(noiseScale, 1.1) * (1.5 + (sin(time * 0.135) * 0.25)), noiseJitter, manhattanDistance);
+  float hotSpotVal = hotSpot.y * noiseStrength;
 
-   gl_FragColor = vec4(
-     0.65 * val - clamp(redMod, -0.35, 0.1),
-     0.15,
-     0.1,
-    // clamp(sin(time) * val, 0.7, 1.0),
-    // clamp(cos(time) * val, 0.0, 0.2),
-    // clamp(cos(time) * val, 0.0, 0.2),
-    1.0);
+  vec2 burst = worley(vPosition * pow(noiseScale, 1.2) * (1.5 + (sin(time * 0.235) * 0.25)), noiseJitter, manhattanDistance);
+  float burstVal = burst.y * noiseStrength;
+
+  gl_FragColor = vec4(
+    0.135 * baseVal * (hotSpotVal * 1.2) * (burstVal * 4.0),
+    0.0175 * baseVal * (hotSpotVal * 1.4) * (burstVal * 5.0),
+    0.00375 * baseVal * (hotSpotVal * 1.6) * (burstVal * 6.0),
+    1.0
+  );
 }
