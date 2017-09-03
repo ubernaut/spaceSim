@@ -163,11 +163,14 @@ vec2 worley(vec3 P, float jitter, bool manhattanDistance) {
 
 void main() {
    vec2 F;
-   F = worley(vPosition * noiseScale * abs(sin(time * .02)), noiseJitter, manhattanDistance);
+   F = worley(vPosition * noiseScale * (1.5 + cos(time * 0.035)), noiseJitter, manhattanDistance);
    float val = F.y * noiseStrength;
    gl_FragColor = vec4(
      1.0 * val,
      0.6 * val,
-     0.07,
+     0.1,
+    // clamp(sin(time) * val, 0.7, 1.0),
+    // clamp(cos(time) * val, 0.0, 0.2),
+    // clamp(cos(time) * val, 0.0, 0.2),
     1.0);
 }

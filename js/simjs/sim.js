@@ -33,7 +33,7 @@ function loadSystem () {
       if (body.name === 'star') {
         bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
         const uniforms = {
-          noiseScale: { value: 135 / body.radius },
+          noiseScale: { value: 75 / body.radius },
           noiseJitter: { value: 2 },
           manhattanDistance: { value: false },
           noiseStrength: { value: 1 },
