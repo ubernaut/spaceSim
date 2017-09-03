@@ -325,8 +325,8 @@ class soPhysics {
       acc[ith][1] = 0
       acc[ith][2] = 0
     }
-    console.log("ith "+names[ith])
-    console.log("jth "+names[jth])
+    // console.log("ith "+names[ith])
+    // console.log("jth "+names[jth])
     names[ith] = 'DELETED'
     this.gridSystem.collisions.push(jth)
     this.gridSystem.removed.push(ith)
@@ -520,7 +520,7 @@ class System {
   getSymPlanets () {
     let body_data = []
     body_data.push('body_X')
-    body_data.push(randomUniform(0.00000001, 0.1))
+    body_data.push(randomUniform(0., 0.1))
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodyDistance))
       body_data.push(randomUniform(0, this.bodyDistance))
@@ -542,7 +542,19 @@ class System {
     let quadrantconst = 1
     let body_data = []
     body_data.push('body_X')
-    body_data.push(randomUniform(0.00000001, 0.01))
+    let min = 8.6 *Math.pow(10,-11)
+    let max = .00001
+
+    let test =Math.random()
+    if(test>=0.8){
+      min = 0.00001
+      max = 0.01
+    }
+    let mass =randomUniform(min, max)
+    if(mass<0.00001){
+      console.log(mass)
+    }
+    body_data.push(mass)
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodyDistance))
       body_data.push(randomUniform(0, this.bodyDistance))
@@ -567,7 +579,7 @@ class System {
   }
 
   getPlanet (body_data) {
-    body_data.push(randomUniform(0.000001, 0.01))
+    body_data.push(randomUniform(0.00000000001, 0.01))
     for (let j of range(0, 2)) {
       body_data.push(randomUniform(-this.bodyDistance, this.bodyDistance))
     }

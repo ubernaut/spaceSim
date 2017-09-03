@@ -1,4 +1,4 @@
-import { onProgress, onError} from './utils'
+import { onProgress, onError,randomUniform} from './utils'
 import { System, GridSystem, soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from 'worker-loader?inline!./systemBuilderWorker'
 import Promise from 'bluebird'
@@ -20,7 +20,7 @@ function loadSystem () {
     // console.log(Void.thisSystem);
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005, true)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true)
 
     // const texLoader = new THREE.TextureLoader()
     const mkPlanet = body => {
@@ -32,7 +32,7 @@ function loadSystem () {
       // }
       // );
       bodyMaterial = new THREE.MeshPhongMaterial({
-        color: (Math.random() * 0xffffff)
+        color: (randomUniform(.5,1) * 0xffffff)
       })
       // if (body.name=="star"){bodyMaterial.side = THREE.DoubleSide}
       const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
