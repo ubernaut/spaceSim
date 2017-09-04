@@ -14,7 +14,7 @@ let world = null
 const bodys = []
 
 let galaxyRadius
-function loadSystem () {
+const loadSystem = () => {
   Void.systemLoaded = false
   const systemWorker = new SystemBuilderWorker()
   systemWorker.postMessage('!')
@@ -84,7 +84,7 @@ function loadSystem () {
   Void.systemLoaded = true
 }
 
-function updateSystem () {
+const updateSystem = () => {
   let i = 0
   for (const body of Void.thisSystem.bodies) {
     if (body.object) {
@@ -124,7 +124,7 @@ function updateSystem () {
   }
 }
 
-function initOimoPhysics () {
+const initOimoPhysics = () => {
   // world setting:( TimeStep, BroadPhaseType, Iterations )
   // BroadPhaseType can be
   // 1 : BruteForce
@@ -143,7 +143,7 @@ function initOimoPhysics () {
     // setInterval(updateOimoPhysics, 1000/60);
 }
 
-function setControls (ship) {
+const setControls = ship => {
     // if (isMobile()) {
     //   Void.controls = new THREE.DeviceOrientationControls(ship, true)
     // } else {
@@ -156,7 +156,7 @@ function setControls (ship) {
     // }
 }
 
-function onDocumentMouseWheel (event) {
+const onDocumentMouseWheel = event => {
   const deltay = event.wheelDeltaY
   // fov -= event.wheelDeltaY * 0.05;
   // camera.projectionMatrix = THREE.Matrix4.makePerspective( fov, window.innerWidth / window.innerHeight, 1, 1100 );
@@ -171,7 +171,7 @@ function onDocumentMouseWheel (event) {
   }
 }
 
-function init () {
+const init = () => {
   window.addEventListener('mousewheel', onDocumentMouseWheel, false)
 
   container = document.createElement('div')
@@ -198,13 +198,13 @@ function init () {
   const mtlLoader = new THREE.MTLLoader()
     // mtlLoader.setPath( 'obj/male02/' );
   mtlLoader.setPath('js/models/')
-  mtlLoader.load('ship.mtl', function (materials) {
+  mtlLoader.load('ship.mtl', (materials) => {
     materials.preload()
     const objLoader = new THREE.OBJLoader()
 
     objLoader.setMaterials(materials)
     objLoader.setPath('js/models/')
-    objLoader.load('ship.obj', function (object) {
+    objLoader.load('ship.obj', (object) => {
       object.position.x = 0
       object.position.y = 0
       object.scale.set(20, 20, 20)
@@ -224,7 +224,7 @@ function init () {
     }, onProgress, onError)
   })
 
-    // scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
+  // scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
   const pointlight = new THREE.PointLight()
   pointlight.position.set(0, 0, 0)
   pointlight.castShadow = true

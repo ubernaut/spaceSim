@@ -35,7 +35,9 @@
     },
     "rules": {
       "object-curly-spacing": [ 2, "always" ],
-      "array-bracket-spacing": [ 2, "always" ]
+      "array-bracket-spacing": [ 2, "always" ],
+      "func-style": [ 2, "expression" ],
+      "prefer-arrow-callback": [ 2, { "allowNamedFunctions": false } ]
     }
   },
   "babel": {
