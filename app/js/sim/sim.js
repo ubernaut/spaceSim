@@ -1,6 +1,8 @@
 import Promise from 'bluebird'
 
 import { createStar } from '-/bodies/star'
+import { createPlanet } from '-/bodies/planet'
+import * as controls from '-/player/controls'
 import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from 'worker-loader?inline!./workers/systemBuilderWorker'
@@ -25,32 +27,18 @@ const loadSystem = () => {
     Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true)
 
     const mkBody = body => {
-      let bodyMaterial
-      let bodyGeometry
       if (body.name === 'star') {
-        const { core, surface } = createStar({
-          radius: body.radius,
-          position: body.position,
-          color: 'B1',
-          time: Void.time
-        })
+        const { core, surface } = createStar({ radius: body.radius, position: body.position, color: 'B1', time: Void.time })
         body.object = surface
         Void.scene.add(surface)
         Void.scene.add(core)
       } else {
-        bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
-        bodyMaterial = new THREE.MeshPhongMaterial({
-          color: randomUniform(0.5, 1) * 0xffffff
-        })
-        const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
-        planet.position.x = body.position.x
-        planet.position.y = body.position.y
-        planet.position.z = body.position.z
+        const planet = createPlanet({ radius: body.radius, position: body.position })
         body.object = planet
         Void.scene.add(planet)
       }
     }
-    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(200), { concurrency: 10 })
+    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 300), { concurrency: 16 })
   }
   Void.systemLoaded = true
 }
@@ -110,47 +98,16 @@ const initOimoPhysics = () => {
     info: false,
     gravity: [ 0, 0, 0 ]
   })
-    // populate(1);
-    // setInterval(updateOimoPhysics, 1000/60);
+  // populate(1);
+  // setInterval(updateOimoPhysics, 1000/60);
 }
 
-const setControls = ship => {
-    // if (isMobile()) {
-    //   Void.controls = new THREE.DeviceOrientationControls(ship, true)
-    // } else {
-  Void.controls = new THREE.FlyControls(ship)
-  Void.controls.movementSpeed = 100
-  Void.controls.domElement = container
-  Void.controls.rollSpeed = Math.PI / 3
-  Void.controls.autoForward = false
-  Void.controls.dragToLook = true
-    // }
-}
-
-const onDocumentMouseWheel = event => {
-  const deltay = event.wheelDeltaY
-  // fov -= event.wheelDeltaY * 0.05;
-  // camera.projectionMatrix = THREE.Matrix4.makePerspective( fov, window.innerWidth / window.innerHeight, 1, 1100 );
-  if (deltay < 0) {
-    camera.position.y *= 1.1
-    camera.position.z *= 1.1
-    Void.controls.movementSpeed *= 1.1
-  } else {
-    camera.position.y *= 0.9
-    camera.position.z *= 0.9
-    Void.controls.movementSpeed *= 0.9
-  }
-}
-
-const init = () => {
-  window.addEventListener('mousewheel', onDocumentMouseWheel, false)
-
-  container = document.createElement('div')
-  document.body.appendChild(container)
+const init = rootEl => {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26))
   camera.lookAt(new THREE.Vector3(0, 0, -1000000000000000000))
+  Void.camera = camera
 
-    // scene
+  // scene
   Void.scene = new THREE.Scene()
   const ambient = new THREE.AmbientLight(0x888888)
   Void.scene.add(ambient)
@@ -167,7 +124,7 @@ const init = () => {
 
   THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
   const mtlLoader = new THREE.MTLLoader()
-    // mtlLoader.setPath( 'obj/male02/' );
+  // mtlLoader.setPath( 'obj/male02/' );
   mtlLoader.setPath('app/assets/models/')
   mtlLoader.load('ship.mtl', (materials) => {
     materials.preload()
@@ -186,7 +143,8 @@ const init = () => {
       Void.ship.add(camera)
       camera.position.set(0, 10, 30)
       Void.scene.add(object)
-      setControls(Void.ship)
+
+      Void.controls = controls.setFlyControls({ camera: Void.camera, ship: Void.ship, el: document })
 
       const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
       helper.geometry.rotateY(Math.PI)
@@ -220,7 +178,7 @@ const init = () => {
   renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)
-  container.appendChild(renderer.domElement)
+  rootEl.appendChild(renderer.domElement)
 
   let stars = getUrlParameter('nostars')
   if (stars === 'true') {
@@ -229,20 +187,14 @@ const init = () => {
     addStars()
   }
 
-  const spheregeometry = new THREE.SphereGeometry(10000000000, 36, 30)
-  const spherematerial = new THREE.MeshBasicMaterial({ wireframe: true, color: 0xa807b7 })
-  const sphere = new THREE.Mesh(spheregeometry, spherematerial)
-
-  sphere.position.set(-2.0, 0, 0)
-
-  // scene.add(sphere);
   window.addEventListener('resize', onWindowResize, false)
+
   initOimoPhysics()
   Void.world = world
   loadSystem()
 }
 
-function addStars () {
+const addStars = () => {
   const radius = galaxyRadius
   let i,
     r = radius,
@@ -276,10 +228,10 @@ function addStars () {
   ]
   for (i = 10; i < 30; i++) {
     stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
-        // stars.rotation.x = Math.random() * 6;
-        // stars.rotation.y = Math.random() * 6;
-        // stars.rotation.z = Math.random() * 6;
-        //  stars.scale.setScalar( i * 10 );
+      // stars.rotation.x = Math.random() * 6;
+      // stars.rotation.y = Math.random() * 6;
+      // stars.rotation.z = Math.random() * 6;
+      //  stars.scale.setScalar( i * 10 );
     stars.position.x -= radius / 2
     stars.position.y -= radius / 6
     stars.position.z -= radius / 2
@@ -288,62 +240,62 @@ function addStars () {
     Void.scene.add(stars)
   }
 }
-function onWindowResize () {
-      // windowHalfX = window.innerWidth / 2
-      // windowHalfY = window.innerHeight / 2
+
+const onWindowResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight)
 }
-function updateOimoPhysics () {
+
+const updateOimoPhysics = () => {
   if (world == null) {
     return
   }
   world.step()
-  let x,
-    y,
-    z,
-    mesh,
-    body,
-    i = bodys.length
-  while (i--) {
-    body = bodys[i]
-    mesh = meshs[i]
-    if (!body.sleeping) {
-      mesh.position.copy(body.getPosition())
-      mesh.quaternion.copy(body.getQuaternion())
-          // change material
-      if (mesh.material.name === 'sbox') {
-        mesh.material = mats.box
-      }
-      if (mesh.material.name === 'ssph') {
-        mesh.material = mats.sph
-      }
-      if (mesh.material.name === 'scyl') {
-        mesh.material = mats.cyl
-      }
-      // reset position
-      if (mesh.position.y < -100) {
-        x = -100 + Math.random() * 200
-        z = -100 + Math.random() * 200
-        y = 100 + Math.random() * 1000
-        body.resetPosition(x, y, z)
-      }
-    } else {
-      if (mesh.material.name === 'box') {
-        mesh.material = mats.sbox
-      }
-      if (mesh.material.name === 'sph') {
-        mesh.material = mats.ssph
-      }
-      if (mesh.material.name === 'cyl') {
-        mesh.material = mats.scyl
-      }
-    }
-  }
+    // let x,
+    //   y,
+    //   z,
+    //   mesh,
+    //   body,
+    //   i = bodys.length
+    // while (i--) {
+    //   body = bodys[i]
+    //   mesh = meshs[i]
+    //   if (!body.sleeping) {
+    //     mesh.position.copy(body.getPosition())
+    //     mesh.quaternion.copy(body.getQuaternion())
+    //         // change material
+    //     if (mesh.material.name === 'sbox') {
+    //       mesh.material = mats.box
+    //     }
+    //     if (mesh.material.name === 'ssph') {
+    //       mesh.material = mats.sph
+    //     }
+    //     if (mesh.material.name === 'scyl') {
+    //       mesh.material = mats.cyl
+    //     }
+    //     // reset position
+    //     if (mesh.position.y < -100) {
+    //       x = -100 + Math.random() * 200
+    //       z = -100 + Math.random() * 200
+    //       y = 100 + Math.random() * 1000
+    //       body.resetPosition(x, y, z)
+    //     }
+    //   } else {
+    //     if (mesh.material.name === 'box') {
+    //       mesh.material = mats.sbox
+    //     }
+    //     if (mesh.material.name === 'sph') {
+    //       mesh.material = mats.ssph
+    //     }
+    //     if (mesh.material.name === 'cyl') {
+    //       mesh.material = mats.scyl
+    //     }
+    //   }
+    // }
 }
 
-function animate () {
+const animate = () => {
   requestAnimationFrame(animate)
   updateOimoPhysics()
   if (Void.soPhysics) {
@@ -356,57 +308,58 @@ function animate () {
 }
 
 const initialTime = 100
-function render () {
+const render = () => {
   const delta = clock.getDelta()
   if (Void.controls) {
     Void.time.value = initialTime + clock.getElapsedTime()
     Void.controls.update(delta)
   }
-
   renderer.render(Void.scene, camera)
 }
 
-// function getTexture(body){
+//   function getTexture(body) {
 //
-//   if (body.mass< 0.001)
-//           body.texture = loader.loadTexture("models/earthmoon.jpg")
-//   }else if( body.mass >= 0.001 and body.mass < .002){
-//           body.texture = loader.loadTexture("models/mars.jpg")
-//   }else if( body.mass >= .002 and body.mass < .003){
-//           body.texture = loader.loadTexture("models/venus.jpg")
-//   }else if( body.mass >= .003 and body.mass < .006){
-//           body.texture = loader.loadTexture("models/mercury.jpg")
-//   }else if( body.mass >= .006 and body.mass < .009){
-//           body.texture = loader.loadTexture("models/pluto.jpg")
-//   }else if( body.mass >= .009 and body.mass < .01){
-//           body.texture = loader.loadTexture("models/uranus.jpg")
-//   }else if( body.mass >= .01 and body.mass < .03){
-//           body.texture = loader.loadTexture("models/saturn.jpg")
-//   }else if( body.mass >= .03 and body.mass < .05){
-//           body.texture = loader.loadTexture("models/neptune.jpg")
-//   }else if( body.mass >= .05 and body.mass < .1){
-//           body.texture = loader.loadTexture("models/saturn.jpg")
-//   }else if( body.mass >= .1 and body.mass < .2){
-//           body.texture = loader.loadTexture("models/jupiter.jpg")
-//   }else{
-//           if (body.mass >=.7 and body.mass < 1.0){    #M type
-//                   body.texture = loader.loadTexture("models/Mstar.jpg")
-//                   sunMaterial.setEmission(VBase4(1,.6,.6,1))
-//           }else if(  body.mass >= 1.0 and body.mass < 1.5){  #K type
-//                   body.texture = loader.loadTexture("models/Kstar.jpg")
-//                   sunMaterial.setEmission(VBase4(1,.6,.6,1))
-//           }else if(  body.mass >= 1.0 and body.mass < 1.5){  #G type
-//                   body.texture = loader.loadTexture("models/GMstar.jpg")
-//                   sunMaterial.setEmission(VBase4(1,.6,.6,1))
+//     if (body.mass < 0.001)
+//       body.texture = loader.loadTexture("models/earthmoon.jpg")
+//   } else if (body.mass >= 0.001 and body.mass < .002) {
+//     body.texture = loader.loadTexture("models/mars.jpg")
+//   } else if (body.mass >= .002 and body.mass < .003) {
+//     body.texture = loader.loadTexture("models/venus.jpg")
+//   } else if (body.mass >= .003 and body.mass < .006) {
+//     body.texture = loader.loadTexture("models/mercury.jpg")
+//   } else if (body.mass >= .006 and body.mass < .009) {
+//     body.texture = loader.loadTexture("models/pluto.jpg")
+//   } else if (body.mass >= .009 and body.mass < .01) {
+//     body.texture = loader.loadTexture("models/uranus.jpg")
+//   } else if (body.mass >= .01 and body.mass < .03) {
+//     body.texture = loader.loadTexture("models/saturn.jpg")
+//   } else if (body.mass >= .03 and body.mass < .05) {
+//     body.texture = loader.loadTexture("models/neptune.jpg")
+//   } else if (body.mass >= .05 and body.mass < .1) {
+//     body.texture = loader.loadTexture("models/saturn.jpg")
+//   } else if (body.mass >= .1 and body.mass < .2) {
+//     body.texture = loader.loadTexture("models/jupiter.jpg")
+//   } else {
+//     if (body.mass >= .7 and body.mass < 1.0) {
+//       // #M type
+//       body.texture = loader.loadTexture("models/Mstar.jpg")
+//       sunMaterial.setEmission(VBase4(1, .6, .6, 1))
+//     } else if (body.mass >= 1.0 and body.mass < 1.5) {
+//       // #K type
+//       body.texture = loader.loadTexture("models/Kstar.jpg")
+//       sunMaterial.setEmission(VBase4(1, .6, .6, 1))
+//     } else if (body.mass >= 1.0 and body.mass < 1.5) {
+//       // #G type
+//       body.texture = loader.loadTexture("models/GMstar.jpg")
+//       sunMaterial.setEmission(VBase4(1, .6, .6, 1))
 //
-//           // #}else if(  body.mass >= 1.5 and body.mass < 1.5){  #G type
-//           //         #body.texture = loader.loadTexture("models/Mstar.jpg")
-//           //         #sunMaterial.setEmission(VBase4(1,.6,.6,1))
-//           }else{
-//                   body.texture = loader.loadTexture("models/Ostar.jpg")
-//                   sunMaterial.setEmission(VBase4(.8,.8,1,1))
-//                 }
-//
+//       // #}else if(  body.mass >= 1.5 and body.mass < 1.5){  #G type
+//       //         #body.texture = loader.loadTexture("models/Mstar.jpg")
+//       //         #sunMaterial.setEmission(VBase4(1,.6,.6,1))
+//     } else {
+//       body.texture = loader.loadTexture("models/Ostar.jpg")
+//       sunMaterial.setEmission(VBase4(.8, .8, 1, 1))
+//     }
 //   }
 // }
 

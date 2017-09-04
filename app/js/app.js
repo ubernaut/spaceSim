@@ -21,7 +21,8 @@ const Void = window.Void = {
   time: { value: 100000000 },
   socket: null,
   scene: null,
-  world: null
+  world: null,
+  controls: null
 }
 
 /**
@@ -67,7 +68,7 @@ document.body.addEventListener('mouseup', e => net.broadcastUpdate(Void.socket, 
  * Init
  */
 
-sim.init(Void.world)
+sim.init(document.getElementById('root'))
 sim.animate()
 
 // Websocket connection

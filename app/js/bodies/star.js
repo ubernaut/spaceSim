@@ -34,7 +34,7 @@ const createStar = ({ radius, position, color, time = 0 }) => {
     rgb = starColors.K7
   }
 
-  const coreGeometry = new THREE.SphereGeometry(radius * 0.999, 16, 16)
+  const coreGeometry = new THREE.SphereGeometry(radius * 0.99999, 16, 16)
   const coreMaterial = new THREE.MeshPhongMaterial({
     color: 0 * 0xffffff
   })

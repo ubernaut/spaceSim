@@ -32,7 +32,8 @@
       "THREE": false,
       "OIMO": false,
       "postMessage": false,
-      "self": true
+      "self": true,
+      "requestAnimationFrame": false
     },
     "rules": {
       "object-curly-spacing": [
