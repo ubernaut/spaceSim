@@ -188,7 +188,7 @@ void main() {
     baseColorRed * value,
     baseColorGreen * value,
     baseColorBlue * value,
-    1.0
+    0.7
   );
 
   gl_FragColor = finalColor;

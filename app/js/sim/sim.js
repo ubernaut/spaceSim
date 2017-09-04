@@ -29,11 +29,11 @@ const loadSystem = () => {
 
     const mkBody = body => {
       if (body.name === 'star') {
-        const { core, surface, pointlight } = createStar({ radius: body.radius, position: body.position, color: 'A1', time: Void.time })
-        body.object = surface
-        Void.scene.add(surface)
-        // Void.scene.add(core)
-        Void.scene.add(pointlight)
+        const star = createStar({ radius: body.radius, position: body.position, color: 'A1', time: Void.time })
+        body.object = star.photosphere
+        Void.scene.add(star.photosphere)
+        Void.scene.add(star.surface)
+        Void.scene.add(star.pointlight)
       } else {
         const planet = createPlanet({ radius: body.radius, position: body.position })
         body.object = planet
@@ -121,9 +121,10 @@ const addShip = scene => {
     objLoader.setMaterials(materials)
     objLoader.load('ship.obj', (object) => {
       object.position.x = 0
-      object.position.y = 0
+      object.position.y = -30000000000
+      object.position.z = 30000000000
       object.scale.set(20, 20, 20)
-      object.rotation.set(0, 0, 0)
+      object.rotation.set(20, -0.25, -0.25)
       object.name = 'spaceShip'
 
       Void.ship = object
@@ -216,31 +217,29 @@ const init = rootEl => {
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)
 
+  // camera
+  const camera = Void.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26))
+  camera.lookAt(new THREE.Vector3(0, 0, -1))
+
   // scene
   const scene = Void.scene = new THREE.Scene()
   addLights(scene)
   addShip(scene)
   addUniverse(scene)
 
-  // camera
-  const camera = Void.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26))
-  camera.lookAt(new THREE.Vector3(0, 0, -1000000000000000000))
-
   addPostprocessing({ renderer, scene, camera })
 
   rootEl.appendChild(renderer.domElement)
 
-  let stars = getUrlParameter('nostars')
-  if (stars === 'true') {
-    // don't add stars
-  } else {
+  if (getUrlParameter('nostars') === undefined) {
     addStars()
   }
 
   window.addEventListener('resize', onWindowResize, false)
 
-  initOimoPhysics()
   Void.world = world
+
+  initOimoPhysics()
   loadSystem()
 }
 

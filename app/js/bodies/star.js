@@ -34,12 +34,14 @@ const createStar = ({ radius, position, color, time = 0 }) => {
     rgb = starColors.K7
   }
 
-  const coreGeometry = new THREE.SphereGeometry(radius * 0.99999, 16, 16)
-  const coreMaterial = new THREE.MeshPhongMaterial({
-    color: 0 * 0xffffff,
+  const photosphereGeometry = new THREE.SphereGeometry(radius * 0.999, 16, 16)
+  const photosphereMaterial = new THREE.ShaderMaterial({
+    uniforms: getUniforms(radius, rgb, time),
+    vertexShader,
+    fragmentShader,
     depthTest: false
   })
-  const core = new THREE.Mesh(coreGeometry, coreMaterial)
+  const photosphere = new THREE.Mesh(photosphereGeometry, photosphereMaterial)
 
   const surfaceGeometry = new THREE.SphereGeometry(radius, 64, 64)
   const surfaceMaterial = new THREE.ShaderMaterial({
@@ -50,7 +52,7 @@ const createStar = ({ radius, position, color, time = 0 }) => {
   })
   const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial)
 
-  ;[ core, surface ].map(s => {
+  ;[ photosphere, surface ].map(s => {
     s.position.x = position.x
     s.position.y = position.y
     s.position.z = position.z
@@ -61,7 +63,7 @@ const createStar = ({ radius, position, color, time = 0 }) => {
   pointlight.castShadow = true
 
   return {
-    core,
+    photosphere,
     surface,
     pointlight
   }
