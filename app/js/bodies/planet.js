@@ -3,7 +3,8 @@ import { randomUniform } from '-/utils'
 const createPlanet = ({ radius, position }) => {
   const geometry = new THREE.SphereGeometry(radius, 16, 16)
   const material = new THREE.MeshPhongMaterial({
-    color: randomUniform(0.5, 1) * 0xffffff
+    color: randomUniform(0.5, 1) * 0xffffff,
+    fog: true
   })
   const planet = new THREE.Mesh(geometry, material)
 

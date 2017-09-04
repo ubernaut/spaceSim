@@ -6,10 +6,12 @@ import * as controls from '-/player/controls'
 import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from './workers/systemBuilder.worker'
+import { createComposer } from '-/webgl/postprocessing/effects'
 
-let container,
-  camera,
-  renderer
+import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
+import { EffectComposer, GlitchPass, KernelSize, BloomPass, RenderPass, GodRaysPass } from 'postprocessing'
+
+let renderer
 let world = null
 
 let galaxyRadius
@@ -27,10 +29,11 @@ const loadSystem = () => {
 
     const mkBody = body => {
       if (body.name === 'star') {
-        const { core, surface } = createStar({ radius: body.radius, position: body.position, color: 'B1', time: Void.time })
+        const { core, surface, pointlight } = createStar({ radius: body.radius, position: body.position, color: 'A1', time: Void.time })
         body.object = surface
         Void.scene.add(surface)
         Void.scene.add(core)
+        Void.scene.add(pointlight)
       } else {
         const planet = createPlanet({ radius: body.radius, position: body.position })
         body.object = planet
@@ -101,36 +104,21 @@ const initOimoPhysics = () => {
   // setInterval(updateOimoPhysics, 1000/60);
 }
 
-const init = rootEl => {
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26))
-  camera.lookAt(new THREE.Vector3(0, 0, -1000000000000000000))
-  Void.camera = camera
-
-  // scene
-  Void.scene = new THREE.Scene()
+const addLights = scene => {
   const ambient = new THREE.AmbientLight(0x888888)
-  Void.scene.add(ambient)
+  scene.add(ambient)
+}
 
-  const directionalLight = new THREE.DirectionalLight(0xffeedd)
-  directionalLight.position.set(0, 0, 1).normalize()
-
-  const size = 100000000
-  const divisions = 1000
-
-  const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff)
-
-  Void.scene.add(gridHelper1)
-
-  THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
+const addShip = scene => {
   const mtlLoader = new THREE.MTLLoader()
-  // mtlLoader.setPath( 'obj/male02/' );
   mtlLoader.setPath('app/assets/models/')
+
+  const objLoader = new THREE.OBJLoader()
+  objLoader.setPath('app/assets/models/')
+
   mtlLoader.load('ship.mtl', (materials) => {
     materials.preload()
-    const objLoader = new THREE.OBJLoader()
-
     objLoader.setMaterials(materials)
-    objLoader.setPath('app/assets/models/')
     objLoader.load('ship.obj', (object) => {
       object.position.x = 0
       object.position.y = 0
@@ -139,44 +127,107 @@ const init = rootEl => {
       object.name = 'spaceShip'
 
       Void.ship = object
-      Void.ship.add(camera)
-      camera.position.set(0, 10, 30)
-      Void.scene.add(object)
+      Void.ship.add(Void.camera)
+      Void.camera.position.set(0, 10, 30)
+      scene.add(object)
 
       Void.controls = controls.setFlyControls({ camera: Void.camera, ship: Void.ship, el: document })
 
+      const size = 100000000
+      const divisions = 1000
+      const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff)
+      scene.add(gridHelper1)
+
       const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
       helper.geometry.rotateY(Math.PI)
-      Void.scene.add(helper)
+      scene.add(helper)
       Void.ship.add(helper)
     }, onProgress, onError)
   })
+}
 
-  // scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
-  const pointlight = new THREE.PointLight()
-  pointlight.position.set(0, 0, 0)
-  pointlight.castShadow = true
-  Void.scene.add(pointlight)
-
+const addUniverse = scene => {
   const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
   const oortMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 })
   const oort = new THREE.Mesh(oortGeometry, oortMaterial)
-  Void.scene.add(oort)
+  scene.add(oort)
 
   galaxyRadius = 5 * Math.pow(10, 20)
   const galaxyGeometry = new THREE.SphereGeometry(5 * Math.pow(10, 20), 32, 32)
   const galaxyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
   const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
-  Void.scene.add(galaxy)
+  scene.add(galaxy)
 
   const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32)
   const universeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
   const universe = new THREE.Mesh(universeGeometry, universeMaterial)
-  Void.scene.add(universe)
+  scene.add(universe)
+}
 
-  renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true })
+const addPostprocessing = ({ renderer, scene, camera }) => {
+    // postprocessing
+  composer = new EffectComposer(renderer)
+  composer.addPass(new RenderPass(scene, camera))
+
+  const bloomPass = new BloomPass({
+    resolutionScale: 0.05,
+    kernelSize: 3.0,
+    intensity: 0.4,
+    distinction: 1
+  })
+  bloomPass.renderToScreen = true
+  bloomPass.combineMaterial.defines.SCREEN_MODE = '1'
+  bloomPass.combineMaterial.needsUpdate = true
+  composer.addPass(bloomPass)
+
+  // const coreGeometry = new THREE.SphereGeometry(1 * 0.99999, 16, 16)
+  // const coreMaterial = new THREE.MeshPhongMaterial({
+  //   color: 0xffddaa,
+  //   transparent: true
+  // })
+  // const core = new THREE.Mesh(coreGeometry, coreMaterial)
+  // core.position.set(0, 0, 0)
+  // scene.add(core)
+
+  // const raysPass = new GodRaysPass(scene, camera, core, {
+  //   resolutionScale: 0.6,
+  //   kernelSize: KernelSize.SMALL,
+  //   intensity: 1.0,
+  //   density: 0.96,
+  //   decay: 0.93,
+  //   weight: 0.4,
+  //   exposure: 0.6,
+  //   samples: 60,
+  //   clampMax: 1.0
+  // })
+  // raysPass.renderToScreen = true
+  // composer.addPass(raysPass)
+  //
+  // raysPass.combineMaterial.defines.SCREEN_MODE = '1'
+}
+
+let composer
+const init = rootEl => {
+  // renderer
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    logarithmicDepthBuffer: true
+  })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)
+
+  // scene
+  const scene = Void.scene = new THREE.Scene()
+  addLights(scene)
+  addShip(scene)
+  addUniverse(scene)
+
+  // camera
+  const camera = Void.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26))
+  camera.lookAt(new THREE.Vector3(0, 0, -1000000000000000000))
+
+  addPostprocessing({ renderer, scene, camera })
+
   rootEl.appendChild(renderer.domElement)
 
   let stars = getUrlParameter('nostars')
@@ -218,12 +269,12 @@ const addStars = () => {
 
   let stars
   const starsMaterials = [
-    new THREE.PointsMaterial({ color: 0xffffff, size: 10000000000000000, sizeAttenuation: true }),
-    new THREE.PointsMaterial({ color: 0xaaaaaa, size: 10000000000000000, sizeAttenuation: true }),
-    new THREE.PointsMaterial({ color: 0x555555, size: 10000000000000000, sizeAttenuation: true }),
-    new THREE.PointsMaterial({ color: 0xff0000, size: 10000000000000000, sizeAttenuation: true }),
-    new THREE.PointsMaterial({ color: 0xffdddd, size: 10000000000000000, sizeAttenuation: true }),
-    new THREE.PointsMaterial({ color: 0xddddff, size: 10000000000000000, sizeAttenuation: true })
+    new THREE.PointsMaterial({ color: 0xffffff, size: 10000000000000000, sizeAttenuation: true, fog: false }),
+    new THREE.PointsMaterial({ color: 0xaaaaaa, size: 10000000000000000, sizeAttenuation: true, fog: false }),
+    new THREE.PointsMaterial({ color: 0x555555, size: 10000000000000000, sizeAttenuation: true, fog: false }),
+    new THREE.PointsMaterial({ color: 0xff0000, size: 10000000000000000, sizeAttenuation: true, fog: false }),
+    new THREE.PointsMaterial({ color: 0xffdddd, size: 10000000000000000, sizeAttenuation: true, fog: false }),
+    new THREE.PointsMaterial({ color: 0xddddff, size: 10000000000000000, sizeAttenuation: true, fog: false })
   ]
   for (i = 10; i < 30; i++) {
     stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
@@ -304,6 +355,7 @@ const animate = () => {
     }
   }
   render()
+  composer.render(Void.clock.getDelta())
 }
 
 const initialTime = 100
@@ -313,7 +365,7 @@ const render = () => {
     Void.time.value = initialTime + Void.clock.getElapsedTime()
     Void.controls.update(delta)
   }
-  renderer.render(Void.scene, camera)
+  renderer.render(Void.scene, Void.camera)
 }
 //   function getTexture(body) {
 //

@@ -1213,6 +1213,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
+dat.gui@0.6.x:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/dat.gui/-/dat.gui-0.6.1.tgz#7c3d0a2ac2c570dafb61b91203fd7fe3171d6ac7"
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
@@ -3336,6 +3340,14 @@ portfinder@^1.0.9:
     debug "^2.2.0"
     mkdirp "0.5.x"
 
+postprocessing@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/postprocessing/-/postprocessing-2.3.1.tgz#18b39070d1bdef0b47b20eedee0e8e679e942442"
+  dependencies:
+    dat.gui "0.6.x"
+    stats.js "0.17.x"
+    three "0.87.x"
+
 prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
@@ -3984,6 +3996,10 @@ standard@^10.0.3:
     eslint-plugin-standard "~3.0.1"
     standard-engine "~7.0.0"
 
+stats.js@0.17.x:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/stats.js/-/stats.js-0.17.0.tgz#b1c3dc46d94498b578b7fd3985b81ace7131cc7d"
+
 "statuses@>= 1.3.1 < 2", statuses@~1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.3.1.tgz#faf51b9eb74aaef3b3acf4ad5f61abf24cb7b93e"
@@ -4126,7 +4142,7 @@ text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
 
-three@^0.87.1:
+three@0.87.x, three@^0.87.1:
   version "0.87.1"
   resolved "https://registry.yarnpkg.com/three/-/three-0.87.1.tgz#466a34edc4543459ced9b9d7d276b65216fe2ba8"
 

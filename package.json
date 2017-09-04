@@ -16,6 +16,7 @@
     "bluebird": "^3.5.0",
     "browser-bunyan": "^0.4.0",
     "msgpack-lite": "^0.1.26",
+    "postprocessing": "^2.3.1",
     "socket.io": "^2.0.3",
     "three": "^0.87.1",
     "uuid": "^3.1.0"

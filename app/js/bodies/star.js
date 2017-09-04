@@ -36,7 +36,8 @@ const createStar = ({ radius, position, color, time = 0 }) => {
 
   const coreGeometry = new THREE.SphereGeometry(radius * 0.99999, 16, 16)
   const coreMaterial = new THREE.MeshPhongMaterial({
-    color: 0 * 0xffffff
+    color: 0 * 0xffffff,
+    depthTest: false
   })
   const core = new THREE.Mesh(coreGeometry, coreMaterial)
 
@@ -55,10 +56,19 @@ const createStar = ({ radius, position, color, time = 0 }) => {
     s.position.z = position.z
   })
 
+  const pointlight = new THREE.PointLight(rgb2hex(starColors[color]), 1.2, 0, 2)
+  pointlight.position.set(0, 0, 0)
+  pointlight.castShadow = true
+
   return {
     core,
-    surface
+    surface,
+    pointlight
   }
+}
+
+const rgb2hex = rgb => {
+  return parseInt('0x' + rgb.map(x => parseInt(x).toString(16)).join(''), 16)
 }
 
 const getUniforms = (radius, rgb, time = 0) => {
@@ -76,13 +86,13 @@ const getUniforms = (radius, rgb, time = 0) => {
       value: 1
     },
     baseColorRed: {
-      value: rgb[0] / 255.0
+      value: rgb[0] / 255.0 * 0.65
     },
     baseColorGreen: {
-      value: rgb[1] / 255.0
+      value: rgb[1] / 255.0 * 0.55
     },
     baseColorBlue: {
-      value: rgb[2] / 255.0
+      value: rgb[2] / 255.0 * 0.55
     },
     time
   }
