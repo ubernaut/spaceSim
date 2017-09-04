@@ -14,6 +14,8 @@ import { EffectComposer, GlitchPass, KernelSize, BloomPass, RenderPass, GodRaysP
 let renderer
 let world = null
 
+const animateCallbacks = []
+
 let galaxyRadius
 const loadSystem = () => {
   const systemWorker = new SystemBuilderWorker()
@@ -30,17 +32,19 @@ const loadSystem = () => {
     const mkBody = body => {
       if (body.name === 'star') {
         const star = createRandomStar({ radius: body.radius, position: body.position, time: Void.time })
-        body.object = star.photosphere
-        Void.scene.add(star.photosphere)
-        Void.scene.add(star.surface)
-        Void.scene.add(star.pointlight)
+        body.object = star.chromosphere
+        // Void.scene.add(star.photosphere)
+        Void.scene.add(star.chromosphere)
+        animateCallbacks.push(star.animate)
+        Void.scene.add(star.emitter)
+        Void.scene.add(star.pointLight)
       } else {
         const planet = createPlanet({ radius: body.radius, position: body.position })
         body.object = planet
         Void.scene.add(planet)
       }
     }
-    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 300), { concurrency: 12 })
+    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 250), { concurrency: 20 })
   }
   Void.systemLoaded = true
 }
@@ -121,10 +125,10 @@ const addShip = scene => {
     objLoader.setMaterials(materials)
     objLoader.load('ship.obj', (object) => {
       object.position.x = 0
-      object.position.y = -30000000000
-      object.position.z = 30000000000
+      object.position.y = -5000000000
+      object.position.z = 5000000000
       object.scale.set(20, 20, 20)
-      object.rotation.set(20, -0.25, -0.25)
+      object.rotation.set(1, -0.25, -0.25)
       object.name = 'spaceShip'
 
       Void.ship = object
@@ -344,28 +348,33 @@ const updateOimoPhysics = () => {
     // }
 }
 
+let tick = 0
+const initialTime = 1000
 const animate = () => {
   requestAnimationFrame(animate)
-  updateOimoPhysics()
-  if (Void.soPhysics) {
-    if (Void.systemLoaded) {
-      Void.soPhysics.accelerateCuda()
-      updateSystem()
-    }
-  }
-  render()
-  composer.render(Void.clock.getDelta())
-}
 
-const initialTime = 100
-const render = () => {
   const delta = Void.clock.getDelta()
+
   if (Void.controls) {
-    Void.time.value = initialTime + Void.clock.getElapsedTime()
     Void.controls.update(delta)
   }
-  renderer.render(Void.scene, Void.camera)
+
+  Void.time.value = initialTime + Void.clock.getElapsedTime()
+
+  if (Void.soPhysics && Void.systemLoaded) {
+    Void.soPhysics.accelerateCuda()
+    updateOimoPhysics()
+    updateSystem()
+
+    animateCallbacks.map(x => x(Void.time.value))
+  }
+
+  composer.render(delta)
 }
+
+// const render = () => {
+//   const delta = Void.clock.getDelta()
+// }
 //   function getTexture(body) {
 //
 //     if (body.mass < 0.001)

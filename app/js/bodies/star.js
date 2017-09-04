@@ -2,6 +2,8 @@ import fragmentShader from 'app/shaders/star.fs.glsl'
 import vertexShader from 'app/shaders/corona.vs.glsl'
 import { randomUniform } from '-/utils'
 
+import { GPUParticleSystem } from 'app/js/webgl/gpu-particle-system'
+
 const starColors = {
   O5: [ 157, 180, 255 ],
 
@@ -110,6 +112,25 @@ const createRandomStar = ({ radius, position, time = 0 }) => {
   return createStar({ radius: radius, position: position, color: starColor, time: Void.time })
 }
 
+const particleOptions = {
+  position: new THREE.Vector3(),
+  positionRandomness: 0.3,
+  velocity: new THREE.Vector3(1, 1, 1),
+  velocityRandomness: 0.5,
+  color: 0xffffff,
+  turbulence: 0.5,
+  lifetime: 2,
+  size: 5,
+  sizeRandomness: 1
+}
+
+const particleEmitterOptions = {
+  spawnRate: 5,
+  horizontalSpeed: 1.5,
+  verticalSpeed: 1.5,
+  timeScale: 1
+}
+
 const createStar = ({ radius, position, color, time = 0 }) => {
   let rgb
   if (typeof color === 'string') {
@@ -119,43 +140,77 @@ const createStar = ({ radius, position, color, time = 0 }) => {
     rgb = starColors.K7
   }
 
-  const photosphereGeometry = new THREE.SphereGeometry(radius * 0.999, 16, 16)
-  const photosphereMaterial = new THREE.ShaderMaterial({
-    uniforms: getUniforms(radius, rgb, time),
-    vertexShader,
-    fragmentShader,
-    depthTest: false
-  })
-  const photosphere = new THREE.Mesh(photosphereGeometry, photosphereMaterial)
+  const photosphere = createPhotosphere(radius, rgb, time)
+  const chromosphere = createChromosphere(radius, rgb, time)
 
-  const surfaceGeometry = new THREE.SphereGeometry(radius, 64, 64)
-  const surfaceMaterial = new THREE.ShaderMaterial({
-    uniforms: getUniforms(radius, rgb, time),
-    vertexShader,
-    fragmentShader,
-    depthTest: false
+  const emitter = new GPUParticleSystem({
+    maxParticles: 100
   })
-  const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial)
+  emitter.position.set(0, 0, 0)
 
-  ;[ photosphere, surface ].map(s => {
+  const pointLight = new THREE.PointLight(rgb2hex(starColors[color]), 1.3, 0, 2)
+  pointLight.castShadow = true
+
+  ;[ emitter, photosphere, chromosphere, pointLight ].map(s => {
     s.position.x = position.x
     s.position.y = position.y
     s.position.z = position.z
   })
 
-  const pointlight = new THREE.PointLight(rgb2hex(starColors[color]), 1.2, 0, 2)
-  pointlight.position.set(0, 0, 0)
-  pointlight.castShadow = true
+  const animate = (delta, tick) => {
+    // console.log(time)a
+    const position = {
+      x: Math.sin(delta * particleEmitterOptions.horizontalSpeed) * 20,
+      y: Math.sin(delta * particleEmitterOptions.horizontalSpeed) * 10,
+      z: Math.sin(delta * particleEmitterOptions.horizontalSpeed + particleEmitterOptions.verticalSpeed) * 5
+    }
+    const options = Object.assign({}, particleOptions, { position })
+    // console.log(options)wa
+    for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
+      emitter.spawnParticle()
+    }
+    emitter.update(tick)
+  }
 
   return {
     photosphere,
-    surface,
-    pointlight
+    chromosphere,
+    pointLight,
+    emitter,
+    animate
   }
 }
 
 const rgb2hex = rgb => {
   return parseInt('0x' + rgb.map(x => parseInt(x).toString(16)).join(''), 16)
+}
+
+const createChromosphere = (radius, rgb, time) => {
+  const chromosphereGeometry = new THREE.SphereGeometry(radius, 64, 64)
+  const chromosphereMaterial = new THREE.ShaderMaterial({
+    uniforms: getUniforms(radius, rgb, time),
+    vertexShader,
+    fragmentShader,
+    depthTest: true,
+    transparent: true,
+    blending: THREE.AdditiveBlending
+  })
+  const chromosphere = new THREE.Mesh(chromosphereGeometry, chromosphereMaterial)
+  return chromosphere
+}
+
+const createPhotosphere = (radius, rgb, time) => {
+  const photosphereGeometry = new THREE.SphereGeometry(radius * 0.99, 16, 16)
+  const photosphereMaterial = new THREE.ShaderMaterial({
+    uniforms: getUniforms(radius, rgb, time),
+    vertexShader,
+    fragmentShader,
+    depthTest: true,
+    transparent: true,
+    blending: THREE.AdditiveBlending
+  })
+  const photosphere = new THREE.Mesh(photosphereGeometry, photosphereMaterial)
+  return photosphere
 }
 
 const getUniforms = (radius, rgb, time = 0) => {
@@ -189,5 +244,6 @@ const getUniforms = (radius, rgb, time = 0) => {
 }
 
 export {
-  createStar, createRandomStar
+  createStar,
+  createRandomStar
 }
