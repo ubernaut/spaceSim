@@ -1,7 +1,6 @@
 import Promise from 'bluebird'
-import worleyFragShader from 'app/shaders/star.fs.glsl'
-import worleyVertShader from 'app/shaders/star.vs.glsl'
 
+import { createStar } from '-/bodies/star'
 import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from 'worker-loader?inline!./workers/systemBuilderWorker'
@@ -28,53 +27,16 @@ const loadSystem = () => {
     const mkBody = body => {
       let bodyMaterial
       let bodyGeometry
-      let surfaceMaterial
-      let surfaceGeometry
-
       if (body.name === 'star') {
-        bodyGeometry = new THREE.SphereGeometry(body.radius * 0.99, 8, 8)
-        surfaceGeometry = new THREE.SphereGeometry(body.radius, 64, 64)
-        const uniforms = {
-          noiseScale: {
-            value: 35 / body.radius
-          },
-          noiseJitter: {
-            value: 2
-          },
-          manhattanDistance: {
-            value: true
-          },
-          noiseStrength: {
-            value: 1
-          },
-          baseColorRed: {
-            value: 0.5
-          },
-          baseColorGreen: {
-            value: 0.075
-          },
-          baseColorBlue: {
-            value: 0.01
-          },
+        const { core, surface } = createStar({
+          radius: body.radius,
+          position: body.position,
+          color: 'B1',
           time: Void.time
-        }
-        surfaceMaterial = new THREE.ShaderMaterial({ uniforms, vertexShader: worleyVertShader, fragmentShader: worleyFragShader, depthTest: false })
-        bodyMaterial = new THREE.MeshPhongMaterial({
-          color: 0 * 0xffffff
         })
-        const starSurface = new THREE.Mesh(surfaceGeometry, surfaceMaterial)
-        starSurface.position.x = body.position.x
-        starSurface.position.y = body.position.y
-        starSurface.position.z = body.position.z
-        body.object = starSurface
-        Void.scene.add(starSurface)
-
-        const starCore = new THREE.Mesh(bodyGeometry, bodyMaterial)
-        starCore.position.x = body.position.x
-        starCore.position.y = body.position.y
-        starCore.position.z = body.position.z
-        body.object = starCore
-        Void.scene.add(starCore)
+        body.object = surface
+        Void.scene.add(surface)
+        Void.scene.add(core)
       } else {
         bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
         bodyMaterial = new THREE.MeshPhongMaterial({

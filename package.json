@@ -13,6 +13,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "browser-bunyan": "^0.4.0",
+    "kelvin-to-rgb": "^1.0.2",
     "msgpack-lite": "^0.1.26",
     "raw-loader": "^0.5.1",
     "socket.io": "^2.0.3",
@@ -34,10 +35,24 @@
       "self": true
     },
     "rules": {
-      "object-curly-spacing": [ 2, "always" ],
-      "array-bracket-spacing": [ 2, "always" ],
-      "func-style": [ 2, "expression" ],
-      "prefer-arrow-callback": [ 2, { "allowNamedFunctions": false } ]
+      "object-curly-spacing": [
+        2,
+        "always"
+      ],
+      "array-bracket-spacing": [
+        2,
+        "always"
+      ],
+      "func-style": [
+        2,
+        "expression"
+      ],
+      "prefer-arrow-callback": [
+        2,
+        {
+          "allowNamedFunctions": false
+        }
+      ]
     }
   },
   "babel": {
