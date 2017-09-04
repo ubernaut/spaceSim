@@ -32,7 +32,7 @@ const loadSystem = () => {
         const { core, surface, pointlight } = createStar({ radius: body.radius, position: body.position, color: 'A1', time: Void.time })
         body.object = surface
         Void.scene.add(surface)
-        Void.scene.add(core)
+        // Void.scene.add(core)
         Void.scene.add(pointlight)
       } else {
         const planet = createPlanet({ radius: body.radius, position: body.position })
@@ -172,7 +172,7 @@ const addPostprocessing = ({ renderer, scene, camera }) => {
   const bloomPass = new BloomPass({
     resolutionScale: 0.05,
     kernelSize: 3.0,
-    intensity: 0.4,
+    intensity: 0.3,
     distinction: 1
   })
   bloomPass.renderToScreen = true
@@ -292,8 +292,8 @@ const addStars = () => {
 }
 
 const onWindowResize = () => {
-  camera.aspect = window.innerWidth / window.innerHeight
-  camera.updateProjectionMatrix()
+  Void.camera.aspect = window.innerWidth / window.innerHeight
+  Void.camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight)
 }
 

@@ -1,5 +1,5 @@
 import fragmentShader from 'app/shaders/star.fs.glsl'
-import vertexShader from 'app/shaders/star.vs.glsl'
+import vertexShader from 'app/shaders/corona.vs.glsl'
 
 const starColors = {
   O5: [ 157, 180, 255 ],
@@ -73,6 +73,9 @@ const rgb2hex = rgb => {
 
 const getUniforms = (radius, rgb, time = 0) => {
   return {
+    viewVector: {
+      value: Void.camera
+    },
     noiseScale: {
       value: 35 / radius
     },

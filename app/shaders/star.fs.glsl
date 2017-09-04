@@ -1,6 +1,7 @@
 precision mediump float;
 
 varying vec3 vPosition;
+varying float intensity;
 
 uniform float noiseScale;
 uniform float noiseJitter;
@@ -183,10 +184,12 @@ void main() {
 
   float value = baseVal * hotSpotVal * burstVal * burst2Val * burst3Val;
 
-  gl_FragColor = vec4(
+  vec4 finalColor = vec4(
     baseColorRed * value,
     baseColorGreen * value,
     baseColorBlue * value,
     1.0
   );
+
+  gl_FragColor = finalColor;
 }
