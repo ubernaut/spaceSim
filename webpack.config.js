@@ -58,7 +58,7 @@ module.exports = {
     contentBase: __dirname,
     publicPath: '/',
     compress: true,
-    port: 8000,
+    port: 9000,
     hot: true,
     historyApiFallback: {
       index: 'app/index.dev.html'
