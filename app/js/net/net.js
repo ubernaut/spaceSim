@@ -1,7 +1,8 @@
 import io from 'socket.io-client'
 import msgpack from 'msgpack-lite'
-import { onProgress, onError } from './utils'
-import { shoot } from './weapons'
+
+import { onProgress, onError } from '-/utils'
+import { shoot } from '-/player/weapons'
 
 const handleEvent = eventData => {
   const decoded = msgpack.decode(new Uint8Array(eventData))
@@ -64,8 +65,8 @@ const loadOrUpdatePlayer = (playerId, playerData) => {
 
 const mtlLoader = new THREE.MTLLoader()
 const objLoader = new THREE.OBJLoader()
-mtlLoader.setPath('js/models/')
-objLoader.setPath('js/models/')
+mtlLoader.setPath('app/assets/models/')
+objLoader.setPath('app/assets/models/')
 
 // const createHudElement = () => {
 //   const hudElementX = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000)

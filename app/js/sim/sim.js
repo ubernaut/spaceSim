@@ -1,10 +1,10 @@
 import Promise from 'bluebird'
-import worleyFragShader from '../shaders/worley-sphere-frag.glsl'
-import worleyVertShader from '../shaders/worley-sphere-vert.glsl'
+import worleyFragShader from 'app/shaders/worley-sphere-frag.glsl'
+import worleyVertShader from 'app/shaders/worley-sphere-vert.glsl'
 
-import { onProgress, onError, randomUniform, getUrlParameter } from './utils'
+import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
-import SystemBuilderWorker from 'worker-loader?inline!./systemBuilderWorker'
+import SystemBuilderWorker from 'worker-loader?inline!./workers/systemBuilderWorker'
 
 const clock = new THREE.Clock()
 let container,
@@ -116,7 +116,7 @@ const updateSystem = () => {
       }
       if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
         Void.scene.remove(body.object)
-        console.log('removed body')
+        // console.log('removed body')
         body.object = ''
       }
     }
@@ -197,13 +197,13 @@ const init = () => {
   THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
   const mtlLoader = new THREE.MTLLoader()
     // mtlLoader.setPath( 'obj/male02/' );
-  mtlLoader.setPath('js/models/')
+  mtlLoader.setPath('app/assets/models/')
   mtlLoader.load('ship.mtl', (materials) => {
     materials.preload()
     const objLoader = new THREE.OBJLoader()
 
     objLoader.setMaterials(materials)
-    objLoader.setPath('js/models/')
+    objLoader.setPath('app/assets/models/')
     objLoader.load('ship.obj', (object) => {
       object.position.x = 0
       object.position.y = 0

@@ -1,11 +1,13 @@
 const path = require('path')
 const webpack = require('webpack')
 
+const resolve = target => path.join(__dirname, target)
+
 module.exports = {
-  entry: './js/app.js',
+  entry: resolve('app/js/app.js'),
 
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: resolve('dist'),
     filename: 'bundle.js'
   },
 
@@ -19,7 +21,8 @@ module.exports = {
       '.js'
     ],
     alias: {
-      '-': path.join(__dirname, 'js')
+      '-': resolve('app/js'),
+      'app': resolve('app')
     }
   },
 

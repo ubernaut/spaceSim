@@ -1,5 +1,6 @@
-import { randomUniform, guid } from './utils'
 import uuid from 'uuid/v4'
+
+import { randomUniform, guid } from '-/utils'
 
 class Body {
   constructor (body_data = []) {
@@ -533,9 +534,7 @@ class System {
       max = 0.01
     }
     let mass = randomUniform(min, max)
-    if (mass < 0.00001) {
-      console.log(mass)
-    }
+
     body_data.push(mass)
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodyDistance))

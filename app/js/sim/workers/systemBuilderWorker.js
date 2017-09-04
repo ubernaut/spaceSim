@@ -1,4 +1,4 @@
-import { System } from './systemBuilder'
+import { System } from '-/sim/systemBuilder'
 
 self.onmessage = e => {
   console.log('in worker')

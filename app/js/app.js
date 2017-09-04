@@ -1,8 +1,8 @@
 import bunyan from 'browser-bunyan'
 
-import * as net from './simjs/netcode'
-import * as sim from './simjs/sim'
-import { shoot } from './simjs/weapons'
+import * as net from '-/net/net'
+import * as sim from '-/sim/sim'
+import { shoot } from '-/player/weapons'
 
 /**
  * App State
