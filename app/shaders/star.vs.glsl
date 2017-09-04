@@ -10,9 +10,9 @@ uniform float time;
 
 void main() {
   vPosition = position;
-  vPosition.x *= 1.0 + (pow(abs(sin(time / 350.0)), 1.5) * .4);
-  vPosition.y *= 1.0 + (pow(abs(cos(time / 350.0)), 2.0) * .4);
-  vPosition.z *= 1.0 + (pow(abs(sin(time / 350.0)), 2.5) * .4);
+  vPosition.x *= 1.0 + (pow(abs(sin(time / 100.0)), 1.5) * .4);
+  vPosition.y *= 1.0 + (pow(abs(cos(time / 50.0)), 2.0) * .3);
+  vPosition.z *= 1.0 + (pow(abs(sin(time / 200.0)), 2.5) * .45);
   // vPosition.z *= (tan(time) + 1.5) * .2;
 
   vPosition.y += time;

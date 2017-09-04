@@ -1,6 +1,6 @@
 import Promise from 'bluebird'
-import worleyFragShader from 'app/shaders/worley-sphere-frag.glsl'
-import worleyVertShader from 'app/shaders/worley-sphere-vert.glsl'
+import worleyFragShader from 'app/shaders/star.fs.glsl'
+import worleyVertShader from 'app/shaders/star.vs.glsl'
 
 import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
@@ -46,6 +46,15 @@ const loadSystem = () => {
           },
           noiseStrength: {
             value: 1
+          },
+          baseColorRed: {
+            value: 0.5
+          },
+          baseColorGreen: {
+            value: 0.075
+          },
+          baseColorBlue: {
+            value: 0.01
           },
           time: Void.time
         }
