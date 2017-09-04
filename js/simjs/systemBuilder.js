@@ -1,4 +1,4 @@
-import { randomUniform , guid} from './utils'
+import { randomUniform, guid } from './utils'
 import uuid from 'uuid/v4'
 
 class Body {
@@ -14,9 +14,9 @@ class Body {
     }
     this.name = body_data[0]
     this.mass = body_data[1]
-    this.position = new Point([body_data[2], body_data[3], body_data[4]])
-    this.velocity = new Point([body_data[5], body_data[6], body_data[7]])
-    this.acceleration = new Point([body_data[8], body_data[9], body_data[10]])
+    this.position = new Point([ body_data[2], body_data[3], body_data[4] ])
+    this.velocity = new Point([ body_data[5], body_data[6], body_data[7] ])
+    this.acceleration = new Point([ body_data[8], body_data[9], body_data[10] ])
     this.orientation = new Point()
     this.angVelocity = new Point()
     this.acceleration.reset()
@@ -24,7 +24,7 @@ class Body {
   }
 };
 class Point {
-  constructor (position_data = [0, 0, 0]) {
+  constructor (position_data = [ 0, 0, 0 ]) {
     this.x = position_data[0]
     this.y = position_data[1]
     this.z = position_data[2]
@@ -37,28 +37,28 @@ class Point {
 };
 
 class Galaxy {
-  constructor() {
-    this.stars = [];
-    this.theta = 0;
-    this.dTheta = .05;
-    this.maxTheta = 10;
-    this.alpha = 2000;
-    this.beta = 0.25;
-    this.e = 2.71828182845904523536;
-    this.starDensity = 1;
+  constructor () {
+    this.stars = []
+    this.theta = 0
+    this.dTheta = 0.05
+    this.maxTheta = 10
+    this.alpha = 2000
+    this.beta = 0.25
+    this.e = 2.71828182845904523536
+    this.starDensity = 1
     while (this.theta < this.maxTheta) {
-      this.theta += this.dTheta;
-     let randMax = 2000 / (1 + this.theta / 2);
-     let randMin = 0 - randMax;
-      this.starDensity = 10 / (1 + this.theta / 2);
+      this.theta += this.dTheta
+      let randMax = 2000 / (1 + this.theta / 2)
+      let randMin = 0 - randMax
+      this.starDensity = 10 / (1 + this.theta / 2)
       for (let i = 0; i <= this.starDensity; i++) {
-       let xPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.cos(this.theta);
-       let yPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.sin(this.theta);
-       xPos = xPos + Math.random() * (randMax - randMin) + randMin;
-       yPos = yPos + Math.random() * (randMax - randMin) + randMin;
-       let zPos = Math.random() * (randMax - randMin) + randMin;
-       let newStar = new Star(xPos, yPos, zPos, "star", "cos");
-        this.stars.push(newStar);
+        let xPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.cos(this.theta)
+        let yPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.sin(this.theta)
+        xPos = xPos + Math.random() * (randMax - randMin) + randMin
+        yPos = yPos + Math.random() * (randMax - randMin) + randMin
+        let zPos = Math.random() * (randMax - randMin) + randMin
+        let newStar = new Star(xPos, yPos, zPos, 'star', 'cos')
+        this.stars.push(newStar)
       }
     }
   }
@@ -79,7 +79,7 @@ class Star {
       0,
       0
     ])
-    this.color = [0.0, 0.0, 1.0]
+    this.color = [ 0.0, 0.0, 1.0 ]
     this.mass = 16
     this.radius = 6.6
     this.temp = 33000
@@ -110,44 +110,44 @@ class Star {
     }
   }
   otype () {
-    this.color = [1.0, 0.0, 0.0]
+    this.color = [ 1.0, 0.0, 0.0 ]
     this.mass = 16
     this.radius = 6.6
     this.temp = 33000
   }
   btype () {
-    this.color = [0.5, 0.5, 0.8, 1.0]
+    this.color = [ 0.5, 0.5, 0.8, 1.0 ]
     this.mass = 2.1
     this.radius = 1.8
     this.temp = 10000
   }
   atype () {
-    this.color = [1.0, 1.0, 1.0, 1.0]
+    this.color = [ 1.0, 1.0, 1.0, 1.0 ]
     this.mass = 1.4
     this.radius = 1.4
     this.temp = 7500
   }
   ftype () {
-    this.color = [1.0, 1.0, 0.8, 1.0]
-    this.color = [1.0, 0.0, 0.0]
+    this.color = [ 1.0, 1.0, 0.8, 1.0 ]
+    this.color = [ 1.0, 0.0, 0.0 ]
     this.mass = 1
     this.radius = 1
     this.temp = 6000
   }
   gtype () {
-    this.color = [1.0, 1.0, 0.0, 1.0]
+    this.color = [ 1.0, 1.0, 0.0, 1.0 ]
     this.mass = 0.8
     this.radius = 0.9
     this.temp = 5200
   }
   ktype () {
-    this.color = [1.0, 0.2, 0.2, 1.0]
+    this.color = [ 1.0, 0.2, 0.2, 1.0 ]
     this.mass = 0.7
     this.radius = 0.5
     this.temp = 3700
   }
   mtype () {
-    this.color = [1.0, 0.0, 0.0, 1.0]
+    this.color = [ 1.0, 0.0, 0.0, 1.0 ]
     this.mass = 0.2
     this.radius = 0.2
     this.temp = 2000
@@ -158,20 +158,20 @@ class GridSystem {
   constructor (bodies = []) {
     this.count = bodies.length
     this.player = 0
-    this.names = ['']
-    this.mass = [0.0]
-    this.rad = [0.0]
+    this.names = [ '' ]
+    this.mass = [ 0.0 ]
+    this.rad = [ 0.0 ]
     this.pos = [
-      [0.0, 0.0, 0.0]
+      [ 0.0, 0.0, 0.0 ]
     ]
     this.ori = [
-      [0.0, 0.0, 0.0]
+      [ 0.0, 0.0, 0.0 ]
     ]
     this.vel = [
-      [0.0, 0.0, 0.0]
+      [ 0.0, 0.0, 0.0 ]
     ]
     this.acc = [
-      [0.0, 0.0, 0.0]
+      [ 0.0, 0.0, 0.0 ]
     ]
     this.allocated = 1
     this.collisions = []
@@ -250,7 +250,7 @@ class GridSystem {
 
   resetAcc () {
     for (let i = 0; i < this.count; i++) {
-      this.acc[i] = [0.0, 0.0, 0.0]
+      this.acc[i] = [ 0.0, 0.0, 0.0 ]
     }
   }
 
@@ -259,20 +259,20 @@ class GridSystem {
     this.names.push('')
     this.mass.push(0.0)
     this.rad.push(0.0)
-    this.pos.push([0.0, 0.0, 0.0])
-    this.ori.push([0.0, 0.0, 0.0])
-    this.vel.push([0.0, 0.0, 0.0])
-    this.acc.push([0.0, 0.0, 0.0])
+    this.pos.push([ 0.0, 0.0, 0.0 ])
+    this.ori.push([ 0.0, 0.0, 0.0 ])
+    this.vel.push([ 0.0, 0.0, 0.0 ])
+    this.acc.push([ 0.0, 0.0, 0.0 ])
   }
 }
 const G = 2.93558 * Math.pow(10, -4)
 const epsilon = 0.01
 
 class soPhysics {
-  constructor (aSystem, maxMark = 100000, dt = 0.02, metric=false) {
+  constructor (aSystem, maxMark = 100000, dt = 0.02, metric = false) {
     this.dt = dt
     this.system = aSystem
-    this.metric=metric
+    this.metric = metric
     this.collisions = []
     this.gridSystem = new GridSystem(aSystem.bodies)
     this.maxMark = maxMark
@@ -280,8 +280,6 @@ class soPhysics {
     this.sumFit = this.fitness
     this.t = 0
     this.count = 1
-
-
   }
 
   collisionDetected (player, names, mass, pos, vel, acc, rad, ith, jth) {
@@ -306,7 +304,7 @@ class soPhysics {
     vel[ith][1] = 0
     vel[ith][2] = 0
 
-    if(names[jth]=='star'){
+    if (names[jth] == 'star') {
       pos[jth][0] = 0
       pos[jth][1] = 0
       pos[jth][2] = 0
@@ -317,7 +315,7 @@ class soPhysics {
       acc[jth][1] = 0
       acc[jth][2] = 0
     }
-    if(names[ith]=='star'){
+    if (names[ith] == 'star') {
       pos[ith][0] = 0
       pos[ith][1] = 0
       pos[ith][2] = 0
@@ -368,67 +366,65 @@ class soPhysics {
     let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
     let rad2 = Math.sqrt(radius)
     let grav_mag = 0.0
-    if (rad2 > .666*(rad[ith] + rad[jth])) {
+    if (rad2 > 0.666 * (rad[ith] + rad[jth])) {
       grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)))
       let grav_x = grav_mag * d_x
       let grav_y = grav_mag * d_y
       let grav_z = grav_mag * d_z
-      if(names[ith]!="star"){
-      acc[ith][0] += grav_x * mass[jth]
-      acc[ith][1] += grav_y * mass[jth]
-      acc[ith][2] += grav_z * mass[jth]
+      if (names[ith] != 'star') {
+        acc[ith][0] += grav_x * mass[jth]
+        acc[ith][1] += grav_y * mass[jth]
+        acc[ith][2] += grav_z * mass[jth]
       }
-      if(names[jth]!="star"){
-      acc[jth][0] += grav_x * mass[ith]
-      acc[jth][1] += grav_y * mass[ith]
-      acc[jth][2] += grav_z * mass[ith]
+      if (names[jth] != 'star') {
+        acc[jth][0] += grav_x * mass[ith]
+        acc[jth][1] += grav_y * mass[ith]
+        acc[jth][2] += grav_z * mass[ith]
       }
-
     } else {
       grav_mag = 0
       this.collisionDetected(player, names, mass, pos, vel, acc, rad, ith, jth)
     }
   }
-  convertToMetric(){
+  convertToMetric () {
     for (let i = 0; i < this.gridSystem.count; i++) {
-      this.gridSystem.rad[i]*= 149600000000
+      this.gridSystem.rad[i] *= 149600000000
 
-      this.gridSystem.pos[i][0]*= 149600000000
-      this.gridSystem.pos[i][1]*= 149600000000
-      this.gridSystem.pos[i][2]*= 149600000000
+      this.gridSystem.pos[i][0] *= 149600000000
+      this.gridSystem.pos[i][1] *= 149600000000
+      this.gridSystem.pos[i][2] *= 149600000000
 
-      this.gridSystem.vel[i][0]*= 149600000000
-      this.gridSystem.vel[i][1]*= 149600000000
-      this.gridSystem.vel[i][2]*= 149600000000
+      this.gridSystem.vel[i][0] *= 149600000000
+      this.gridSystem.vel[i][1] *= 149600000000
+      this.gridSystem.vel[i][2] *= 149600000000
 
-
-      this.gridSystem.acc[i][0]*= 149600000000
-      this.gridSystem.acc[i][1]*= 149600000000
-      this.gridSystem.acc[i][2]*= 149600000000
+      this.gridSystem.acc[i][0] *= 149600000000
+      this.gridSystem.acc[i][1] *= 149600000000
+      this.gridSystem.acc[i][2] *= 149600000000
     }
   }
-  convertToStellar(){
+  convertToStellar () {
     for (let i = 0; i < this.gridSystem.count; i++) {
-      this.gridSystem.rad[i]/= 149600000000
+      this.gridSystem.rad[i] /= 149600000000
 
-      this.gridSystem.pos[i][0]/= 149600000000
-      this.gridSystem.pos[i][1]/= 149600000000
-      this.gridSystem.pos[i][2]/= 149600000000
+      this.gridSystem.pos[i][0] /= 149600000000
+      this.gridSystem.pos[i][1] /= 149600000000
+      this.gridSystem.pos[i][2] /= 149600000000
 
-      this.gridSystem.vel[i][0]/= 149600000000
-      this.gridSystem.vel[i][1]/= 149600000000
-      this.gridSystem.vel[i][2]/= 149600000000
+      this.gridSystem.vel[i][0] /= 149600000000
+      this.gridSystem.vel[i][1] /= 149600000000
+      this.gridSystem.vel[i][2] /= 149600000000
 
-      this.gridSystem.acc[i][0]/= 149600000000
-      this.gridSystem.acc[i][1]/= 149600000000
-      this.gridSystem.acc[i][2]/= 149600000000
+      this.gridSystem.acc[i][0] /= 149600000000
+      this.gridSystem.acc[i][1] /= 149600000000
+      this.gridSystem.acc[i][2] /= 149600000000
     }
   }
 
   accelerateCuda () {
     let G = 2.93558 * Math.pow(10, -4)
     let epsilon = 0.01
-    if(this.metric){this.convertToStellar()}
+    if (this.metric) { this.convertToStellar() }
     for (let i = 0; i < this.gridSystem.count; i++) {
       if (this.gridSystem.names[i] != 'DELETED') {
         for (let j = 0; j < i; j++) {
@@ -445,7 +441,7 @@ class soPhysics {
         this.gridSystem.removeBody(i)
       }
     }
-    if(this.metric){this.convertToMetric()}
+    if (this.metric) { this.convertToMetric() }
     this.gridSystem.collisions = []
   }
 
@@ -504,7 +500,7 @@ class System {
 
     // body name
     body_data.push(`body ${uuid()}`)
-    body_data.push(randomUniform(0., 0.1))
+    body_data.push(randomUniform(0.0, 0.1))
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodyDistance))
       body_data.push(randomUniform(0, this.bodyDistance))
@@ -528,16 +524,16 @@ class System {
 
     // body name
     body_data.push(`body ${uuid()}`)
-    let min = 8.6 *Math.pow(10,-11)
-    let max = .00001
+    let min = 8.6 * Math.pow(10, -11)
+    let max = 0.00001
 
-    let test =Math.random()
-    if(test>=0.8){
+    let test = Math.random()
+    if (test >= 0.8) {
       min = 0.00001
       max = 0.01
     }
-    let mass =randomUniform(min, max)
-    if(mass<0.00001){
+    let mass = randomUniform(min, max)
+    if (mass < 0.00001) {
       console.log(mass)
     }
     body_data.push(mass)
@@ -618,7 +614,7 @@ class System {
   }
 
   addStar () {
-    let body_data = this.getStar(['star'])
+    let body_data = this.getStar([ 'star' ])
     let body = new Body(body_data)
     this.bodies.push(body)
   }
@@ -672,7 +668,6 @@ class System {
       this.addPlanet()
     }
   }
-
 
   //   evaluateBodies( someBodies) {
   //           kinetic=0.0;

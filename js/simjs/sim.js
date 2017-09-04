@@ -2,8 +2,8 @@ import Promise from 'bluebird'
 import worleyFragShader from '../shaders/worley-sphere-frag.glsl'
 import worleyVertShader from '../shaders/worley-sphere-vert.glsl'
 
-import { onProgress, onError,randomUniform,getUrlParameter} from './utils'
-import { System, GridSystem, soPhysics, convertSystemToMeters } from './systemBuilder'
+import { onProgress, onError, randomUniform, getUrlParameter } from './utils'
+import { soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from 'worker-loader?inline!./systemBuilderWorker'
 
 const clock = new THREE.Clock()
@@ -21,12 +21,10 @@ function loadSystem () {
   systemWorker.onmessage = e => {
     Void.thisSystem = e.data
 
-    // console.log(Void.thisSystem);
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
     Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true)
 
-    // const texLoader = new THREE.TextureLoader()
     const mkBody = body => {
       let bodyMaterial
       let bodyGeometry
@@ -34,22 +32,24 @@ function loadSystem () {
       let surfaceGeometry
 
       if (body.name === 'star') {
-        bodyGeometry = new THREE.SphereGeometry(body.radius * .99, 8, 8)
+        bodyGeometry = new THREE.SphereGeometry(body.radius * 0.99, 8, 8)
         surfaceGeometry = new THREE.SphereGeometry(body.radius, 64, 64)
         const uniforms = {
-          noiseScale: { value: 35 / body.radius },
-          noiseJitter: { value: 2 },
-          manhattanDistance: { value: true },
-          noiseStrength: { value: 1 },
+          noiseScale: {
+            value: 35 / body.radius
+          },
+          noiseJitter: {
+            value: 2
+          },
+          manhattanDistance: {
+            value: true
+          },
+          noiseStrength: {
+            value: 1
+          },
           time: Void.time
         }
-        surfaceMaterial = new THREE.ShaderMaterial({
-          uniforms,
-          vertexShader: worleyVertShader,
-          fragmentShader: worleyFragShader,
-          depthTest: false
-
-        })
+        surfaceMaterial = new THREE.ShaderMaterial({ uniforms, vertexShader: worleyVertShader, fragmentShader: worleyFragShader, depthTest: false })
         bodyMaterial = new THREE.MeshPhongMaterial({
           color: 0 * 0xffffff
         })
@@ -81,19 +81,19 @@ function loadSystem () {
     }
     Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(200), { concurrency: 10 })
   }
-  Void.systemLoaded =true
+  Void.systemLoaded = true
 }
+
 function updateSystem () {
   let i = 0
   for (const body of Void.thisSystem.bodies) {
     if (body.object) {
       let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
-      if(collidedIndex!= -1){
-        Void.soPhysics.collisions.splice(collidedIndex,1)
-        if( body.name!="star"){
-
+      if (collidedIndex !== -1) {
+        Void.soPhysics.collisions.splice(collidedIndex, 1)
+        if (body.name !== 'star') {
           Void.scene.remove(body.object)
-          body.radius= Void.soPhysics.gridSystem.rad[i]
+          body.radius = Void.soPhysics.gridSystem.rad[i]
           let bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
           let bodyMaterial = new THREE.MeshPhongMaterial({
             color: randomUniform(0.5, 1) * 0xffffff
@@ -109,20 +109,19 @@ function updateSystem () {
           body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
           body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
         }
-      }else{
+      } else {
         body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
         body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
         body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
       }
-    if(Void.soPhysics.gridSystem.names[i]=="DELETED"){
-      Void.scene.remove(body.object)
-      console.log("removed body")
-      body.object = ""
-    }
+      if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
+        Void.scene.remove(body.object)
+        console.log('removed body')
+        body.object = ''
+      }
     }
     i++
   }
-
 }
 
 function initOimoPhysics () {
@@ -131,7 +130,6 @@ function initOimoPhysics () {
   // 1 : BruteForce
   // 2 : Sweep and prune , the default
   // 3 : dynamic bounding volume tree
-
   world = new OIMO.World({
     timestep: 1 / 60,
     iterations: 8,
@@ -139,23 +137,23 @@ function initOimoPhysics () {
     worldscale: 1,
     random: true,
     info: false,
-    gravity: [0, 0, 0]
+    gravity: [ 0, 0, 0 ]
   })
-  // populate(1);
-  // setInterval(updateOimoPhysics, 1000/60);
+    // populate(1);
+    // setInterval(updateOimoPhysics, 1000/60);
 }
-// function bindship () {}
+
 function setControls (ship) {
-  // if (isMobile()) {
-  //   Void.controls = new THREE.DeviceOrientationControls(ship, true)
-  // } else {
+    // if (isMobile()) {
+    //   Void.controls = new THREE.DeviceOrientationControls(ship, true)
+    // } else {
   Void.controls = new THREE.FlyControls(ship)
   Void.controls.movementSpeed = 100
   Void.controls.domElement = container
   Void.controls.rollSpeed = Math.PI / 3
   Void.controls.autoForward = false
   Void.controls.dragToLook = true
-  // }
+    // }
 }
 
 function onDocumentMouseWheel (event) {
@@ -173,24 +171,22 @@ function onDocumentMouseWheel (event) {
   }
 }
 
-// function wireframeLoader () {}
-// function objectLoader () {}
-
 function init () {
   window.addEventListener('mousewheel', onDocumentMouseWheel, false)
 
   container = document.createElement('div')
   document.body.appendChild(container)
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26))
-  camera.position.y = 30
-  camera.position.z = 100
   camera.lookAt(new THREE.Vector3(0, 0, -1000000000000000000))
-  // scene
+
+    // scene
   Void.scene = new THREE.Scene()
   const ambient = new THREE.AmbientLight(0x888888)
   Void.scene.add(ambient)
+
   const directionalLight = new THREE.DirectionalLight(0xffeedd)
   directionalLight.position.set(0, 0, 1).normalize()
+
   const size = 100000000
   const divisions = 1000
 
@@ -200,7 +196,7 @@ function init () {
 
   THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
   const mtlLoader = new THREE.MTLLoader()
-  // mtlLoader.setPath( 'obj/male02/' );
+    // mtlLoader.setPath( 'obj/male02/' );
   mtlLoader.setPath('js/models/')
   mtlLoader.load('ship.mtl', function (materials) {
     materials.preload()
@@ -228,42 +224,42 @@ function init () {
     }, onProgress, onError)
   })
 
-  // scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
+    // scene.fog = new THREE.FogExp2( 0x000000, 0.00000025 );
   const pointlight = new THREE.PointLight()
   pointlight.position.set(0, 0, 0)
   pointlight.castShadow = true
   Void.scene.add(pointlight)
 
   const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
-  const oortMaterial = new THREE.MeshBasicMaterial({color: 0x555555})
+  const oortMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 })
   const oort = new THREE.Mesh(oortGeometry, oortMaterial)
   Void.scene.add(oort)
 
   galaxyRadius = 5 * Math.pow(10, 20)
   const galaxyGeometry = new THREE.SphereGeometry(5 * Math.pow(10, 20), 32, 32)
-  const galaxyMaterial = new THREE.MeshBasicMaterial({color: 0xffffff})
+  const galaxyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
   const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
   Void.scene.add(galaxy)
 
   const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32)
-  const universeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000})
+  const universeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
   const universe = new THREE.Mesh(universeGeometry, universeMaterial)
   Void.scene.add(universe)
 
-  renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: true})
+  renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)
   container.appendChild(renderer.domElement)
 
-  let stars =getUrlParameter('nostars')
-  if(stars=='true'){
-    //don't andd stars
-  }else{
+  let stars = getUrlParameter('nostars')
+  if (stars === 'true') {
+    // don't add stars
+  } else {
     addStars()
   }
 
   const spheregeometry = new THREE.SphereGeometry(10000000000, 36, 30)
-  const spherematerial = new THREE.MeshBasicMaterial({wireframe: true, color: 0xa807b7})
+  const spherematerial = new THREE.MeshBasicMaterial({ wireframe: true, color: 0xa807b7 })
   const sphere = new THREE.Mesh(spheregeometry, spherematerial)
 
   sphere.position.set(-2.0, 0, 0)
@@ -274,62 +270,64 @@ function init () {
   Void.world = world
   loadSystem()
 }
-function addStars(){
 
-const radius = galaxyRadius
-let i,
-  r = radius,
-  starsGeometry = [new THREE.Geometry(), new THREE.Geometry()]
-for (i = 0; i < 5000; i++) {
-  const vertex = new THREE.Vector3()
-  vertex.x = (Math.random() * (2 - 1))
-  vertex.y = (Math.random() * (2 - 1)) / 3
-  vertex.z = (Math.random() * (2 - 1))
-  vertex.multiplyScalar(r)
+function addStars () {
+  const radius = galaxyRadius
+  let i,
+    r = radius,
+    starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ]
+  for (i = 0; i < 5000; i++) {
+    const vertex = new THREE.Vector3()
+    vertex.x = (Math.random() * (2 - 1))
+    vertex.y = (Math.random() * (2 - 1)) / 3
+    vertex.z = (Math.random() * (2 - 1))
+    vertex.multiplyScalar(r)
 
-  starsGeometry[0].vertices.push(vertex)
-}
-for (i = 0; i < 5000; i++) {
-  const vertex = new THREE.Vector3()
-  vertex.x = (Math.random() * (2 - 1))
-  vertex.y = (Math.random() * (2 - 1)) / 3
-  vertex.z = (Math.random() * (2 - 1))
-  vertex.multiplyScalar(r)
-  starsGeometry[1].vertices.push(vertex)
-}
+    starsGeometry[0].vertices.push(vertex)
+  }
+  for (i = 0; i < 5000; i++) {
+    const vertex = new THREE.Vector3()
+    vertex.x = (Math.random() * (2 - 1))
+    vertex.y = (Math.random() * (2 - 1)) / 3
+    vertex.z = (Math.random() * (2 - 1))
+    vertex.multiplyScalar(r)
+    starsGeometry[1].vertices.push(vertex)
+  }
 
-let stars
-const starsMaterials = [
-  new THREE.PointsMaterial({color: 0xffffff, size: 10000000000000000, sizeAttenuation: true}),
-  new THREE.PointsMaterial({color: 0xaaaaaa, size: 10000000000000000, sizeAttenuation: true}),
-  new THREE.PointsMaterial({color: 0x555555, size: 10000000000000000, sizeAttenuation: true}),
-  new THREE.PointsMaterial({color: 0xff0000, size: 10000000000000000, sizeAttenuation: true}),
-  new THREE.PointsMaterial({color: 0xffdddd, size: 10000000000000000, sizeAttenuation: true}),
-  new THREE.PointsMaterial({color: 0xddddff, size: 10000000000000000, sizeAttenuation: true})
-]
-for (i = 10; i < 30; i++) {
-  stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
-  // stars.rotation.x = Math.random() * 6;
-  // stars.rotation.y = Math.random() * 6;
-  // stars.rotation.z = Math.random() * 6;
-  //  stars.scale.setScalar( i * 10 );
-  stars.position.x -= radius / 2
-  stars.position.y -= radius / 6
-  stars.position.z -= radius / 2
-  stars.matrixAutoUpdate = false
-  stars.updateMatrix()
-  Void.scene.add(stars)
-}
+  let stars
+  const starsMaterials = [
+    new THREE.PointsMaterial({ color: 0xffffff, size: 10000000000000000, sizeAttenuation: true }),
+    new THREE.PointsMaterial({ color: 0xaaaaaa, size: 10000000000000000, sizeAttenuation: true }),
+    new THREE.PointsMaterial({ color: 0x555555, size: 10000000000000000, sizeAttenuation: true }),
+    new THREE.PointsMaterial({ color: 0xff0000, size: 10000000000000000, sizeAttenuation: true }),
+    new THREE.PointsMaterial({ color: 0xffdddd, size: 10000000000000000, sizeAttenuation: true }),
+    new THREE.PointsMaterial({ color: 0xddddff, size: 10000000000000000, sizeAttenuation: true })
+  ]
+  for (i = 10; i < 30; i++) {
+    stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
+        // stars.rotation.x = Math.random() * 6;
+        // stars.rotation.y = Math.random() * 6;
+        // stars.rotation.z = Math.random() * 6;
+        //  stars.scale.setScalar( i * 10 );
+    stars.position.x -= radius / 2
+    stars.position.y -= radius / 6
+    stars.position.z -= radius / 2
+    stars.matrixAutoUpdate = false
+    stars.updateMatrix()
+    Void.scene.add(stars)
+  }
 }
 function onWindowResize () {
-  // windowHalfX = window.innerWidth / 2
-  // windowHalfY = window.innerHeight / 2
+      // windowHalfX = window.innerWidth / 2
+      // windowHalfY = window.innerHeight / 2
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight)
 }
 function updateOimoPhysics () {
-  if (world == null) { return }
+  if (world == null) {
+    return
+  }
   world.step()
   let x,
     y,
@@ -343,11 +341,16 @@ function updateOimoPhysics () {
     if (!body.sleeping) {
       mesh.position.copy(body.getPosition())
       mesh.quaternion.copy(body.getQuaternion())
-      // change material
-      if (mesh.material.name === 'sbox') { mesh.material = mats.box }
-      if (mesh.material.name === 'ssph') { mesh.material = mats.sph }
-      if (mesh.material.name === 'scyl') { mesh.material = mats.cyl }
-
+          // change material
+      if (mesh.material.name === 'sbox') {
+        mesh.material = mats.box
+      }
+      if (mesh.material.name === 'ssph') {
+        mesh.material = mats.sph
+      }
+      if (mesh.material.name === 'scyl') {
+        mesh.material = mats.cyl
+      }
       // reset position
       if (mesh.position.y < -100) {
         x = -100 + Math.random() * 200
@@ -356,28 +359,29 @@ function updateOimoPhysics () {
         body.resetPosition(x, y, z)
       }
     } else {
-      if (mesh.material.name === 'box') { mesh.material = mats.sbox }
-      if (mesh.material.name === 'sph') { mesh.material = mats.ssph }
-      if (mesh.material.name === 'cyl') { mesh.material = mats.scyl }
+      if (mesh.material.name === 'box') {
+        mesh.material = mats.sbox
+      }
+      if (mesh.material.name === 'sph') {
+        mesh.material = mats.ssph
+      }
+      if (mesh.material.name === 'cyl') {
+        mesh.material = mats.scyl
+      }
     }
   }
-
-  // infos.innerHTML = world.getInfo();
 }
 
-//
 function animate () {
   requestAnimationFrame(animate)
   updateOimoPhysics()
   if (Void.soPhysics) {
-
-    if(Void.systemLoaded){
-    Void.soPhysics.accelerateCuda()
-    updateSystem()
+    if (Void.systemLoaded) {
+      Void.soPhysics.accelerateCuda()
+      updateSystem()
     }
   }
   render()
-  // camera.lookAt(ship.position);
 }
 
 const initialTime = 100

@@ -29,7 +29,13 @@
     "globals": {
       "Void": true,
       "THREE": false,
-      "OIMO": false
+      "OIMO": false,
+      "postMessage": false,
+      "self": true
+    },
+    "rules": {
+      "object-curly-spacing": [ 2, "always" ],
+      "array-bracket-spacing": [ 2, "always" ]
     }
   },
   "babel": {
