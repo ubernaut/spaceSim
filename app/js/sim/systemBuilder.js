@@ -270,10 +270,10 @@ const G = 2.93558 * Math.pow(10, -4)
 const epsilon = 0.01
 
 class soPhysics {
-  constructor (aSystem, maxMark = 100000, dt = 0.02, metric = false) {
+  constructor (aSystem, maxMark = 100000, dt = 0.02, GPGPU = false) {
     this.dt = dt
     this.system = aSystem
-    this.metric = metric
+
     this.collisions = []
     this.gridSystem = new GridSystem(aSystem.bodies)
     this.maxMark = maxMark
@@ -281,7 +281,42 @@ class soPhysics {
     this.sumFit = this.fitness
     this.t = 0
     this.count = 1
+    this.tryCount = 0
+
+    if(GPGPU){
+      try{
+        this.initGPUStuff()
+      }catch(except){
+        console.log(except);
+      }
+
+      }
+    }
+
+
+  initGPUStuff(){
+    this.gpu = new GPU()
+    this.gpgpu = true
+    console.log(this.gridSystem.pos)
+    const myFunc = this.gpu.createKernel(function(pos) {
+    return pos;
+  }).setOutput([3,512]);
+
+  myFunc(this.gridSystem.pos);
   }
+  // loadGpu (){
+  //
+  // }
+  // tryLoadGpu (){
+  //   try {
+  //     this.loadGpu ()
+  //     console.log("success!")
+  //   }
+  //   catch(exception){
+  //     console.log("couldn't load GPU")
+  //     this.tryCount++
+  //   }
+  // }
 
   collisionDetected (player, names, mass, pos, vel, acc, rad, ith, jth) {
     if (names[jth] != 'player' && names[ith] != 'player') {
