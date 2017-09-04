@@ -38,30 +38,86 @@ const createRandomStar = ({ radius, position, time = 0 }) => {
     const starrand = randomUniform(1,10000)
     let subRand = 0
     if (starrand < 7600){
-
             //self.mtype()
-            starColor= "M2"
-            // subRand = Math.round(randomUniform(1,3))*2
-            // color ="M"+subRand.toString()
+            subRand = Math.round(randomUniform(1,3))
+            if(subRand==1){
+              starColor= "M2"
+            }else if(subRand ==2){
+              starColor = "M4"
+            }
+            else if(subRand ==3){
+              starColor = "M6"
+            }
     }else if (starrand < 8800 && starrand > 7600){
             //self.ktype()
-            starColor = "K0"
+
+            subRand = Math.round(randomUniform(1,3))
+            if(subRand==1){
+             starColor = "K0"
+            }else if(subRand ==2){
+              starColor = "K4"
+            }
+            else if(subRand ==3){
+              starColor = "K7"
+            }
     }else if (starrand < 9400 && starrand > 8800){
             //self.gtype()
-            starColor = "G2"
+
+            subRand = Math.round(randomUniform(1,3))
+            if(subRand==1){
+              starColor = "G2"
+            }else if(subRand ==2){
+              starColor = "G5"
+            }
+            else if(subRand ==3){
+              starColor = "G8"
+            }
     }else if (starrand < 9700 && starrand > 9400){
             //self.ftype()
-            starColor = "F0"
+
+            subRand = Math.round(randomUniform(1,4))
+            if(subRand==1){
+              starColor = "F0"
+            }else if(subRand ==2){
+              starColor = "F2"
+            }
+            else if(subRand ==3){
+              starColor = "F5"
+            }else if(subRand ==4){
+              starColor = "F8"
+            }
+
     }else if (starrand < 9800 && starrand > 9900){
             //self.atype()
-            starColor = "A1"
+
+            subRand = Math.round(randomUniform(1,3))
+            if(subRand==1){
+              starColor = "A1"
+            }else if(subRand ==2){
+              starColor = "A3"
+            }
+            else if(subRand ==3){
+              starColor = "A5"
+            }
     }else if (starrand < 9900 && starrand > 9950){
             //self.btype()
-            starColor = "B1"
+            subRand = Math.round(randomUniform(1,4))
+            if(subRand==1){
+              starColor = "B1"
+            }else if(subRand ==2){
+              starColor = "B3"
+            }
+            else if(subRand ==3){
+              starColor = "B5"
+            }
+            else if(subRand ==4){
+              starColor = "B8"
+            }
     }else if (starrand < 9950){
             //self.otype()
             starColor = "O5"
     }
+    console.log("star is type: "+starColor)
 
     return createStar({ radius: radius, position: position, color: starColor,  time: Void.time })
 }
