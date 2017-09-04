@@ -1,15 +1,20 @@
 const path = require('path')
 const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+const resolve = target => path.join(__dirname, target)
 
 module.exports = {
-  entry: './js/app.js',
-
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js'
+  entry: {
+    bundle: resolve('app/js/app.js')
   },
 
-  devtool: 'eval-source-map',
+  output: {
+    path: resolve('dist'),
+    filename: '[name]-[hash:16].js'
+  },
+
+  devtool: false,
 
   resolve: {
     modules: [ 'node_modules' ],
@@ -19,7 +24,8 @@ module.exports = {
       '.js'
     ],
     alias: {
-      '-': path.join(__dirname, 'js')
+      '-': resolve('app/js'),
+      'app': resolve('app')
     }
   },
 
@@ -41,11 +47,26 @@ module.exports = {
         loaders: [
           'raw-loader'
         ]
+      },
+      {
+        test: /\.worker.js$/,
+        loader: 'worker-loader?inline'
       }
     ]
   },
 
   plugins: [
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      filename: 'vendor-[hash:16].js',
+      minChunks: module => {
+        return module.context && module.context.indexOf('node_modules') !== -1
+      }
+    }),
+    new HtmlWebpackPlugin({
+      filename: '../index.html',
+      template: resolve('app/index.prod.html')
+    })
   ]
 }

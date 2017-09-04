@@ -2,7 +2,8 @@ node_modules/
 npm-debug.log
 package-lock.json
 
-dist/
+dist/**
+!dist/lib/**
 
 yarn.lock
 

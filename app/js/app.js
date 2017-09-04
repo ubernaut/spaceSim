@@ -18,6 +18,7 @@ const Void = window.Void = {
   player: {
     ship: null
   },
+  clock: new THREE.Clock(),
   time: { value: 100000000 },
   socket: null,
   scene: null,

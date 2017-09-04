@@ -4,14 +4,16 @@ const webpack = require('webpack')
 const resolve = target => path.join(__dirname, target)
 
 module.exports = {
-  entry: resolve('app/js/app.js'),
+  entry: {
+    bundle: resolve('app/js/app.js')
+  },
 
   output: {
     path: resolve('dist'),
-    filename: 'bundle.js'
+    filename: '[name].js'
   },
 
-  devtool: 'eval-source-map',
+  devtool: 'cheap-module-eval-source-map',
 
   resolve: {
     modules: [ 'node_modules' ],
@@ -40,23 +42,37 @@ module.exports = {
         ]
       },
       {
-        test: /\.(glsl|md|obj)$/i,
+        test: /\.(glsl|md|obj)$/,
         loaders: [
           'raw-loader'
         ]
+      },
+      {
+        test: /\.worker.js$/,
+        loader: 'worker-loader?inline'
       }
     ]
   },
 
   devServer: {
     contentBase: __dirname,
-    publicPath: '/dist/',
+    publicPath: '/',
     compress: true,
     port: 8000,
-    hot: true
+    hot: true,
+    historyApiFallback: {
+      index: 'app/index.dev.html'
+    }
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      filename: 'vendor.js',
+      minChunks: module => {
+        return module.context && module.context.indexOf('node_modules') !== -1
+      }
+    })
   ]
 }

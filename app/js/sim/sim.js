@@ -5,25 +5,24 @@ import { createPlanet } from '-/bodies/planet'
 import * as controls from '-/player/controls'
 import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
-import SystemBuilderWorker from 'worker-loader?inline!./workers/systemBuilderWorker'
+import SystemBuilderWorker from './workers/systemBuilder.worker'
 
-const clock = new THREE.Clock()
 let container,
   camera,
   renderer
 let world = null
-const bodys = []
 
 let galaxyRadius
 const loadSystem = () => {
-  Void.systemLoaded = false
   const systemWorker = new SystemBuilderWorker()
+
   systemWorker.postMessage('!')
   systemWorker.onmessage = e => {
     Void.thisSystem = e.data
 
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
+
     Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true)
 
     const mkBody = body => {
@@ -309,14 +308,13 @@ const animate = () => {
 
 const initialTime = 100
 const render = () => {
-  const delta = clock.getDelta()
+  const delta = Void.clock.getDelta()
   if (Void.controls) {
-    Void.time.value = initialTime + clock.getElapsedTime()
+    Void.time.value = initialTime + Void.clock.getElapsedTime()
     Void.controls.update(delta)
   }
   renderer.render(Void.scene, camera)
 }
-
 //   function getTexture(body) {
 //
 //     if (body.mass < 0.001)

@@ -23,6 +23,7 @@ self.onmessage = function (e) {
     setInterval(update, e.data.dt * 1000)
   }
 }
+
 let update = function () {
    // Step the world
   Void.world.step()
