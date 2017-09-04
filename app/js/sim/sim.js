@@ -37,7 +37,7 @@ const loadSystem = () => {
         Void.scene.add(planet)
       }
     }
-    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 300), { concurrency: 16 })
+    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 300), { concurrency: 12 })
   }
   Void.systemLoaded = true
 }
