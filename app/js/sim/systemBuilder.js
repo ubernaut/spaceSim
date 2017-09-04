@@ -285,7 +285,7 @@ class soPhysics {
 
     if(GPGPU){
       try{
-        this.initGPUStuff()
+        //this.initGPUStuff()
       }catch(except){
         console.log(except);
       }
@@ -298,6 +298,7 @@ class soPhysics {
     this.gpu = new GPU()
     this.gpgpu = true
     console.log(this.gridSystem.pos)
+
     const myFunc = this.gpu.createKernel(function(pos) {
     return pos;
   }).setOutput([3,512]);

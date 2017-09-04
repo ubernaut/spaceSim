@@ -1,6 +1,6 @@
 import Promise from 'bluebird'
 
-import { createStar } from '-/bodies/star'
+import { createStar, createRandomStar } from '-/bodies/star'
 import { createPlanet } from '-/bodies/planet'
 import * as controls from '-/player/controls'
 import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
@@ -29,7 +29,7 @@ const loadSystem = () => {
 
     const mkBody = body => {
       if (body.name === 'star') {
-        const star = createStar({ radius: body.radius, position: body.position, color: 'A1', time: Void.time })
+        const star = createRandomStar({ radius: body.radius, position: body.position, time: Void.time })
         body.object = star.photosphere
         Void.scene.add(star.photosphere)
         Void.scene.add(star.surface)
