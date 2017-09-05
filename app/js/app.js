@@ -1,3 +1,5 @@
+import 'babel-polyfill'
+
 import bunyan from 'browser-bunyan'
 
 import * as net from '-/net/net'

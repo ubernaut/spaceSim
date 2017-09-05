@@ -1,4 +1,4 @@
-import { randomUniform } from '-/utils'
+import Promise from 'bluebird'
 
 import earth from 'app/assets/images/planets/earth/earth-512x512.jpg'
 import earthBump from 'app/assets/images/planets/earth/earth-512x512.bump.jpg'
@@ -13,7 +13,7 @@ import saturn from 'app/assets/images/planets/saturn.jpg'
 import uranus from 'app/assets/images/planets/uranus.jpg'
 import venus from 'app/assets/images/planets/venus.jpg'
 
-const planetTextures = [
+const basicPlanetTextures = [
   jupiter,
   mars,
   mercury,
@@ -24,46 +24,69 @@ const planetTextures = [
   venus
 ]
 
-const textureLoader = new THREE.TextureLoader()
+const loadTextures = textureUrls => {
+  const loader = new THREE.TextureLoader()
+  return textureUrls.map(url => new Promise(resolve => loader.load(url, resolve)))
+}
 
-const planetMaterials = []
-
-planetTextures.map(t => {
-  textureLoader.load(t, map => {
-    planetMaterials.push(new THREE.MeshPhongMaterial({ map }))
-  })
-})
-
-// earth: texture, spec map, bump map
-textureLoader.load(earth, map => {
-  textureLoader.load(earthBump, specularMap => {
-    textureLoader.load(earthSpec, normalMap => {
-      const earthMaterial = new THREE.MeshPhongMaterial({
-        map,
-        specularMap,
-        normalMap,
-        specular: new THREE.Color(0xffffff),
-        shininess: 2
+const loadEarthMesh = () => {
+  const loader = new THREE.TextureLoader()
+  return new Promise(resolve => {
+    loader.load(earth, map => {
+      loader.load(earthBump, specularMap => {
+        loader.load(earthSpec, normalMap => {
+          const material = new THREE.MeshPhongMaterial({
+            map,
+            specularMap,
+            normalMap,
+            specular: 0xeeddaa,
+            shininess: 1
+          })
+          const geometry = new THREE.SphereGeometry(1, 32, 32)
+          const mesh = THREE.SceneUtils.createMultiMaterialObject(geometry, [ material ])
+          resolve(mesh)
+        })
       })
-      planetMaterials.push(earthMaterial)
     })
   })
+}
+
+/**
+ * Get a random planet mesh to add the scene
+ */
+const randomMesh = meshes => meshes[Math.floor(Math.random() * meshes.length)]
+
+/**
+ * Pre-load the planets
+ */
+const planetsMeshes = []
+
+const loadPlanets = () => {
+  const geometry = new THREE.SphereGeometry(1, 16, 16)
+  return Promise.all(loadTextures(basicPlanetTextures))
+    .then(textures => textures.map(map => new THREE.MeshPhongMaterial({ map })))
+    .then(materials => materials.map(mat => new THREE.Mesh(geometry.clone(), mat, { castShadow: true })))
+    .then(meshes => [ ...meshes, loadEarthMesh() ])
+}
+
+Promise.all(loadPlanets()).then(meshes => {
+  Void.log.debug('loaded planet meshes')
+  planetsMeshes.push(...meshes)
 })
 
-const randomMaterial = () => planetMaterials[Math.floor(Math.random() * planetMaterials.length)]
-
+/**
+ * Main creation method
+ */
 const createPlanet = ({ radius, position }) => {
-  const geometry = new THREE.SphereGeometry(radius, 16, 16)
+  const planet = randomMesh(planetsMeshes).clone()
 
-  const material = randomMaterial().clone()
-  // material.color.set(randomUniform(0.5, 1) * 0xffffff)
-  const planet = new THREE.Mesh(geometry, material, {
-    castShadow: true
-  })
-
-  planet.position.x = position.x
-  planet.position.y = position.y
-  planet.position.z = position.z
+  if (planet.type === 'Group') {
+    planet.children[0].scale.set(radius, radius, radius)
+    planet.children[0].position.set(position.x, position.y, position.z)
+  } else {
+    planet.scale.set(radius, radius, radius)
+    planet.position.set(position.x, position.y, position.z)
+  }
 
   return planet
 }
