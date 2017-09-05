@@ -270,10 +270,10 @@ const G = 2.93558 * Math.pow(10, -4)
 const epsilon = 0.01
 
 class soPhysics {
-  constructor (aSystem, maxMark = 100000, dt = 0.02, GPGPU = false) {
+  constructor (aSystem, maxMark = 100000, dt = 0.02,metric=false, GPGPU = false) {
     this.dt = dt
     this.system = aSystem
-
+    this.metric = metric
     this.collisions = []
     this.gridSystem = new GridSystem(aSystem.bodies)
     this.maxMark = maxMark

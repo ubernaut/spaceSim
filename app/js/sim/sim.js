@@ -27,7 +27,7 @@ const loadSystem = () => {
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001,true, true)
 
     const mkBody = body => {
       if (body.name === 'star') {
