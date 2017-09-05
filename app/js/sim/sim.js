@@ -37,6 +37,7 @@ const loadSystem = () => {
         Void.scene.add(star.chromosphere)
         Void.scene.add(star.emitter)
         Void.scene.add(star.pointLight)
+        animateCallbacks.push(star.animate)
       } else {
         const planet = createPlanet({ radius: body.radius, position: body.position })
         if (planet) {

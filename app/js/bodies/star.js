@@ -161,17 +161,20 @@ const createStar = ({ radius, position, color, time = 0 }) => {
 
   const animate = (delta, tick) => {
     // console.log(time)a
-    const position = {
-      x: Math.sin(delta * particleEmitterOptions.horizontalSpeed) * 20,
-      y: Math.sin(delta * particleEmitterOptions.horizontalSpeed) * 10,
-      z: Math.sin(delta * particleEmitterOptions.horizontalSpeed + particleEmitterOptions.verticalSpeed) * 5
-    }
-    const options = Object.assign({}, particleOptions, { position })
-    // console.log(options)wa
-    for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
-      emitter.spawnParticle()
-    }
-    emitter.update(tick)
+    // const position = {
+    //   x: Math.sin(delta * particleEmitterOptions.horizontalSpeed) * 20,
+    //   y: Math.sin(delta * particleEmitterOptions.horizontalSpeed) * 10,
+    //   z: Math.sin(delta * particleEmitterOptions.horizontalSpeed + particleEmitterOptions.verticalSpeed) * 5
+    // }
+    // const options = Object.assign({}, particleOptions, { position })
+    // // console.log(options)wa
+    // for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
+    //   emitter.spawnParticle()
+    // }
+    // emitter.update(tick)
+    ;[ photosphere, chromosphere ].map(mesh => {
+      mesh.rotation.z -= 0.0005
+    })
   }
 
   return {
