@@ -150,7 +150,7 @@ const createStar = ({ radius, position, color, time = 0 }) => {
   })
   emitter.position.set(0, 0, 0)
 
-  const pointLight = new THREE.PointLight(rgb2hex(starTypes[color]), 1.3, 0, 2)
+  const pointLight = new THREE.PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
   pointLight.castShadow = true
 
   ;[ emitter, photosphere, chromosphere, pointLight ].map(s => {
