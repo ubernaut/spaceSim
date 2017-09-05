@@ -1,5 +1,5 @@
 import fragmentShader from 'app/shaders/star.fs.glsl'
-import vertexShader from 'app/shaders/corona.vs.glsl'
+import vertexShader from 'app/shaders/star.vs.glsl'
 import { randomUniform } from '-/utils'
 
 import { GPUParticleSystem } from 'app/js/webgl/gpu-particle-system'
@@ -217,9 +217,9 @@ const createPhotosphere = (radius, rgb, time) => {
 
 const getUniforms = (radius, rgb, time = 0) => {
   // TODO: fix this UI hack
-  Void.uniforms.sun.color.red.value = rgb[0] / 255.0 * 0.65
-  Void.uniforms.sun.color.green.value = rgb[1] / 255.0 * 0.5
-  Void.uniforms.sun.color.blue.value = rgb[2] / 255.0 * 0.5
+  Void.uniforms.sun.color.red.value = rgb[0] / 255.0 * 0.7
+  Void.uniforms.sun.color.green.value = rgb[1] / 255.0 * 0.7
+  Void.uniforms.sun.color.blue.value = rgb[2] / 255.0 * 0.7
 
   return {
     viewVector: {

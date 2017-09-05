@@ -78,9 +78,10 @@ Promise.all(loadPlanets()).then(meshes => {
  * Main creation method
  */
 const createPlanet = ({ radius, position }) => {
-  const planet = randomMesh(planetsMeshes).clone()
+  const planetMesh = randomMesh(planetsMeshes)
 
-  if (planet) {
+  if (planetMesh) {
+    const planet = planetMesh.clone()
     if (planet.type === 'Group') {
       planet.children[0].scale.set(radius, radius, radius)
       planet.children[0].position.set(position.x, position.y, position.z)

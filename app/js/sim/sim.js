@@ -27,7 +27,7 @@ const loadSystem = () => {
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001,true, true)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true, true)
 
     const mkBody = body => {
       if (body.name === 'star') {
@@ -39,8 +39,10 @@ const loadSystem = () => {
         Void.scene.add(star.pointLight)
       } else {
         const planet = createPlanet({ radius: body.radius, position: body.position })
-        body.object = planet
-        Void.scene.add(planet)
+        if (planet) {
+          body.object = planet
+          Void.scene.add(planet)
+        }
       }
     }
     Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 250), { concurrency: 20 })
@@ -304,7 +306,6 @@ const updateOimoPhysics = () => {
     return
   }
   world.step()
-
 }
 
 let tick = 0
@@ -330,7 +331,5 @@ const animate = () => {
 
   composer.render(delta)
 }
-
-
 
 export { init, animate, loadSystem, world }
