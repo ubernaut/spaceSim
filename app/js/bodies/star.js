@@ -134,6 +134,8 @@ const particleEmitterOptions = {
 const createStar = ({ radius, position, color, time = 0 }) => {
   let rgb
   if (typeof color === 'string') {
+    // TODO: remove this UI hack
+    Void.gui.values.starType = color
     rgb = starTypes[color]
   }
   if (!color || !rgb) {
@@ -214,6 +216,11 @@ const createPhotosphere = (radius, rgb, time) => {
 }
 
 const getUniforms = (radius, rgb, time = 0) => {
+  // TODO: fix this UI hack
+  Void.uniforms.sun.color.red.value = rgb[0] / 255.0 * 0.65
+  Void.uniforms.sun.color.green.value = rgb[1] / 255.0 * 0.5
+  Void.uniforms.sun.color.blue.value = rgb[2] / 255.0 * 0.5
+
   return {
     viewVector: {
       value: Void.camera
@@ -230,15 +237,9 @@ const getUniforms = (radius, rgb, time = 0) => {
     noiseStrength: {
       value: 1
     },
-    baseColorRed: {
-      value: rgb[0] / 255.0 * 0.65
-    },
-    baseColorGreen: {
-      value: rgb[1] / 255.0 * 0.55
-    },
-    baseColorBlue: {
-      value: rgb[2] / 255.0 * 0.55
-    },
+    baseColorRed: Void.uniforms.sun.color.red,
+    baseColorGreen: Void.uniforms.sun.color.green,
+    baseColorBlue: Void.uniforms.sun.color.blue,
     time
   }
 }

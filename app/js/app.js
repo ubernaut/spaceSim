@@ -27,7 +27,22 @@ const Void = window.Void = {
   controls: null,
   gui: {
     values: {
-      starType: 'A1'
+      starType: 'O5'
+    }
+  },
+  uniforms: {
+    sun: {
+      color: {
+        red: {
+          value: 255
+        },
+        green: {
+          value: 255
+        },
+        blue: {
+          value: 255
+        }
+      }
     }
   }
 }
@@ -83,7 +98,12 @@ const registerEventListeners = () => {
 sim.init(document.getElementById('root'))
 sim.animate()
 
-createBasicUI(Void.gui.values)
+createBasicUI(Void.gui.values, color => {
+  const split = color.split(',')
+  Void.uniforms.sun.color.red.value = split[0] / 255.0 * 0.75
+  Void.uniforms.sun.color.green.value = split[1] / 255.0 * 0.75
+  Void.uniforms.sun.color.blue.value = split[2] / 255.0 * 0.75
+})
 
 registerEventListeners()
 
