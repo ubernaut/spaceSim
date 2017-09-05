@@ -14,7 +14,7 @@ const onScroll = ({ camera, controls, event }) => {
 }
 
 const setFlyControls = ({ ship, camera, el }) => {
-  const controls = new THREE.FlyControls(ship)
+  const controls = new THREE.FlyControls(ship, el)
   controls.movementSpeed = 100
   controls.domElement = el
   controls.rollSpeed = Math.PI / 3

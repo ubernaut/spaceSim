@@ -35,7 +35,6 @@ const loadSystem = () => {
         body.object = star.chromosphere
         // Void.scene.add(star.photosphere)
         Void.scene.add(star.chromosphere)
-        animateCallbacks.push(star.animate)
         Void.scene.add(star.emitter)
         Void.scene.add(star.pointLight)
       } else {
@@ -136,7 +135,7 @@ const addShip = scene => {
       Void.camera.position.set(0, 10, 30)
       scene.add(object)
 
-      Void.controls = controls.setFlyControls({ camera: Void.camera, ship: Void.ship, el: document })
+      Void.controls = controls.setFlyControls({ camera: Void.camera, ship: Void.ship, el: document.querySelector('#root > canvas') })
 
       const size = 100000000
       const divisions = 1000

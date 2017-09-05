@@ -4,7 +4,7 @@ import { randomUniform } from '-/utils'
 
 import { GPUParticleSystem } from 'app/js/webgl/gpu-particle-system'
 
-const starColors = {
+const starTypes = {
   O5: [ 157, 180, 255 ],
 
   B1: [ 162, 185, 255 ],
@@ -134,10 +134,10 @@ const particleEmitterOptions = {
 const createStar = ({ radius, position, color, time = 0 }) => {
   let rgb
   if (typeof color === 'string') {
-    rgb = starColors[color]
+    rgb = starTypes[color]
   }
   if (!color || !rgb) {
-    rgb = starColors.K7
+    rgb = starTypes.K7
   }
 
   const photosphere = createPhotosphere(radius, rgb, time)
@@ -148,7 +148,7 @@ const createStar = ({ radius, position, color, time = 0 }) => {
   })
   emitter.position.set(0, 0, 0)
 
-  const pointLight = new THREE.PointLight(rgb2hex(starColors[color]), 1.3, 0, 2)
+  const pointLight = new THREE.PointLight(rgb2hex(starTypes[color]), 1.3, 0, 2)
   pointLight.castShadow = true
 
   ;[ emitter, photosphere, chromosphere, pointLight ].map(s => {
@@ -245,5 +245,6 @@ const getUniforms = (radius, rgb, time = 0) => {
 
 export {
   createStar,
-  createRandomStar
+  createRandomStar,
+  starTypes
 }
