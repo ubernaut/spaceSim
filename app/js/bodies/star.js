@@ -225,9 +225,6 @@ const getUniforms = (radius, rgb, time = 0) => {
   Void.uniforms.sun.color.blue.value = rgb[2] / 255.0 * 0.7
 
   return {
-    viewVector: {
-      value: Void.camera
-    },
     noiseScale: {
       value: 35 / radius
     },
