@@ -49,14 +49,16 @@ module.exports = {
         ]
       },
       {
-        test: /\.worker.js$/,
-        loader: 'worker-loader?inline'
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [
+          'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
+          'image-webpack-loader?bypassOnDebug'
+        ]
       }
     ]
   },
 
   plugins: [
-    new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       filename: 'vendor-[hash:16].js',
