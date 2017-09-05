@@ -1,6 +1,9 @@
 import { randomUniform } from '-/utils'
 
-import earth from 'app/assets/images/planets/earth.jpg'
+import earth from 'app/assets/images/planets/earth/earth-512x512.jpg'
+import earthBump from 'app/assets/images/planets/earth/earth-512x512.bump.jpg'
+import earthSpec from 'app/assets/images/planets/earth/earth-512x512.spec.jpg'
+
 import jupiter from 'app/assets/images/planets/jupiter.jpg'
 import mars from 'app/assets/images/planets/mars.jpg'
 import mercury from 'app/assets/images/planets/mercury.jpg'
@@ -11,7 +14,6 @@ import uranus from 'app/assets/images/planets/uranus.jpg'
 import venus from 'app/assets/images/planets/venus.jpg'
 
 const planetTextures = [
-  earth,
   jupiter,
   mars,
   mercury,
@@ -22,9 +24,29 @@ const planetTextures = [
   venus
 ]
 
-const planetMaterials = planetTextures.map(t => {
-  return new THREE.MeshPhongMaterial({
-    map: new THREE.ImageUtils.loadTexture(t)
+const textureLoader = new THREE.TextureLoader()
+
+const planetMaterials = []
+
+planetTextures.map(t => {
+  textureLoader.load(t, map => {
+    planetMaterials.push(new THREE.MeshPhongMaterial({ map }))
+  })
+})
+
+// earth: texture, spec map, bump map
+textureLoader.load(earth, map => {
+  textureLoader.load(earthBump, specularMap => {
+    textureLoader.load(earthSpec, normalMap => {
+      const earthMaterial = new THREE.MeshPhongMaterial({
+        map,
+        specularMap,
+        normalMap,
+        specular: new THREE.Color(0xffffff),
+        shininess: 2
+      })
+      planetMaterials.push(earthMaterial)
+    })
   })
 })
 
