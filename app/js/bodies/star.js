@@ -35,7 +35,7 @@ const starTypes = {
 }
 
 const createRandomStar = ({ radius, position, time = 0 }) => {
-  let starColor = ''
+  let starColor = 'F8'
 
   const starrand = randomUniform(1, 10000)
   let subRand = 0
