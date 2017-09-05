@@ -3,7 +3,6 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
-    "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-env": "^1.6.0",
     "file-loader": "^0.11.2",
     "graceful-fs": "^4.1.11",
@@ -65,9 +64,6 @@
   "babel": {
     "presets": [
       "env"
-    ],
-    "plugins": [
-      "transform-async-to-generator"
     ]
   }
 }
