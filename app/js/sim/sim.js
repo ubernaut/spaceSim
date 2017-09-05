@@ -305,47 +305,7 @@ const updateOimoPhysics = () => {
     return
   }
   world.step()
-    // let x,
-    //   y,
-    //   z,
-    //   mesh,
-    //   body,
-    //   i = bodys.length
-    // while (i--) {
-    //   body = bodys[i]
-    //   mesh = meshs[i]
-    //   if (!body.sleeping) {
-    //     mesh.position.copy(body.getPosition())
-    //     mesh.quaternion.copy(body.getQuaternion())
-    //         // change material
-    //     if (mesh.material.name === 'sbox') {
-    //       mesh.material = mats.box
-    //     }
-    //     if (mesh.material.name === 'ssph') {
-    //       mesh.material = mats.sph
-    //     }
-    //     if (mesh.material.name === 'scyl') {
-    //       mesh.material = mats.cyl
-    //     }
-    //     // reset position
-    //     if (mesh.position.y < -100) {
-    //       x = -100 + Math.random() * 200
-    //       z = -100 + Math.random() * 200
-    //       y = 100 + Math.random() * 1000
-    //       body.resetPosition(x, y, z)
-    //     }
-    //   } else {
-    //     if (mesh.material.name === 'box') {
-    //       mesh.material = mats.sbox
-    //     }
-    //     if (mesh.material.name === 'sph') {
-    //       mesh.material = mats.ssph
-    //     }
-    //     if (mesh.material.name === 'cyl') {
-    //       mesh.material = mats.scyl
-    //     }
-    //   }
-    // }
+
 }
 
 let tick = 0
@@ -372,53 +332,6 @@ const animate = () => {
   composer.render(delta)
 }
 
-// const render = () => {
-//   const delta = Void.clock.getDelta()
-// }
-//   function getTexture(body) {
-//
-//     if (body.mass < 0.001)
-//       body.texture = loader.loadTexture("models/earthmoon.jpg")
-//   } else if (body.mass >= 0.001 and body.mass < .002) {
-//     body.texture = loader.loadTexture("models/mars.jpg")
-//   } else if (body.mass >= .002 and body.mass < .003) {
-//     body.texture = loader.loadTexture("models/venus.jpg")
-//   } else if (body.mass >= .003 and body.mass < .006) {
-//     body.texture = loader.loadTexture("models/mercury.jpg")
-//   } else if (body.mass >= .006 and body.mass < .009) {
-//     body.texture = loader.loadTexture("models/pluto.jpg")
-//   } else if (body.mass >= .009 and body.mass < .01) {
-//     body.texture = loader.loadTexture("models/uranus.jpg")
-//   } else if (body.mass >= .01 and body.mass < .03) {
-//     body.texture = loader.loadTexture("models/saturn.jpg")
-//   } else if (body.mass >= .03 and body.mass < .05) {
-//     body.texture = loader.loadTexture("models/neptune.jpg")
-//   } else if (body.mass >= .05 and body.mass < .1) {
-//     body.texture = loader.loadTexture("models/saturn.jpg")
-//   } else if (body.mass >= .1 and body.mass < .2) {
-//     body.texture = loader.loadTexture("models/jupiter.jpg")
-//   } else {
-//     if (body.mass >= .7 and body.mass < 1.0) {
-//       // #M type
-//       body.texture = loader.loadTexture("models/Mstar.jpg")
-//       sunMaterial.setEmission(VBase4(1, .6, .6, 1))
-//     } else if (body.mass >= 1.0 and body.mass < 1.5) {
-//       // #K type
-//       body.texture = loader.loadTexture("models/Kstar.jpg")
-//       sunMaterial.setEmission(VBase4(1, .6, .6, 1))
-//     } else if (body.mass >= 1.0 and body.mass < 1.5) {
-//       // #G type
-//       body.texture = loader.loadTexture("models/GMstar.jpg")
-//       sunMaterial.setEmission(VBase4(1, .6, .6, 1))
-//
-//       // #}else if(  body.mass >= 1.5 and body.mass < 1.5){  #G type
-//       //         #body.texture = loader.loadTexture("models/Mstar.jpg")
-//       //         #sunMaterial.setEmission(VBase4(1,.6,.6,1))
-//     } else {
-//       body.texture = loader.loadTexture("models/Ostar.jpg")
-//       sunMaterial.setEmission(VBase4(.8, .8, 1, 1))
-//     }
-//   }
-// }
+
 
 export { init, animate, loadSystem, world }
