@@ -83,11 +83,15 @@ const createPlanet = ({ radius, position }) => {
   if (planetMesh) {
     const planet = planetMesh.clone()
     if (planet.type === 'Group') {
-      planet.children[0].scale.set(radius, radius, radius)
-      planet.children[0].position.set(position.x, position.y, position.z)
+      planet.children.map(c => {
+        c.scale.set(radius, radius, radius)
+        c.position.set(position.x, position.y, position.z)
+        c.rotation.set(115, 0, 0)
+      })
     } else {
       planet.scale.set(radius, radius, radius)
       planet.position.set(position.x, position.y, position.z)
+      planet.rotation.set(115, 0, 0)
     }
 
     return planet
