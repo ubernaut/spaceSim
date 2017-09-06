@@ -186,31 +186,6 @@ const addPostprocessing = ({ renderer, scene, camera }) => {
   bloomPass.combineMaterial.defines.SCREEN_MODE = '1'
   bloomPass.combineMaterial.needsUpdate = true
   composer.addPass(bloomPass)
-
-  // const coreGeometry = new THREE.SphereGeometry(1 * 0.99999, 16, 16)
-  // const coreMaterial = new THREE.MeshPhongMaterial({
-  //   color: 0xffddaa,
-  //   transparent: true
-  // })
-  // const core = new THREE.Mesh(coreGeometry, coreMaterial)
-  // core.position.set(0, 0, 0)
-  // scene.add(core)
-
-  // const raysPass = new GodRaysPass(scene, camera, core, {
-  //   resolutionScale: 0.6,
-  //   kernelSize: KernelSize.SMALL,
-  //   intensity: 1.0,
-  //   density: 0.96,
-  //   decay: 0.93,
-  //   weight: 0.4,
-  //   exposure: 0.6,
-  //   samples: 60,
-  //   clampMax: 1.0
-  // })
-  // raysPass.renderToScreen = true
-  // composer.addPass(raysPass)
-  //
-  // raysPass.combineMaterial.defines.SCREEN_MODE = '1'
 }
 
 let composer
@@ -224,8 +199,9 @@ const init = rootEl => {
   renderer.setSize(window.innerWidth, window.innerHeight)
 
   // camera
-  const camera = Void.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4.4 * Math.pow(10, 26))
-  camera.lookAt(new THREE.Vector3(0, 0, -1))
+  const IAU = 9.4607 * Math.pow(10, 15)
+  const farClip = 5 * IAU
+  const camera = Void.camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, farClip)
 
   // scene
   const scene = Void.scene = new THREE.Scene()
