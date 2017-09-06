@@ -8,26 +8,55 @@
     <script src="app/lib/gpu.min.js"></script>
     <script>
 
-    var positions = [[0,0,0],
-                    [0,10,0],
-                    [0,0,20]]
+    var positions = [[1,2,3],
+                    [4,5,6],
+                    [7,8,9]]
+    var velocities = [[1,2,3],
+                    [4,5,6],
+                    [7,8,9]]
+    var acceleration = [[1,2,3],
+                    [4,5,6],
+                    [7,8,9]]
+    var masses = [1,1,1]
+    var radii = [1,1,1]
 
     function initGPUStuff(){
       var gpu = new GPU()
-      const myFunc = gpu.createKernel(function(pos) {
-        var acc = pos[this.thread.y][this.thread.x]* 2;
+      const myFunc = gpu.createKernel(function(pos, mass, vel, acc, rad) {
+        function accGravSingle ( massj, massi, posj, posi, velj, veli, accj, acci, radj, radi){
+          var acc = [0,0,0];
+          var d_x = posj[0] - posi[0];
+          var d_y = posj[1] - posi[1];
+          var d_z = posj[2] - posi[2];
+          var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
+          var rad2 = Math.sqrt(radius);
+          var grav_mag = 0.0;
+          if (rad2 > 0.666 * (radi + radj)) {
+            grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)));
+            var grav_x = grav_mag * d_x;
+            var grav_y = grav_mag * d_y;
+            var grav_z = grav_mag * d_z;
+            acc[0] = grav_x * massj;
+            acc[1] = grav_y * massj;
+            acc[2] = grav_z * massj;
 
-        var d_x = pos[this.thread.y][0] - pos[this.thread.x][0];
-        var d_y = pos[this.thread.y][1] - pos[this.thread.x][1];
-        var d_z = pos[this.thread.y][2] - pos[this.thread.x][2];
-
-      return d_z;
+          } else {
+            grav_mag = 0;
+            //collision detected
+          }
+          return acc;
+        }
+        return accGravSingle(mass[this.thread.x],mass[this.thread.y],
+                             pos[this.thread.x],pos[this.thread.y],
+                             vel[this.thread.x],vel[this.thread.y],
+                             acc[this.thread.x],acc[this.thread.y],
+                             rad[this.thread.x],rad[this.thread.y]);
     }).setOutput([3,3]);
 
-    console.log(myFunc(positions ));
+    console.log(myFunc(positions, masses,velocities, acceleration, radii ));
     }
 
-    function accGravSingle (player, mass, pos, vel, acc, rad, ith, jth) {
+    function accGravSingle ( mass, pos, vel, acc, rad, ith, jth){
       var d_x = pos[jth][0] - pos[ith][0]
       var d_y = pos[jth][1] - pos[ith][1]
       var d_z = pos[jth][2] - pos[ith][2]
@@ -55,6 +84,23 @@
 
 
     initGPUStuff()
+
+
+
+//     var positions = [[0,0,0],
+//                 [0,10,0],
+//                 [0,0,20]]
+// function initGPUStuff(){
+//   var gpu = new GPU()
+//   const myFunc = gpu.createKernel(function(pos) {
+//     var acc = pos[this.thread.y][this.thread.x]* 2;
+//     var d_x = pos[this.thread.y][0] - pos[this.thread.x][0];
+//     var d_y = pos[this.thread.y][1] - pos[this.thread.x][1];
+//     var d_z = pos[this.thread.y][2] - pos[this.thread.x][2];
+//   return d_z;
+// }).setOutput([3,3]);
+// console.log(myFunc(positions ));
+// }
     </script>
   </head>
 
