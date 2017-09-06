@@ -1,3 +1,5 @@
+import FlyControls from './controls/flyControls'
+
 const movementSpeedMultiplier = 25000000
 
 const onScroll = ({ camera, controls, event }) => {
@@ -18,10 +20,10 @@ const adjustThrust = (val, controls) => {
 }
 
 const setFlyControls = ({ ship, camera, el }) => {
-  const controls = new THREE.FlyControls(ship, el)
+  const controls = new FlyControls(ship, el)
   controls.movementSpeed = 0
   controls.domElement = el
-  controls.rollSpeed = 0.1
+  controls.rollSpeed = 0.35
   controls.autoForward = true
   controls.dragToLook = true
 

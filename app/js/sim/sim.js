@@ -139,18 +139,20 @@ const addShip = scene => {
       scene.add(object)
 
       Void.controls = controls.setFlyControls({ camera: Void.camera, ship: Void.ship, el: document.querySelector('#root > canvas') })
-
-      const size = 100000000
-      const divisions = 1000
-      const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff)
-      scene.add(gridHelper1)
-
-      const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
-      helper.geometry.rotateY(Math.PI)
-      scene.add(helper)
-      Void.ship.add(helper)
     }, onProgress, onError)
   })
+}
+
+const shipPolarGrid = ship => {
+  const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
+  helper.geometry.rotateY(Math.PI)
+  return helper
+}
+
+const squareGrid = () => {
+  const size = 100000000
+  const divisions = 1000
+  const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff)
 }
 
 const addUniverse = scene => {
