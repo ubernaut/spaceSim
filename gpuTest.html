@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Into The Void!</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="app/lib/gpu.min.js"></script>
+    <script>
+
+    var positions = [[0,0,0],
+                    [0,10,0],
+                    [0,0,20]]
+
+    function initGPUStuff(){
+      var gpu = new GPU()
+      const myFunc = gpu.createKernel(function(pos) {
+        var acc = pos[this.thread.y][this.thread.x]* 2;
+
+        var d_x = pos[this.thread.y][0] - pos[this.thread.x][0];
+        var d_y = pos[this.thread.y][1] - pos[this.thread.x][1];
+        var d_z = pos[this.thread.y][2] - pos[this.thread.x][2];
+
+      return d_z;
+    }).setOutput([3,3]);
+
+    console.log(myFunc(positions ));
+    }
+
+    function accGravSingle (player, mass, pos, vel, acc, rad, ith, jth) {
+      var d_x = pos[jth][0] - pos[ith][0]
+      var d_y = pos[jth][1] - pos[ith][1]
+      var d_z = pos[jth][2] - pos[ith][2]
+      var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
+      var rad2 = Math.sqrt(radius)
+      var grav_mag = 0.0
+      if (rad2 > 0.666 * (rad[ith] + rad[jth])) {
+        grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)))
+        var grav_x = grav_mag * d_x
+        var grav_y = grav_mag * d_y
+        var grav_z = grav_mag * d_z
+        acc[ith][0] += grav_x * mass[jth]
+        acc[ith][1] += grav_y * mass[jth]
+        acc[ith][2] += grav_z * mass[jth]
+
+        acc[jth][0] += grav_x * mass[ith]
+        acc[jth][1] += grav_y * mass[ith]
+        acc[jth][2] += grav_z * mass[ith]
+
+      } else {
+        grav_mag = 0
+        //collision detected
+      }
+    }
+
+
+    initGPUStuff()
+    </script>
+  </head>
+
+	<body>
+		<div id="info">
+
+		</div>
+
+    <div id="root"></div>
+
+
+</html>
