@@ -20,7 +20,7 @@ let galaxyRadius
 const loadSystem = () => {
   let bodyCount=getUrlParameter('bodyCount')
   if(!bodyCount){
-    bodyCount = 2048
+    bodyCount = 1024
   }
   const systemWorker = new SystemBuilderWorker()
 
