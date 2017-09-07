@@ -340,7 +340,7 @@ class soPhysics {
           return accz;
         }
 
-      },{dimensions:[this.gridSystem.pos.length],
+      },{dimensions:[this.gridSystem.pos.length],//{dimensions:[this.gridSystem.pos.length,this.gridSystem.pos.length],
         loopMaxIterations:this.gridSystem.pos.length});
 }
       GPUAccelerate(){
