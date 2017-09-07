@@ -296,7 +296,7 @@ class soPhysics {
 
     initGPUStuff(){
         this.gpu = new GPU()
-        this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( mass,pos,acc,rad,CurrentDimension){
+        this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( pos,mass, acc,rad,CurrentDimension){
 
           var G = 2.93558 * Math.pow(10, -4);
           var accx = 0;
@@ -316,22 +316,21 @@ class soPhysics {
             var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
             var rad2 = Math.sqrt(radius);
             var grav_mag = 0.0;
-            var epsilon =0.01;
-            if (this.thread.x != this.thread.y && rad2 > 0.666 * (rad[this.thread.y] + rad[this.thread.x])) {
-              grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)));
-              var grav_x = grav_mag * d_x;
-              var grav_y = grav_mag * d_y;
-              var grav_z = grav_mag * d_z;
+            if (this.thread.x != this.thread.y && rad2 > 0.333 * (rad[this.thread.y] + rad[this.thread.x])) {
+              grav_mag = G / (Math.pow((radius+.00000001 ), (3.0 / 2.0)));
               // acc[this.thread.x][0] = acc[this.thread.x][0] + grav_x * mass[this.thread.x];
               // acc[this.thread.x][1] = acc[this.thread.x][1] + grav_y * mass[this.thread.x];
               // acc[this.thread.x][2] = acc[this.thread.x][2] + grav_z * mass[this.thread.x];
 
               if(CurrentDimension ==0){
-                return acc[this.thread.x][0] + grav_x * mass[this.thread.x];
+                var grav_x = grav_mag * d_x;
+                return 0-(acc[this.thread.x][0] + grav_x * mass[this.thread.y]);
               }else if(CurrentDimension ==1){
-                return acc[this.thread.x][1] + grav_y * mass[this.thread.x];
+                var grav_y = grav_mag * d_y;
+                return 0-(acc[this.thread.x][1] + grav_y * mass[this.thread.y]);
               }else{
-                return acc[this.thread.x][2] + grav_z * mass[this.thread.x];
+                var grav_z = grav_mag * d_z;
+                return 0-(acc[this.thread.x][2] + grav_z * mass[this.thread.y]);
               }
             } else {
               grav_mag = 0;
