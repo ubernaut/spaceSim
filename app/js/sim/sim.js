@@ -28,6 +28,7 @@ const loadSystem = () => {
     Void.thisSystem.bodies = metersBodies
 
     Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true, true)
+    Void.soPhysics.initGPUStuff()
 
     const mkBody = body => {
       if (body.name === 'star') {
@@ -301,7 +302,8 @@ const animate = () => {
   Void.time.value = initialTime + Void.clock.getElapsedTime()
 
   if (Void.soPhysics && Void.systemLoaded) {
-    Void.soPhysics.accelerateCuda()
+    //Void.soPhysics.accelerateCuda()
+    Void.soPhysics.GPUAccelerate()
     updateOimoPhysics()
     updateSystem()
 

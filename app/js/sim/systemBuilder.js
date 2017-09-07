@@ -285,7 +285,7 @@ class soPhysics {
 
     if(GPGPU){
       try{
-        //this.initGPUStuff()
+        this.initGPUStuff()
       }catch(except){
         console.log(except);
       }
@@ -294,30 +294,95 @@ class soPhysics {
     }
 
 
-  initGPUStuff(){
-    this.gpu = new GPU()
-    this.gpgpu = true
-    console.log(this.gridSystem.pos)
+    initGPUStuff(){
+        this.gpu = new GPU()
+        this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( mass,pos,acc,rad,CurrentDimension){
 
-    const myFunc = this.gpu.createKernel(function(pos) {
-    return pos;
-  }).setOutput([3,512]);
+          var G = 2.93558 * Math.pow(10, -4);
+          var accx = 0;
+          var accy = 0;
+          var accz = 0;
+          var result = 0;
+          // var newAcc=[[1,2,3],
+          //                 [4,5,6],
+          //                 [7,8,9]];
+          // const jth = this.thread.x;
+          // const ith = this.thread.y;
+          //for(var i =0; i<length; i++){
 
-  myFunc(this.gridSystem.pos);
-  }
-  // loadGpu (){
-  //
-  // }
-  // tryLoadGpu (){
-  //   try {
-  //     this.loadGpu ()
-  //     console.log("success!")
-  //   }
-  //   catch(exception){
-  //     console.log("couldn't load GPU")
-  //     this.tryCount++
-  //   }
-  // }
+            var d_x = pos[this.thread.x][0] - pos[this.thread.y][0];
+            var d_y = pos[this.thread.x][1] - pos[this.thread.y][1];
+            var d_z = pos[this.thread.x][2] - pos[this.thread.y][2];
+            var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
+            var rad2 = Math.sqrt(radius);
+            var grav_mag = 0.0;
+            var epsilon =0.01;
+            if (this.thread.x != this.thread.y && rad2 > 0.666 * (rad[this.thread.y] + rad[this.thread.x])) {
+              grav_mag = G / (Math.pow((radius + epsilon), (3.0 / 2.0)));
+              var grav_x = grav_mag * d_x;
+              var grav_y = grav_mag * d_y;
+              var grav_z = grav_mag * d_z;
+              // acc[this.thread.x][0] = acc[this.thread.x][0] + grav_x * mass[this.thread.x];
+              // acc[this.thread.x][1] = acc[this.thread.x][1] + grav_y * mass[this.thread.x];
+              // acc[this.thread.x][2] = acc[this.thread.x][2] + grav_z * mass[this.thread.x];
+
+              if(CurrentDimension ==0){
+                return acc[this.thread.x][0] + grav_x * mass[this.thread.x];
+              }else if(CurrentDimension ==1){
+                return acc[this.thread.x][1] + grav_y * mass[this.thread.x];
+              }else{
+                return acc[this.thread.x][2] + grav_z * mass[this.thread.x];
+              }
+            } else {
+              grav_mag = 0;
+              return 0;
+              //collision detected
+            }
+        //}
+
+      },{dimensions:[this.gridSystem.pos.length]});
+}
+      GPUAccelerate(){
+        this.convertToStellar()
+        var result =[];
+        result.push(this.GPUcomputeAcceleration(
+                            this.gridSystem.pos,
+                            this.gridSystem.mass,
+                            this.gridSystem.acc,
+                            this.gridSystem.rad,
+                          0));
+        result.push(this.GPUcomputeAcceleration(
+                            this.gridSystem.pos,
+                            this.gridSystem.mass,
+                            this.gridSystem.acc,
+                            this.gridSystem.rad,
+                          1));
+        result.push(this.GPUcomputeAcceleration(
+                            this.gridSystem.pos,
+                            this.gridSystem.mass,
+                            this.gridSystem.acc,
+                            this.gridSystem.rad,
+                          2));
+
+
+        //result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
+        let bottom = []
+        for(let i =0;i<this.gridSystem.pos.length; i++)
+        {bottom.push(
+          [result[0][i],
+          result[1][i],
+          result[2][i]])}
+        //this.calVelPosCuda()
+        this.gridSystem.acc = bottom;
+        this.calVelPosCuda()
+        this.gridSystem.resetAcc()
+        this.convertToMetric()
+        //console.log("GPU:")
+        //console.log(bottom)
+        //this.gridSystem.resetAcc()
+
+      }
+
 
   collisionDetected (player, names, mass, pos, vel, acc, rad, ith, jth) {
     if (names[jth] != 'player' && names[ith] != 'player') {
@@ -471,7 +536,10 @@ class soPhysics {
         }
       }
     }
+    console.log("CPU")
+    console.log(this.gridSystem.acc)
     this.calVelPosCuda()
+
     this.gridSystem.resetAcc()
     for (let i = 0; i < this.gridSystem.length; i++) {
       if (this.gridSystem.names[i] == 'DELETED') {
