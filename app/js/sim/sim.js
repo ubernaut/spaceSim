@@ -18,9 +18,13 @@ const animateCallbacks = []
 
 let galaxyRadius
 const loadSystem = () => {
+  let bodyCount=getUrlParameter('bodyCount')
+  if(!bodyCount){
+    bodyCount = 2048
+  }
   const systemWorker = new SystemBuilderWorker()
 
-  systemWorker.postMessage('!')
+  systemWorker.postMessage([Math.round(bodyCount/2)])
   systemWorker.onmessage = e => {
     Void.thisSystem = e.data
 
@@ -47,7 +51,7 @@ const loadSystem = () => {
         }
       }
     }
-    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 250), { concurrency: 20 })
+    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 2), { concurrency: 12 })
   }
   Void.systemLoaded = true
 }
