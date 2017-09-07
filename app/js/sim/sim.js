@@ -60,37 +60,37 @@ const updateSystem = () => {
   let i = 0
   for (const body of Void.thisSystem.bodies) {
     if (body.object) {
-      let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
-      if (collidedIndex !== -1) {
-        Void.soPhysics.collisions.splice(collidedIndex, 1)
-        if (body.name !== 'star') {
-          Void.scene.remove(body.object)
-          body.radius = Void.soPhysics.gridSystem.rad[i]
-          let bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
-          let bodyMaterial = new THREE.MeshPhongMaterial({
-            color: randomUniform(0.5, 1) * 0xffffff
-          })
-          const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
-          planet.position.x = body.position.x
-          planet.position.y = body.position.y
-          planet.position.z = body.position.z
-          body.object = planet
-          Void.scene.add(planet)
-
-          body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
-          body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
-          body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
-        }
-      } else {
-        body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
-        body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
-        body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
-      }
-      if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
-        Void.scene.remove(body.object)
-        // console.log('removed body')
-        body.object = ''
-      }
+      // let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
+    //  if (collidedIndex !== -1) {
+        //Void.soPhysics.collisions.splice(collidedIndex, 1)
+        // if (body.name !== 'star') {
+        //   Void.scene.remove(body.object)
+        //   body.radius = Void.soPhysics.gridSystem.rad[i]
+        //   let bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
+        //   let bodyMaterial = new THREE.MeshPhongMaterial({
+        //     color: randomUniform(0.5, 1) * 0xffffff
+        //   })
+        //   const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
+        //   planet.position.x = body.position.x
+        //   planet.position.y = body.position.y
+        //   planet.position.z = body.position.z
+        //   body.object = planet
+        //   Void.scene.add(planet)
+        //
+        //   body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
+        //   body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
+        //   body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+        // }
+      // } else {
+         body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
+         body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
+         body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+      // }
+      // if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
+      //   Void.scene.remove(body.object)
+      //   // console.log('removed body')
+      //   body.object = ''
+      // }
     }
     i++
   }
