@@ -296,7 +296,7 @@ class soPhysics {
 
     initGPUStuff(){
         this.gpu = new GPU()
-        this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( pos,mass, acc,rad,CurrentDimension,loopMaxIterations){
+        this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( pos,mass, acc,rad,CurrentDimension){
 
           var G = 2.93558 * Math.pow(10, -4);
           var accx = 0;
@@ -305,7 +305,7 @@ class soPhysics {
           var result = 0;
 
 
-          for(var i =0; i<1024; i++){
+          for(var i =0; i<this.constants.size; i++){
 
             var d_x = pos[this.thread.x][0] - pos[i][0];
             var d_y = pos[this.thread.x][1] - pos[i][1];
@@ -340,7 +340,9 @@ class soPhysics {
           return accz;
         }
 
-      },{dimensions:[this.gridSystem.pos.length],loopMaxIterations:this.gridSystem.pos.length});
+      },{constants: {size:this.gridSystem.pos.length},
+        dimensions:[this.gridSystem.pos.length],
+        loopMaxIterations:this.gridSystem.pos.length});
 }
       GPUAccelerate(){
         this.convertToStellar()
@@ -350,19 +352,19 @@ class soPhysics {
                             this.gridSystem.mass,
                             this.gridSystem.acc,
                             this.gridSystem.rad,
-                          0,this.gridSystem.pos.length));
+                          0));
         result.push(this.GPUcomputeAcceleration(
                             this.gridSystem.pos,
                             this.gridSystem.mass,
                             this.gridSystem.acc,
                             this.gridSystem.rad,
-                          1,this.gridSystem.pos.length));
+                          1));
         result.push(this.GPUcomputeAcceleration(
                             this.gridSystem.pos,
                             this.gridSystem.mass,
                             this.gridSystem.acc,
                             this.gridSystem.rad,
-                          2,this.gridSystem.pos.length));
+                          2));
 
 
         //result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
