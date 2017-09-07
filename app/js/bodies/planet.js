@@ -65,7 +65,7 @@ const loadPlanets = () => {
   const geometry = new THREE.SphereGeometry(1, 8, 8)
   return Promise.all(loadTextures(basicPlanetTextures))
     .then(textures => textures.map(map => new THREE.MeshPhongMaterial({ map })))
-    .then(materials => materials.map(mat => new THREE.Mesh(geometry.clone(), mat, { castShadow: true })))
+    .then(materials => materials.map(mat => new THREE.Mesh(geometry.clone(), mat, { castShadow: false })))
     .then(meshes => [ ...meshes, loadEarthMesh() ])
 }
 
