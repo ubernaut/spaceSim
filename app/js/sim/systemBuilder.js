@@ -296,19 +296,16 @@ class soPhysics {
 
     initGPUStuff(){
         this.gpu = new GPU()
-        this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( pos,mass, acc,rad,CurrentDimension){
+        this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( pos,mass, acc,rad,CurrentDimension,length){
 
           var G = 2.93558 * Math.pow(10, -4);
           var accx = 0;
           var accy = 0;
           var accz = 0;
           var result = 0;
-          // var newAcc=[[1,2,3],
-          //                 [4,5,6],
-          //                 [7,8,9]];
-          // const jth = this.thread.x;
-          // const ith = this.thread.y;
-          //for(var i =0; i<length; i++){
+
+
+          for(var i =0; i<1; i++){
 
             var d_x = pos[this.thread.x][0] - pos[this.thread.y][0];
             var d_y = pos[this.thread.x][1] - pos[this.thread.y][1];
@@ -316,30 +313,35 @@ class soPhysics {
             var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
             var rad2 = Math.sqrt(radius);
             var grav_mag = 0.0;
+
             if (this.thread.x!=0 && this.thread.x != this.thread.y && rad2 > 0.333 * (rad[this.thread.y] + rad[this.thread.x])) {
               grav_mag = G / (Math.pow((radius ), (3.0 / 2.0)));
-              // acc[this.thread.x][0] = acc[this.thread.x][0] + grav_x * mass[this.thread.x];
-              // acc[this.thread.x][1] = acc[this.thread.x][1] + grav_y * mass[this.thread.x];
-              // acc[this.thread.x][2] = acc[this.thread.x][2] + grav_z * mass[this.thread.x];
-
               if(CurrentDimension ==0){
                 var grav_x = grav_mag * d_x;
-                return 0-(acc[this.thread.x][0] + grav_x * mass[this.thread.y]);
+                accx=accx+ (0-(acc[this.thread.x][0] + grav_x * mass[this.thread.y]));
               }else if(CurrentDimension ==1){
                 var grav_y = grav_mag * d_y;
-                return 0-(acc[this.thread.x][1] + grav_y * mass[this.thread.y]);
+                accy=accy+ (0-(acc[this.thread.x][1] + grav_y * mass[this.thread.y]));
               }else{
                 var grav_z = grav_mag * d_z;
-                return 0-(acc[this.thread.x][2] + grav_z * mass[this.thread.y]);
+                accz=accx+( 0-(acc[this.thread.x][2] + grav_z * mass[this.thread.y]));
               }
             } else {
               grav_mag = 0;
-              return 0;
+              //return 0;
               //collision detected
             }
-        //}
+        }
+        if(CurrentDimension ==0){
+          return accx;
+        }else if(CurrentDimension ==1){
+          return accy;
+        }else{
+          return accz;
+        }
 
-      },{dimensions:[this.gridSystem.pos.length]});
+      },{dimensions:[this.gridSystem.pos.length],
+        loopMaxIterations:this.gridSystem.pos.length});
 }
       GPUAccelerate(){
         this.convertToStellar()
@@ -349,19 +351,19 @@ class soPhysics {
                             this.gridSystem.mass,
                             this.gridSystem.acc,
                             this.gridSystem.rad,
-                          0));
+                          0,this.gridSystem.pos.length));
         result.push(this.GPUcomputeAcceleration(
                             this.gridSystem.pos,
                             this.gridSystem.mass,
                             this.gridSystem.acc,
                             this.gridSystem.rad,
-                          1));
+                          1,this.gridSystem.pos.length));
         result.push(this.GPUcomputeAcceleration(
                             this.gridSystem.pos,
                             this.gridSystem.mass,
                             this.gridSystem.acc,
                             this.gridSystem.rad,
-                          2));
+                          2,this.gridSystem.pos.length));
 
 
         //result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
