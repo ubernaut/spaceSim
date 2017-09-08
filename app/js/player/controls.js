@@ -1,6 +1,6 @@
 import FlyControls from './controls/flyControls'
 
-const movementSpeedMultiplier = 10// 25000000
+const movementSpeedMultiplier = 50// 25000000
 
 const onScroll = ({ camera, controls, event }) => {
   const deltaY = event.wheelDeltaY
@@ -14,7 +14,7 @@ const onScroll = ({ camera, controls, event }) => {
 }
 
 const adjustThrust = (val, controls) => {
-  const newSpeed = controls.movementSpeed + ((val * movementSpeedMultiplier) * 1.2)
+  const newSpeed = controls.movementSpeed + (val * Math.max(1, Math.pow(controls.movementSpeed, 0.85)))
   Void.log.debug(`adjusting thrust from ${controls.movementSpeed / movementSpeedMultiplier} to ${newSpeed / movementSpeedMultiplier}`)
   controls.movementSpeed = newSpeed
 }
