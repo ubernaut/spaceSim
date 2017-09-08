@@ -4,6 +4,7 @@ import { createStar, createRandomStar } from '-/bodies/star'
 import { createPlanet } from '-/bodies/planet'
 import { createUniverse } from '-/bodies/universe'
 import * as controls from '-/player/controls'
+import * as weapons from '-/player/weapons'
 import { createShip } from '-/player/ship'
 import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
@@ -295,6 +296,8 @@ const animate = () => {
   }
 
   Void.time.value = Void.clock.getElapsedTime()
+
+  weapons.animate(delta, Void.time.value)
 
   if (Void.soPhysics && Void.systemLoaded) {
     // Void.soPhysics.accelerateCuda()

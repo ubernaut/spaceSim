@@ -14,6 +14,8 @@ const mkBullet = (weapon, color) => {
   }
 }
 
+let bullets = []
+
 const shoot = ({ quaternion, position, weaponType, color }) => {
   color = color || Math.random() * 0xffffff
 
@@ -23,19 +25,28 @@ const shoot = ({ quaternion, position, weaponType, color }) => {
   bullet.mesh.quaternion.copy(quaternion)
   Void.scene.add(bullet.mesh)
 
-  const moveBullet = () => {
-    bullet.mesh.translateZ(-1 * weapons[weaponType].velocity)
-  }
-
-  const flight = setInterval(moveBullet, 50)
-  setTimeout(() => {
-    clearInterval(flight)
-    Void.scene.remove(bullet.mesh)
-  }, weapons[weaponType].flightTime)
+  bullets.push({
+    flightTime: weapons[weaponType].flightTime,
+    velocity: weapons[weaponType].velocity,
+    mesh: bullet.mesh
+  })
 
   return { color }
 }
 
+const animate = (delta, time) => {
+  bullets.map(b => {
+    if (b.flightTime <= 0) {
+      Void.scene.remove(b.mesh)
+      bullets.remove(b)
+    } else {
+      b.mesh.translateZ(-10 * b.velocity * delta)
+      b.flightTime -= delta
+    }
+  })
+}
+
 export {
-  shoot
+  shoot,
+  animate
 }
