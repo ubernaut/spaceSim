@@ -15,14 +15,14 @@ uniform sampler2D tSprite;
 
 void main() {
 
-	// float alpha = 0.;
+	float alpha = 0.7;
 
-	// if( lifeLeft > 0.995 ) {
-	// 	alpha = scaleLinear( lifeLeft, vec2( 1.0, 0.995 ), vec2( 0.0, 1.0 ) );
-	// } else {
-	// 	alpha = lifeLeft * 0.75;
-	// }
+	if( lifeLeft > 0.995 ) {
+		alpha = scaleLinear( lifeLeft, vec2( 1.0, 0.995 ), vec2( 0.0, 1.0 ) );
+	} else {
+		alpha = lifeLeft * 0.75;
+	}
 
-	// vec4 tex = texture2D( tSprite, gl_PointCoord );
-	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); //vec4( vColor.rgb * tex.a, alpha * tex.a );
+	vec4 tex = texture2D( tSprite, gl_PointCoord );
+	gl_FragColor = vec4( vColor.rgb * tex.a, alpha * tex.a );
 }

@@ -61,7 +61,7 @@ let GPUParticleSystem = THREE.GPUParticleSystem = function (options) {
 
   this.particleShaderMat = new THREE.ShaderMaterial({
     transparent: true,
-    depthWrite: false,
+    depthTest: false,
     uniforms: {
       'uTime': {
         value: 0.0
@@ -74,9 +74,12 @@ let GPUParticleSystem = THREE.GPUParticleSystem = function (options) {
       },
       'tSprite': {
         value: this.particleSpriteTex
+      },
+      uVelocityZ: {
+        value: 1.0
       }
     },
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
     vertexShader: vertexShader,
     fragmentShader: fragmentShader
   })

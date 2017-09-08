@@ -156,6 +156,7 @@ export default function (object, domElement) {
     this.object.translateZ(this.moveVector.z * moveMult)
 
     this.tmpQuaternion.set(this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1).normalize()
+
     this.object.quaternion.multiply(this.tmpQuaternion)
 
 		// expose the rotation vector for convenience

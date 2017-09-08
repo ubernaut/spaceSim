@@ -2,29 +2,30 @@ import Promise from 'bluebird'
 
 import { createStar, createRandomStar } from '-/bodies/star'
 import { createPlanet } from '-/bodies/planet'
+import { createUniverse } from '-/bodies/universe'
 import * as controls from '-/player/controls'
+import { createShip } from '-/player/ship'
 import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from './workers/systemBuilder.worker'
 import { createComposer } from '-/webgl/postprocessing/effects'
 
-import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
-import { EffectComposer, GlitchPass, KernelSize, BloomPass, RenderPass, GodRaysPass } from 'postprocessing'
+// import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
+import { EffectComposer, BloomPass, RenderPass } from 'postprocessing'
 
 let renderer
-let world = null
+// let world = null
 
 const animateCallbacks = []
 
-let galaxyRadius
 const loadSystem = () => {
-  let bodyCount=getUrlParameter('bodyCount')
-  if(!bodyCount){
+  let bodyCount = getUrlParameter('bodyCount')
+  if (!bodyCount) {
     bodyCount = 1024
   }
   const systemWorker = new SystemBuilderWorker()
 
-  systemWorker.postMessage([Math.round(bodyCount/2)])
+  systemWorker.postMessage([ Math.round(bodyCount / 2) ])
   systemWorker.onmessage = e => {
     Void.thisSystem = e.data
 
@@ -40,7 +41,6 @@ const loadSystem = () => {
         body.object = star.chromosphere
         // Void.scene.add(star.photosphere)
         Void.scene.add(star.chromosphere)
-        Void.scene.add(star.emitter)
         Void.scene.add(star.pointLight)
         animateCallbacks.push(star.animate)
       } else {
@@ -62,7 +62,7 @@ const updateSystem = () => {
     if (body.object) {
       // let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
     //  if (collidedIndex !== -1) {
-        //Void.soPhysics.collisions.splice(collidedIndex, 1)
+        // Void.soPhysics.collisions.splice(collidedIndex, 1)
         // if (body.name !== 'star') {
         //   Void.scene.remove(body.object)
         //   body.radius = Void.soPhysics.gridSystem.rad[i]
@@ -82,9 +82,9 @@ const updateSystem = () => {
         //   body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
         // }
       // } else {
-         body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
-         body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
-         body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+      body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
+      body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
+      body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
       // }
       // if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
       //   Void.scene.remove(body.object)
@@ -102,7 +102,7 @@ const initOimoPhysics = () => {
   // 1 : BruteForce
   // 2 : Sweep and prune , the default
   // 3 : dynamic bounding volume tree
-  world = new OIMO.World({
+  return new OIMO.World({
     timestep: 1 / 60,
     iterations: 8,
     broadphase: 2,
@@ -120,62 +120,10 @@ const addLights = scene => {
   scene.add(ambient)
 }
 
-const addShip = scene => {
-  const mtlLoader = new THREE.MTLLoader()
-  mtlLoader.setPath('app/assets/models/')
-
-  const objLoader = new THREE.OBJLoader()
-  objLoader.setPath('app/assets/models/')
-
-  mtlLoader.load('ship.mtl', (materials) => {
-    materials.preload()
-    objLoader.setMaterials(materials)
-    objLoader.load('ship.obj', (object) => {
-      object.position.x = 0
-      object.position.y = -5000000000
-      object.position.z = 5000000000
-      object.scale.set(20, 20, 20)
-      object.rotation.set(1, -0.25, -0.25)
-      object.name = 'spaceShip'
-
-      Void.ship = object
-      Void.ship.add(Void.camera)
-      Void.camera.position.set(0, 10, 30)
-      scene.add(object)
-
-      Void.controls = controls.setFlyControls({ camera: Void.camera, ship: Void.ship, el: document.querySelector('#root > canvas') })
-    }, onProgress, onError)
-  })
-}
-
-const shipPolarGrid = ship => {
-  const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
-  helper.geometry.rotateY(Math.PI)
-  return helper
-}
-
 const squareGrid = () => {
   const size = 100000000
   const divisions = 1000
   const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff)
-}
-
-const addUniverse = scene => {
-  const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
-  const oortMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 })
-  const oort = new THREE.Mesh(oortGeometry, oortMaterial)
-  scene.add(oort)
-
-  galaxyRadius = 5 * Math.pow(10, 20)
-  const galaxyGeometry = new THREE.SphereGeometry(5 * Math.pow(10, 20), 32, 32)
-  const galaxyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
-  const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
-  scene.add(galaxy)
-
-  const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32)
-  const universeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
-  const universe = new THREE.Mesh(universeGeometry, universeMaterial)
-  scene.add(universe)
 }
 
 const addPostprocessing = ({ renderer, scene, camera }) => {
@@ -195,12 +143,36 @@ const addPostprocessing = ({ renderer, scene, camera }) => {
   composer.addPass(bloomPass)
 }
 
+const addUniverse = scene => {
+  const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
+  const oortMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 })
+  const oort = new THREE.Mesh(oortGeometry, oortMaterial)
+  // scene.add(oort)
+
+  const galaxyGeometry = new THREE.SphereGeometry(5 * Math.pow(10, 20), 32, 32)
+  const galaxyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
+  const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
+  // scene.add(galaxy)
+
+  const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32)
+  const universeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+  const universe = new THREE.Mesh(universeGeometry, universeMaterial)
+  // scene.add(universe)
+
+  return [
+    oort,
+    galaxy,
+    universe
+  ]
+}
+
 let composer
 const init = rootEl => {
   // renderer
   renderer = new THREE.WebGLRenderer({
     antialias: true,
-    logarithmicDepthBuffer: true
+    logarithmicDepthBuffer: true,
+    shadowMapEnabled: true
   })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)
@@ -213,26 +185,47 @@ const init = rootEl => {
   // scene
   const scene = Void.scene = new THREE.Scene()
   addLights(scene)
-  addShip(scene)
-  addUniverse(scene)
 
+  // ship
+  createShip({ controls }).then(({ ship, animate }) => {
+    // console.log(ship)
+    Void.ship = ship
+    Void.ship.add(Void.camera)
+    Void.camera.position.set(0, 10, 30)
+    scene.add(ship)
+
+    animateCallbacks.push(animate)
+
+    Void.controls = controls.setFlyControls({
+      camera: Void.camera,
+      ship: Void.ship,
+      el: rootEl
+    })
+  })
+
+  // all other matter
+  createUniverse(scene).map(body => scene.add(body))
+
+  // postprocessing
   addPostprocessing({ renderer, scene, camera })
 
+  // attach to the dom
   rootEl.appendChild(renderer.domElement)
 
   if (getUrlParameter('nostars') === undefined) {
-    addStars()
+    const galaxyRadius = 5 * Math.pow(10, 20)
+    addStars(galaxyRadius)
   }
 
   window.addEventListener('resize', onWindowResize, false)
 
-  Void.world = world
+  // init physics
+  Void.world = initOimoPhysics()
 
-  initOimoPhysics()
   loadSystem()
 }
 
-const addStars = () => {
+const addStars = (galaxyRadius) => {
   const radius = galaxyRadius
   let i,
     r = radius,
@@ -286,14 +279,12 @@ const onWindowResize = () => {
 }
 
 const updateOimoPhysics = () => {
-  if (world == null) {
+  if (Void.world == null) {
     return
   }
-  world.step()
+  Void.world.step()
 }
 
-let tick = 0
-const initialTime = 1000
 const animate = () => {
   requestAnimationFrame(animate)
 
@@ -303,18 +294,18 @@ const animate = () => {
     Void.controls.update(delta)
   }
 
-  Void.time.value = initialTime + Void.clock.getElapsedTime()
+  Void.time.value = Void.clock.getElapsedTime()
 
   if (Void.soPhysics && Void.systemLoaded) {
-    //Void.soPhysics.accelerateCuda()
+    // Void.soPhysics.accelerateCuda()
     Void.soPhysics.GPUAccelerate()
     updateOimoPhysics()
     updateSystem()
 
-    animateCallbacks.map(x => x(Void.time.value))
+    animateCallbacks.map(x => x(delta, Void.time.value))
   }
 
   composer.render(delta)
 }
 
-export { init, animate, loadSystem, world }
+export { init, animate, loadSystem }

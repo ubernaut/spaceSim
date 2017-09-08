@@ -2,8 +2,6 @@ import fragmentShader from 'app/shaders/star.fs.glsl'
 import vertexShader from 'app/shaders/star.vs.glsl'
 import { randomUniform } from '-/utils'
 
-import { GPUParticleSystem } from 'app/js/webgl/gpu-particle-system'
-
 const starTypes = {
   O5: [ 157, 180, 255 ],
 
@@ -112,25 +110,6 @@ const createRandomStar = ({ radius, position, time = 0 }) => {
   return createStar({ radius: radius, position: position, color: starColor, time: Void.time })
 }
 
-const particleOptions = {
-  position: new THREE.Vector3(),
-  positionRandomness: 0.3,
-  velocity: new THREE.Vector3(1, 1, 1),
-  velocityRandomness: 0.5,
-  color: 0xffffff,
-  turbulence: 0.5,
-  lifetime: 2,
-  size: 5,
-  sizeRandomness: 1
-}
-
-const particleEmitterOptions = {
-  spawnRate: 5,
-  horizontalSpeed: 1.5,
-  verticalSpeed: 1.5,
-  timeScale: 1
-}
-
 const createStar = ({ radius, position, color, time = 0 }) => {
   let rgb
   if (typeof color === 'string') {
@@ -145,33 +124,16 @@ const createStar = ({ radius, position, color, time = 0 }) => {
   const photosphere = createPhotosphere(radius, rgb, time)
   const chromosphere = createChromosphere(radius, rgb, time)
 
-  const emitter = new GPUParticleSystem({
-    maxParticles: 100
-  })
-  emitter.position.set(0, 0, 0)
-
   const pointLight = new THREE.PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
   pointLight.castShadow = true
 
-  ;[ emitter, photosphere, chromosphere, pointLight ].map(s => {
+  ;[ photosphere, chromosphere, pointLight ].map(s => {
     s.position.x = position.x
     s.position.y = position.y
     s.position.z = position.z
   })
 
   const animate = (delta, tick) => {
-    // console.log(time)a
-    // const position = {
-    //   x: Math.sin(delta * particleEmitterOptions.horizontalSpeed) * 20,
-    //   y: Math.sin(delta * particleEmitterOptions.horizontalSpeed) * 10,
-    //   z: Math.sin(delta * particleEmitterOptions.horizontalSpeed + particleEmitterOptions.verticalSpeed) * 5
-    // }
-    // const options = Object.assign({}, particleOptions, { position })
-    // // console.log(options)wa
-    // for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
-    //   emitter.spawnParticle()
-    // }
-    // emitter.update(tick)
     ;[ photosphere, chromosphere ].map(mesh => {
       mesh.rotation.z -= 0.0005
     })
@@ -181,7 +143,6 @@ const createStar = ({ radius, position, color, time = 0 }) => {
     photosphere,
     chromosphere,
     pointLight,
-    emitter,
     animate
   }
 }
@@ -195,10 +156,7 @@ const createChromosphere = (radius, rgb, time) => {
   const chromosphereMaterial = new THREE.ShaderMaterial({
     uniforms: getUniforms(radius, rgb, time),
     vertexShader,
-    fragmentShader,
-    depthTest: true,
-    transparent: true,
-    blending: THREE.AdditiveBlending
+    fragmentShader
   })
   const chromosphere = new THREE.Mesh(chromosphereGeometry, chromosphereMaterial)
   return chromosphere
@@ -209,10 +167,7 @@ const createPhotosphere = (radius, rgb, time) => {
   const photosphereMaterial = new THREE.ShaderMaterial({
     uniforms: getUniforms(radius, rgb, time),
     vertexShader,
-    fragmentShader,
-    depthTest: true,
-    transparent: true,
-    blending: THREE.AdditiveBlending
+    fragmentShader
   })
   const photosphere = new THREE.Mesh(photosphereGeometry, photosphereMaterial)
   return photosphere
