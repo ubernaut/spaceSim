@@ -296,12 +296,17 @@ class soPhysics {
 
     initGPUStuff(){
         this.gpu = new GPU()
-        this.GPUcomputeAcceleration =  this.gpu.createKernel(function (pos, mass, acc,rad){
+        this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( pos,mass, acc,rad,CurrentDimension){
+
           var G = 2.93558 * Math.pow(10, -4);
-          var acc = 0;
+          var accx = 0;
+          var accy = 0;
+          var accz = 0;
           var result = 0;
 
+
           for(var i =0; i<this.constants.size; i++){
+
             var d_x = pos[this.thread.x][0] - pos[i][0];
             var d_y = pos[this.thread.x][1] - pos[i][1];
             var d_z = pos[this.thread.x][2] - pos[i][2];
@@ -310,30 +315,57 @@ class soPhysics {
             var grav_mag = 0.0;
 
             if (this.thread.x!=0 && this.thread.x != i && rad2 > 0.333 * (rad[i] + rad[this.thread.x])) {
-              grav_mag = G / (Math.pow((radius), (3.0 / 2.0)));
-              var grav_x = grav_mag * d_x;
-              acc += (0-(acc[this.thread.x][this.thread.y] + grav_x * mass[i]));
+              grav_mag = G / (Math.pow((radius ), (3.0 / 2.0)));
+              if(CurrentDimension ==0){
+                var grav_x = grav_mag * d_x;
+                accx=accx+ (0-(acc[this.thread.x][0] + grav_x * mass[i]));
+              }else if(CurrentDimension ==1){
+                var grav_y = grav_mag * d_y;
+                accy=accy+ (0-(acc[this.thread.x][1] + grav_y * mass[i]));
+              }else{
+                var grav_z = grav_mag * d_z;
+                accz=accx+( 0-(acc[this.thread.x][2] + grav_z * mass[i]));
+              }
             } else {
               grav_mag = 0;
               //return 0;
               //collision detected
             }
         }
-        return acc;
-      },{
-          constants: {size:this.gridSystem.pos.length},
-          dimensions: [3, this.gridSystem.pos.length],
-          loopMaxIterations: this.gridSystem.pos.length
-        });
-    }
-  
-    GPUAccelerate(){
+        if(CurrentDimension ==0){
+          return accx;
+        }else if(CurrentDimension ==1){
+          return accy;
+        }else{
+          return accz;
+        }
+
+      },{constants: {size:this.gridSystem.pos.length},
+        dimensions:[this.gridSystem.pos.length],
+        loopMaxIterations:this.gridSystem.pos.length});
+}
+      GPUAccelerate(){
         this.convertToStellar()
-        var result = this.GPUcomputeAcceleration(
+        var result =[];
+        result.push(this.GPUcomputeAcceleration(
                             this.gridSystem.pos,
                             this.gridSystem.mass,
                             this.gridSystem.acc,
-                            this.gridSystem.rad);
+                            this.gridSystem.rad,
+                          0));
+        result.push(this.GPUcomputeAcceleration(
+                            this.gridSystem.pos,
+                            this.gridSystem.mass,
+                            this.gridSystem.acc,
+                            this.gridSystem.rad,
+                          1));
+        result.push(this.GPUcomputeAcceleration(
+                            this.gridSystem.pos,
+                            this.gridSystem.mass,
+                            this.gridSystem.acc,
+                            this.gridSystem.rad,
+                          2));
+
 
         //result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
         let bottom = []
