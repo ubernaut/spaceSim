@@ -172,8 +172,8 @@ const init = rootEl => {
   // renderer
   renderer = new THREE.WebGLRenderer({
     antialias: true,
-    logarithmicDepthBuffer: true,
-    shadowMapEnabled: true
+    logarithmicDepthBuffer: true
+    // shadowMapEnabled: true
   })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)

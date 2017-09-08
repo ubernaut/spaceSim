@@ -1,8 +1,8 @@
 const weapons = {
   planetCannon: {
     mkBulletGeometry: () => new THREE.SphereGeometry(32, 4, 4),
-    velocity: 100,
-    flightTime: 10000
+    velocity: 250,
+    flightTime: 7000
   }
 }
 
@@ -27,7 +27,7 @@ const shoot = ({ quaternion, position, weaponType, color }) => {
 
   bullets.push({
     flightTime: weapons[weaponType].flightTime,
-    velocity: weapons[weaponType].velocity,
+    velocity: weapons[weaponType].velocity + Void.controls.movementSpeed / 10,
     mesh: bullet.mesh
   })
 
@@ -35,15 +35,15 @@ const shoot = ({ quaternion, position, weaponType, color }) => {
 }
 
 const animate = (delta, time) => {
-  bullets.map(b => {
+  bullets = bullets.map(b => {
     if (b.flightTime <= 0) {
       Void.scene.remove(b.mesh)
-      bullets.remove(b)
     } else {
       b.mesh.translateZ(-10 * b.velocity * delta)
-      b.flightTime -= delta
+      b.flightTime -= delta * 1000
+      return b
     }
-  })
+  }).filter(x => !!x)
 }
 
 export {

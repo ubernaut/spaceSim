@@ -96,6 +96,12 @@ const registerEventListeners = () => {
   const canvas = document.querySelector('#root canvas')
   canvas.addEventListener('mousedown', e => net.broadcastUpdate(Void.socket, Void.ship), false)
   canvas.addEventListener('mouseup', e => net.broadcastUpdate(Void.socket, Void.ship), false)
+
+  setInterval(() => {
+    const { quaternion, position } = Void.ship
+    const payload = { quaternion, position }
+    net.broadcastUpdate(Void.socket, { type: 'playerMove', payload })
+  }, 150)
 }
 
 /**

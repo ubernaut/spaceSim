@@ -20,7 +20,7 @@ const particleOptions = {
 }
 
 const particleEmitterOptions = {
-  spawnRate: 200
+  spawnRate: 500
 }
 
 const animateShip = (emitter) => (delta, tick) => {
