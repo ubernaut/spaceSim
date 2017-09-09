@@ -27,7 +27,7 @@ const shoot = ({ quaternion, position, weaponType, color }) => {
 
   bullets.push({
     flightTime: weapons[weaponType].flightTime,
-    velocity: weapons[weaponType].velocity + Void.controls.movementSpeed / 10,
+    velocity: weapons[weaponType].velocity + (Void.controls.movementSpeed / 9.9),
     mesh: bullet.mesh
   })
 

@@ -1,3 +1,5 @@
+import * as net from '-/net/net'
+
 const registerGamepads = () => {
   return navigator.getGamepads() || navigator.webkitGetGamepads() || []
 }
@@ -13,7 +15,7 @@ const onScroll = ({ camera, controls, event }) => {
   }
 }
 
-const createGamepadControls = (object, domElement) => {
+const createGamepadControls = (object, domElement, shoot) => {
   let gamepads = []
 
   const controls = {
@@ -58,16 +60,23 @@ const createGamepadControls = (object, domElement) => {
     const rotMult = 0.015
     if (p1.buttons[6].pressed) {
       // console.log('6')
-      controls.rotationVector.z = 1.5 * p1.buttons[6].value
+      controls.rotationVector.z = 1.75 * p1.buttons[6].value
     } else if (p1.buttons[7].pressed) {
       // console.log('7')
-      controls.rotationVector.z = -1.5 * p1.buttons[7].value
+      controls.rotationVector.z = -1.75 * p1.buttons[7].value
     } else {
       if (controls.rotationVector.z > 0) {
         controls.rotationVector.z -= 0.1
       } else if (controls.rotationVector.z < 0) {
         controls.rotationVector.z += 0.1
       }
+    }
+
+    if (p1.buttons[2].pressed) {
+      const { quaternion, position } = Void.ship
+      const { color, velocity } = shoot({ quaternion, position, weaponType: 'planetCannon' })
+      const payload = { quaternion, position, color, velocity, weaponType: 'planetCannon' }
+      net.broadcastUpdate(Void.socket, { type: 'shotFired', payload })
     }
 
     controls.rotationVector.x = 1.0 * p1.axes[1]
