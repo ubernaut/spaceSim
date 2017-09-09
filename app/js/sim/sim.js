@@ -4,12 +4,12 @@ import { createStar, createRandomStar } from '-/bodies/star'
 import { createPlanet } from '-/bodies/planet'
 import { createUniverse } from '-/bodies/universe'
 import * as controls from '-/player/controls'
+import { createGamepadControls } from '-/player/controls/gamepad-controls'
 import * as weapons from '-/player/weapons'
 import { createShip } from '-/player/ship'
-import { onProgress, onError, randomUniform, getUrlParameter } from '-/utils'
+import { getUrlParameter } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from './workers/systemBuilder.worker'
-import { createComposer } from '-/webgl/postprocessing/effects'
 
 // import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { EffectComposer, BloomPass, RenderPass } from 'postprocessing'
@@ -197,7 +197,12 @@ const init = rootEl => {
 
     animateCallbacks.push(animate)
 
-    Void.controls = controls.setFlyControls({
+    // Void.controls = controls.setFlyControls({
+    //   camera: Void.camera,
+    //   ship: Void.ship,
+    //   el: rootEl
+    // })
+    Void.controls = createGamepadControls({
       camera: Void.camera,
       ship: Void.ship,
       el: rootEl
