@@ -327,6 +327,63 @@ class soPhysics {
           },{ output:[this.gridSystem.pos.length, 3],
               constants: {size:this.gridSystem.pos.length, G:this.G}
               });
+              this.GPUcombineAcceleration = this.gpu.createKernel(function (pos, mass, acc, rad){
+                var result = 0;
+                for(var i =0; i<this.constants.size; i++)
+
+                return result;
+            },{ output:[this.gridSystem.pos.length, 3],
+                constants: {size:this.gridSystem.pos.length, G:this.G}
+                });
+    }
+
+    initSuperKernel(){
+
+              this.gpu = new GPU()
+              this.GPUcomputeAcceleration = this.gpu.createKernel(function (pos, mass, acc, rad){
+                var result = 0;
+
+                var d_x = pos[this.thread.x][0] - pos[this.thread.z][0];
+                var d_y = pos[this.thread.x][1] - pos[this.thread.z][1];
+                var d_z = pos[this.thread.x][2] - pos[this.thread.z][2];
+                var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
+                var rad2 = Math.sqrt(radius);
+                var grav_mag = 0.0;
+    						var grav =0;
+                if (this.thread.x!=0 && this.thread.x != this.thread.z && rad2 > 0.333 * (rad[this.thread.z] + rad[this.thread.x])) {
+                  grav_mag = this.constants.G / (Math.pow((radius ), (3.0 / 2.0)));
+    							if(this.thread.y==0){
+    								grav = grav_mag * d_x;
+    							}else if(this.thread.y==1){
+    								grav = grav_mag * d_y;
+    							}else if(this.thread.y==2){
+    								grav = grav_mag * d_z;
+    							}
+    							else{/* FOURTH DIMENSION this should never happen*/}
+                  result += (0-(acc[this.thread.x][this.thread.y] + grav * mass[this.thread.z]));
+                } else {
+                  //collision detected
+                }
+
+                return result;
+            },{ output:[this.gridSystem.pos.length, 3,this.gridSystem.pos.length],
+                constants: {size:this.gridSystem.pos.length, G:this.G}
+                });
+                this.sum = this.gpu.createKernel(function (pos, mass, acc, rad, sumPosition, runningSum){
+                  if(sumPosition==0){return runningSum;}
+                  else{return runningSum+sum(pos, mass, acc, rad, sumPosition-1, runningSum)}
+
+              },{ output:[this.gridSystem.pos.length, 3],
+                  constants: {size:this.gridSystem.pos.length, G:this.G}
+                  });
+                this.GPUcombineAcceleration = this.gpu.createKernel(function (pos, mass, acc, rad){
+
+                  return sum(pos, mass, acc, rad, this.gridSystem.pos.length, 0);
+
+              },{ output:[this.gridSystem.pos.length, 3],
+                  constants: {size:this.gridSystem.pos.length, G:this.G}
+                  });
+
     }
 //     initGPUStuff(){
 //         this.gpu = new GPU()
