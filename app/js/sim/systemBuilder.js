@@ -938,7 +938,7 @@ class System {
     otherBodies.push(this.bodies[0])
     otherBodies.push(aBody)
     //otherBodies.push(bBody)
-    otherBodies.push(cBody)
+    //otherBodies.push(cBody)
     //otherBodies.push(dBody)
     let fitness = this.evaluateN(otherBodies)
     let quadrant=-1;
