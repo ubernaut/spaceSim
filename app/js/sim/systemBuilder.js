@@ -905,23 +905,27 @@ class System {
   }
 
   invertXbody(adata){
-    let bdata = adata
-    bdata[2] = 0 - adata[2]
+    let bdata = []//adata
+    bdata[0] = `body ${uuid()}`
+    bdata[1] = adata[1]
+    bdata[2] = -1* adata[2]
     bdata[3] = adata[3]
     bdata[4] = adata[4]
 
     bdata[5] =  adata[5]
-    bdata[6] = - adata[6]
+    bdata[6] = -1* adata[6]
     bdata[7] =  adata[7]
     return bdata
   }
   invertYbody(adata){
-    let bdata = adata
+    let bdata = []//adata
+    bdata[0] = `body ${uuid()}`
+    bdata[1] = adata[1]
     bdata[2] = adata[2]
-    bdata[3] = -adata[3]
+    bdata[3] = -1*adata[3]
     bdata[4] = adata[4]
 
-    bdata[5] = - adata[5]
+    bdata[5] = -1* adata[5]
     bdata[6] =  adata[6]
     bdata[7] =  adata[7]
     return bdata
@@ -944,7 +948,7 @@ class System {
 
     while (fitness < 0.1 || fitness > 1) {
       // Void.log.debug('testing configuration')
-      body_data = this.getDirectedPlanet(-1)
+      body_data = this.getDirectedPlanet()
       aBody = new Body(body_data)
       bBody = new Body(this.reverseBody(body_data))
       cBody = new Body(this.invertYbody(body_data))
