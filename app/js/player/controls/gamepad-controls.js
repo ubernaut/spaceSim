@@ -2,6 +2,17 @@ const registerGamepads = () => {
   return navigator.getGamepads() || navigator.webkitGetGamepads() || []
 }
 
+const onScroll = ({ camera, controls, event }) => {
+  const deltaY = event.wheelDeltaY
+  if (deltaY < 0) {
+    camera.position.y *= 1.1
+    camera.position.z *= 1.1
+  } else {
+    camera.position.y *= 0.9
+    camera.position.z *= 0.9
+  }
+}
+
 const createGamepadControls = (object, domElement) => {
   let gamepads = []
 
@@ -63,23 +74,23 @@ const createGamepadControls = (object, domElement) => {
     controls.rotationVector.y = -1.0 * p1.axes[0]
     // controls.rotationVector.z = p1.axes[2]
 
-    controls.object.ship.translateX(controls.movementVector.x * moveMult)
-    controls.object.ship.translateY(controls.movementVector.y * moveMult)
-    controls.object.ship.translateZ(controls.movementVector.z * moveMult)
+    controls.object.translateX(controls.movementVector.x * moveMult)
+    controls.object.translateY(controls.movementVector.y * moveMult)
+    controls.object.translateZ(controls.movementVector.z * moveMult)
 
     const q = new THREE.Quaternion()
     q.set(controls.rotationVector.x * rotMult, controls.rotationVector.y * rotMult, controls.rotationVector.z * rotMult, 1).normalize()
-    controls.object.ship.quaternion.multiply(q)
-    controls.object.ship.rotation.setFromQuaternion(controls.object.ship.quaternion, controls.object.ship.rotation.order)
+    controls.object.quaternion.multiply(q)
+    controls.object.rotation.setFromQuaternion(controls.object.quaternion, controls.object.rotation.order)
 
     p1.buttons.map((b, i) => {
       if (b.pressed) {
         console.log(b, i)
       }
     })
-
-    // console.log(gamepads)
   }
+
+  domElement.addEventListener('mousewheel', event => onScroll({ camera: Void.camera, controls, event }), false)
 
   return controls
 }

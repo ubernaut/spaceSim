@@ -202,11 +202,7 @@ const init = rootEl => {
     //   ship: Void.ship,
     //   el: rootEl
     // })
-    Void.controls = createGamepadControls({
-      camera: Void.camera,
-      ship: Void.ship,
-      el: rootEl
-    })
+    Void.controls = createGamepadControls(Void.ship, rootEl)
   })
 
   // all other matter
