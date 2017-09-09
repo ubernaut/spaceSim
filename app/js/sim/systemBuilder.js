@@ -327,14 +327,62 @@ class soPhysics {
           },{ output:[this.gridSystem.pos.length, 3],
               constants: {size:this.gridSystem.pos.length, G:this.G}
               });
-              this.GPUcombineAcceleration = this.gpu.createKernel(function (pos, mass, acc, rad){
-                var result = 0;
-                for(var i =0; i<this.constants.size; i++)
-
-                return result;
-            },{ output:[this.gridSystem.pos.length, 3],
-                constants: {size:this.gridSystem.pos.length, G:this.G}
-                });
+    }
+    initTransposeKernel(){
+      this.gpu = new GPU()
+      this.GPUcomputeAcceleration = this.gpu.createKernel(function (pos, mass, acc, rad){
+        var result = 0;
+        for(var i =0; i<this.constants.size; i++){
+          var d_x = pos[this.thread.x][0] - pos[i][0];
+          var d_y = pos[this.thread.x][1] - pos[i][1];
+          var d_z = pos[this.thread.x][2] - pos[i][2];
+          var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
+          var rad2 = Math.sqrt(radius);
+          var grav_mag = 0.0;
+          var grav =0;
+          if (this.thread.x!=0 && this.thread.x != i && rad2 > 0.333 * (rad[i] + rad[this.thread.x])) {
+            grav_mag = this.constants.G / (Math.pow((radius ), (3.0 / 2.0)));
+            if(this.thread.y==0){
+              grav = grav_mag * d_x;
+            }else if(this.thread.y==1){
+              grav = grav_mag * d_y;
+            }else if(this.thread.y==2){
+              grav = grav_mag * d_z;
+            }
+            else{//this should never happen
+            }
+            result += (0-(acc[this.thread.x][this.thread.y] + grav * mass[i]));
+          } else {
+            //collision detected
+          }
+        }
+        return result;
+    },{ output:[3,this.gridSystem.pos.length],
+        constants: {size:this.gridSystem.pos.length, G:this.G}
+        });
+    // this.transposeX=this.gpu.createKernel(function(acc){
+    //     result[0][i],
+    //     result[1][i],
+    //     result[2][i]
+    //     return acc[this.thread.y][this.thread.x];
+    // },{ output:[this.gridSystem.pos.length,3],
+    //     constants: {size:this.gridSystem.pos.length, G:this.G}
+    //     });
+    // this.transposeY=this.gpu.createKernel(function(acc){
+    //     result[0][i],
+    //     result[1][i],
+    //     result[2][i]
+    //     return acc[this.thread.y][this.thread.x];
+    // },{ output:[this.gridSystem.pos.length,3],
+    //     constants: {size:this.gridSystem.pos.length, G:this.G}
+    //     });
+    // const GPUcombineAcceleration = this.gpu.combineKernels(this.transpose,this.GPUcomputeAcceleration,
+    //       function (pos, mass, acc, rad){
+    //           return transpose(this.GPUcomputeAcceleration(pos, mass, acc, rad));
+    //       },{ output:[this.gridSystem.pos.length,3],
+    //           constants: {size:this.gridSystem.pos.length, G:this.G}
+    //           });
+    // this.GPUcombineAcceleration=GPUcombineAcceleration;
     }
 
     initSuperKernel(){
@@ -342,7 +390,6 @@ class soPhysics {
               this.gpu = new GPU()
               this.GPUcomputeAcceleration = this.gpu.createKernel(function (pos, mass, acc, rad){
                 var result = 0;
-
                 var d_x = pos[this.thread.x][0] - pos[this.thread.z][0];
                 var d_y = pos[this.thread.x][1] - pos[this.thread.z][1];
                 var d_z = pos[this.thread.x][2] - pos[this.thread.z][2];
@@ -359,7 +406,9 @@ class soPhysics {
     							}else if(this.thread.y==2){
     								grav = grav_mag * d_z;
     							}
-    							else{/* FOURTH DIMENSION this should never happen*/}
+    							else{
+                    return 999;
+                  /* FOURTH DIMENSION this should never happen*/}
                   result += (0-(acc[this.thread.x][this.thread.y] + grav * mass[this.thread.z]));
                 } else {
                   //collision detected
@@ -369,20 +418,29 @@ class soPhysics {
             },{ output:[this.gridSystem.pos.length, 3,this.gridSystem.pos.length],
                 constants: {size:this.gridSystem.pos.length, G:this.G}
                 });
-                this.sum = this.gpu.createKernel(function (pos, mass, acc, rad, sumPosition, runningSum){
-                  if(sumPosition==0){return runningSum;}
-                  else{return runningSum+sum(pos, mass, acc, rad, sumPosition-1, runningSum)}
+            const GPUcomputeAcceleration = this.GPUcomputeAcceleration;
+            this.sum = this.gpu.createKernel(function (acc){
+                  var sumDim=0;
+                  for(var i =0; i<this.constants.size; i++){
+                    sumDim=sumDim +acc[this.thread.x][this.thread.y][i];
+                  }
+                  return sumDim;
+                  // if(sumPosition==0){return runningSum;}
+                  // else{return runningSum+sum(pos, mass, acc, rad, sumPosition-1, runningSum)}
 
               },{ output:[this.gridSystem.pos.length, 3],
                   constants: {size:this.gridSystem.pos.length, G:this.G}
                   });
-                this.GPUcombineAcceleration = this.gpu.createKernel(function (pos, mass, acc, rad){
+              const sum = this.sum;
+              this.GPUcombineAcceleration = this.gpu.combineKernels(sum, GPUcomputeAcceleration, function (pos, mass, acc, rad){
 
-                  return sum(pos, mass, acc, rad, this.gridSystem.pos.length, 0);
-
-              },{ output:[this.gridSystem.pos.length, 3],
+                  return sum(GPUcomputeAcceleration(pos, mass, acc, rad)[this.thread.x]);
+              },
+              { output:[this.gridSystem.pos.length, 3],
                   constants: {size:this.gridSystem.pos.length, G:this.G}
                   });
+
+             var shit =this.GPUcombineAcceleration;
 
     }
 //     initGPUStuff(){
@@ -438,12 +496,19 @@ class soPhysics {
       GPUAccelerate(){
         this.convertToStellar()
 
+        // var result =this.GPUcomputeAcceleration(
+        //                     this.gridSystem.pos,
+        //                     this.gridSystem.mass,
+        //                     this.gridSystem.acc,
+        //                     this.gridSystem.rad
+        //                   );
         var result =this.GPUcomputeAcceleration(
                             this.gridSystem.pos,
                             this.gridSystem.mass,
                             this.gridSystem.acc,
                             this.gridSystem.rad
                           );
+        //console.log(result)
         // result.push(this.GPUcomputeAcceleration(
         //                     this.gridSystem.pos,
         //                     this.gridSystem.mass,
@@ -661,6 +726,9 @@ class System {
     this.star = new Star()
     this.starCount = starcount
     this.bodyCount = bodycount
+    if(bodycount>1){
+      var here="pewp";
+    }
     this.bodies = []
     this.bodyDistance = abodyDistance
     this.bodySpeed = abodySpeed
@@ -824,30 +892,52 @@ class System {
     bdata[7] = 0 - adata[7]
     return bdata
   }
+  rotateBody(adata){
+    let bdata = adata
+    bdata[2] = adata[3]
+    bdata[3] = 0 - adata[2]
+    bdata[4] = adata[4]
+
+    bdata[5] =  adata[6]
+    bdata[6] = 0 - adata[5]
+    bdata[7] =  adata[7]
+    return bdata
+
+  }
   addSinglePlanet () {
     // Void.log.debug('adding Body')
     let body_data = this.getDirectedPlanet()
     let aBody = new Body(body_data)
     let bBody = new Body(this.reverseBody(body_data))
+    let cBody = new Body(this.rotateBody(body_data))
+    let dBody = new Body(this.reverseBody(this.rotateBody(body_data)))
     let otherBodies = []
     otherBodies.push(this.bodies[0])
     otherBodies.push(aBody)
     otherBodies.push(bBody)
+    otherBodies.push(cBody)
+    otherBodies.push(dBody)
     let fitness = this.evaluateN(otherBodies)
     while (fitness < 0.1 || fitness > 1) {
       // Void.log.debug('testing configuration')
-      let adata = this.getDirectedPlanet()
-      let aBody = new Body(adata)
-      let bdata = this.reverseBody(adata)
-      let bBody = new Body(bdata)
+      body_data = this.getDirectedPlanet()
+      aBody = new Body(body_data)
+      bBody = new Body(this.reverseBody(body_data))
+      cBody = new Body(this.rotateBody(body_data))
+      dBody = new Body(this.reverseBody(this.rotateBody(body_data)))
+
       let otherBodies = []
       otherBodies.push(this.bodies[0])
       otherBodies.push(aBody)
       otherBodies.push(bBody)
+      otherBodies.push(cBody)
+      otherBodies.push(dBody)
       fitness = this.evaluateN(otherBodies)
     }
     this.bodies.push(aBody)
     this.bodies.push(bBody)
+    this.bodies.push(cBody)
+    this.bodies.push(dBody)
     return aBody
   };
   addPlanet () {
