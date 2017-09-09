@@ -197,12 +197,17 @@ const init = rootEl => {
 
     animateCallbacks.push(animate)
 
-    // Void.controls = controls.setFlyControls({
-    //   camera: Void.camera,
-    //   ship: Void.ship,
-    //   el: rootEl
-    // })
-    Void.controls = createGamepadControls(Void.ship, rootEl, weapons.shoot)
+
+
+    if(getUrlParameter("gamepad")){
+      Void.controls = createGamepadControls(Void.ship, rootEl, weapons.shoot)
+    }else{
+      Void.controls = controls.setFlyControls({
+        camera: Void.camera,
+        ship: Void.ship,
+        el: rootEl
+      })
+    }
   })
 
   // all other matter
