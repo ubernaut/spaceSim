@@ -47,10 +47,10 @@ const createGamepadControls = (object, domElement) => {
     const rotMult = 0.015
     if (p1.buttons[6].pressed) {
       // console.log('6')
-      controls.rotationVector.z = -1.5 * p1.buttons[6].value
+      controls.rotationVector.z = 1.5 * p1.buttons[6].value
     } else if (p1.buttons[7].pressed) {
       // console.log('7')
-      controls.rotationVector.z = 1.5 * p1.buttons[7].value
+      controls.rotationVector.z = -1.5 * p1.buttons[7].value
     } else {
       if (controls.rotationVector.z > 0) {
         controls.rotationVector.z -= 0.1
