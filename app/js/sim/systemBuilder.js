@@ -941,10 +941,10 @@ class System {
     otherBodies.push(cBody)
     otherBodies.push(dBody)
     let fitness = this.evaluateN(otherBodies)
-    let quadrant=-1;
+
     while (fitness < 0.1 || fitness > 1) {
       // Void.log.debug('testing configuration')
-      body_data = this.getDirectedPlanet(quadrant)
+      body_data = this.getDirectedPlanet(-1)
       aBody = new Body(body_data)
       bBody = new Body(this.reverseBody(body_data))
       cBody = new Body(this.invertYbody(body_data))
@@ -957,7 +957,7 @@ class System {
       otherBodies.push(cBody)
       otherBodies.push(dBody)
       fitness = this.evaluateN(otherBodies)
-      quadrant*=-1;
+
     }
     this.bodies.push(aBody)
     this.bodies.push(bBody)
