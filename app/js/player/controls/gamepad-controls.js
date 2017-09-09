@@ -16,8 +16,6 @@ const onScroll = ({ camera, controls, event }) => {
 }
 
 const createGamepadControls = (object, domElement, shoot) => {
-  let gamepads = []
-
   const controls = {
     movementSpeed: 0,
     movementState: {
@@ -40,29 +38,32 @@ const createGamepadControls = (object, domElement, shoot) => {
   }
 
   controls.update = (delta, time) => {
-    gamepads = registerGamepads()
-
-    const moveMult = delta * controls.movementSpeed
-
-    const forward = 1
-    controls.movementVector.x = -controls.movementState.left + controls.movementState.right
-    controls.movementVector.y = -controls.movementState.down + controls.movementState.up
-    controls.movementVector.z = -forward + controls.movementState.back
-
-    const p1 = gamepads[0]
+    const p1 = registerGamepads()[0]
     if (p1.buttons[3].pressed) {
-      // console.log('b0', controls.object.ship)
       controls.movementSpeed += Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
     } else if (p1.buttons[1].pressed) {
       controls.movementSpeed -= Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
     }
 
+    // configure deadzone and apply yaw + pitch
+    const yaw = p1.axes[1]
+    if (Math.abs(yaw) > 0.2) {
+      controls.rotationVector.x = 1.0 * yaw
+    } else {
+      controls.rotationVector.x = 0
+    }
+    const pitch = p1.axes[0]
+    if (Math.abs(pitch) > 0.2) {
+      controls.rotationVector.y = -1.0 * pitch
+    } else {
+      controls.rotationVector.y = 0
+    }
+
+    // roll
     const rotMult = 0.015
     if (p1.buttons[6].pressed) {
-      // console.log('6')
       controls.rotationVector.z = 1.75 * p1.buttons[6].value
     } else if (p1.buttons[7].pressed) {
-      // console.log('7')
       controls.rotationVector.z = -1.75 * p1.buttons[7].value
     } else {
       if (controls.rotationVector.z > 0) {
@@ -72,25 +73,28 @@ const createGamepadControls = (object, domElement, shoot) => {
       }
     }
 
+    // move the ship
+    const moveMult = delta * controls.movementSpeed
+    controls.movementVector.x = -controls.movementState.left + controls.movementState.right
+    controls.movementVector.y = -controls.movementState.down + controls.movementState.up
+    controls.movementVector.z = -1.0 + controls.movementState.back
+    controls.object.translateX(controls.movementVector.x * moveMult)
+    controls.object.translateY(controls.movementVector.y * moveMult)
+    controls.object.translateZ(controls.movementVector.z * moveMult)
+
+    // rotate the ship
+    const q = new THREE.Quaternion()
+    q.set(controls.rotationVector.x * rotMult, controls.rotationVector.y * rotMult, controls.rotationVector.z * rotMult, 1).normalize()
+    controls.object.quaternion.multiply(q)
+    controls.object.rotation.setFromQuaternion(controls.object.quaternion, controls.object.rotation.order)
+
+    // shoot!
     if (p1.buttons[2].pressed) {
       const { quaternion, position } = Void.ship
       const { color, velocity } = shoot({ quaternion, position, weaponType: 'planetCannon' })
       const payload = { quaternion, position, color, velocity, weaponType: 'planetCannon' }
       net.broadcastUpdate(Void.socket, { type: 'shotFired', payload })
     }
-
-    controls.rotationVector.x = 1.0 * p1.axes[1]
-    controls.rotationVector.y = -1.0 * p1.axes[0]
-    // controls.rotationVector.z = p1.axes[2]
-
-    controls.object.translateX(controls.movementVector.x * moveMult)
-    controls.object.translateY(controls.movementVector.y * moveMult)
-    controls.object.translateZ(controls.movementVector.z * moveMult)
-
-    const q = new THREE.Quaternion()
-    q.set(controls.rotationVector.x * rotMult, controls.rotationVector.y * rotMult, controls.rotationVector.z * rotMult, 1).normalize()
-    controls.object.quaternion.multiply(q)
-    controls.object.rotation.setFromQuaternion(controls.object.quaternion, controls.object.rotation.order)
 
     p1.buttons.map((b, i) => {
       if (b.pressed) {
