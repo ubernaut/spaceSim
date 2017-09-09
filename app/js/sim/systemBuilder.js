@@ -895,7 +895,7 @@ class System {
     let bdata = adata
     bdata[2] = adata[3]
     bdata[3] = 0 - adata[2]
-    bdata[4] = adata[4]
+    bdata[4] = 0// adata[4]
 
     bdata[5] =  adata[6]
     bdata[6] = 0 - adata[5]
@@ -910,18 +910,18 @@ class System {
     bdata[3] = adata[3]
     bdata[4] = adata[4]
 
-    bdata[5] = 0 - adata[5]
-    bdata[6] =  adata[6]
+    bdata[5] =  adata[5]
+    bdata[6] = - adata[6]
     bdata[7] =  adata[7]
     return bdata
   }
   invertYbody(adata){
     let bdata = adata
     bdata[2] = adata[2]
-    bdata[3] = 0 - adata[3]
+    bdata[3] = -adata[3]
     bdata[4] = adata[4]
 
-    bdata[5] = 0- adata[5]
+    bdata[5] = - adata[5]
     bdata[6] =  adata[6]
     bdata[7] =  adata[7]
     return bdata
@@ -932,14 +932,14 @@ class System {
     let body_data = this.getDirectedPlanet()
     let aBody = new Body(body_data)
     let bBody = new Body(this.reverseBody(body_data))
-    //let cBody = new Body(this.rotateBody(body_data))
-    //let dBody = new Body(this.reverseBody(this.rotateBody(body_data)))
+    let cBody = new Body(this.invertYbody(body_data))
+    let dBody = new Body(this.invertXbody(body_data))
     let otherBodies = []
     otherBodies.push(this.bodies[0])
     otherBodies.push(aBody)
-    //otherBodies.push(bBody)
-    //otherBodies.push(cBody)
-    //otherBodies.push(dBody)
+    otherBodies.push(bBody)
+    otherBodies.push(cBody)
+    otherBodies.push(dBody)
     let fitness = this.evaluateN(otherBodies)
     let quadrant=-1;
     while (fitness < 0.1 || fitness > 1) {
@@ -947,22 +947,22 @@ class System {
       body_data = this.getDirectedPlanet(quadrant)
       aBody = new Body(body_data)
       bBody = new Body(this.reverseBody(body_data))
-      //cBody = new Body(this.invertXbody(body_data))
-      //dBody = new Body(this.reverseBody(this.rotateBody(body_data)))
+      cBody = new Body(this.invertYbody(body_data))
+      dBody = new Body(this.invertXbody(body_data))
 
       let otherBodies = []
       otherBodies.push(this.bodies[0])
       otherBodies.push(aBody)
       otherBodies.push(bBody)
-      //otherBodies.push(cBody)
-      //otherBodies.push(dBody)
+      otherBodies.push(cBody)
+      otherBodies.push(dBody)
       fitness = this.evaluateN(otherBodies)
       quadrant*=-1;
     }
     this.bodies.push(aBody)
     this.bodies.push(bBody)
-    //this.bodies.push(cBody)
-    //this.bodies.push(dBody)
+    this.bodies.push(cBody)
+    this.bodies.push(dBody)
     return aBody
   };
   addPlanet () {
