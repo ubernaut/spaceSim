@@ -13,9 +13,9 @@ const particleOptions = {
   velocity: new THREE.Vector3(0, 0, 1),
   velocityRandomness: 0.2,
   color: 0xff5500,
-  turbulence: 0.1,
-  lifetime: 7,
-  size: 25,
+  turbulence: 0.5,
+  lifetime: 20,
+  size: 5000,
   sizeRandomness: 0.5
 }
 
@@ -66,7 +66,7 @@ const createShip = ({ position, scale, rotation }) => {
         ship.name = 'spaceShip'
 
         const emitter = new GPUParticleSystem({
-          maxParticles: 25000
+          maxParticles: 250000
         })
         ship.add(emitter)
         emitter.rotation.set(0, 0, 0)

@@ -6,12 +6,14 @@ import * as net from '-/net/net'
 import * as sim from '-/sim/sim'
 import { shoot } from '-/player/weapons'
 import { createBasicUI } from '-/ui/ui'
+import { getAllConfigVars } from '-/utils'
 
 /**
  * App State
  */
 
 const Void = window.Void = {
+  urlConfigs:getAllConfigVars(),
   server: {
     host: 'http://thedagda.co',
     // host: 'http://localhost',
@@ -37,6 +39,7 @@ const Void = window.Void = {
       starType: 'O5'
     }
   },
+
   uniforms: {
     sun: {
       color: {

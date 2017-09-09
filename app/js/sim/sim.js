@@ -7,10 +7,10 @@ import * as controls from '-/player/controls'
 import { createGamepadControls } from '-/player/controls/gamepad-controls'
 import * as weapons from '-/player/weapons'
 import { createShip } from '-/player/ship'
-import { getUrlParameter } from '-/utils'
+import { getAllConfigVars } from '-/utils'
 import { soPhysics, convertSystemToMeters } from './systemBuilder'
 import SystemBuilderWorker from './workers/systemBuilder.worker'
-
+//import {getConfig} from './systemBuilder'
 // import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { EffectComposer, BloomPass, RenderPass } from 'postprocessing'
 
@@ -20,10 +20,11 @@ let renderer
 const animateCallbacks = []
 
 const loadSystem = () => {
-  let bodyCount = getUrlParameter('bodyCount')
-  if (!bodyCount) {
-    bodyCount = 1024
-  }
+  let bodyCount = 1024
+  if (Void.urlConfigs.hasOwnProperty( Void.urlConfigs.bodyCount )) {
+    if(Number.isInteger(Void.urlConfigs.bodyCount) ) {
+    bodyCount = Void.urlConfigs.bodyCount
+  }}
   const systemWorker = new SystemBuilderWorker()
 
   systemWorker.postMessage([ Math.round(bodyCount / 2) ])
@@ -33,7 +34,7 @@ const loadSystem = () => {
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true, true)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.0001, true, true)
     Void.soPhysics.initGPUStuff()
 
     const mkBody = body => {
@@ -169,6 +170,7 @@ const addUniverse = scene => {
 
 let composer
 const init = rootEl => {
+
   // renderer
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -194,12 +196,10 @@ const init = rootEl => {
     Void.ship.add(Void.camera)
     Void.camera.position.set(0, 10, 30)
     scene.add(ship)
-
     animateCallbacks.push(animate)
 
+    if(Void.urlConfigs.hasOwnProperty( Void.urlConfigs.gamepad )){
 
-
-    if(getUrlParameter("gamepad")){
       Void.controls = createGamepadControls(Void.ship, rootEl, weapons.shoot)
     }else{
       Void.controls = controls.setFlyControls({
@@ -219,10 +219,11 @@ const init = rootEl => {
   // attach to the dom
   rootEl.appendChild(renderer.domElement)
 
-  if (getUrlParameter('nostars') === undefined) {
+  if (Void.urlConfigs.hasOwnProperty( Void.urlConfigs.stars)){
+    if( Void.urlConfigs.stars=='false') {
     const galaxyRadius = 5 * Math.pow(10, 20)
     addStars(galaxyRadius)
-  }
+  }}
 
   window.addEventListener('resize', onWindowResize, false)
 
