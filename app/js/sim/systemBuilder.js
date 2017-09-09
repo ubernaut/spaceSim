@@ -784,8 +784,7 @@ class System {
       body_data.push(0.0)
     }
   }
-  getDirectedPlanet () {
-    let quadrantconst = 1
+  getDirectedPlanet (quadrantconst=1) {
     let body_data = []
 
     // body name
@@ -809,7 +808,7 @@ class System {
     if (quadrantconst < 0) {
       body_data.push(randomUniform(-this.bodyDistance, 0))
       body_data.push(randomUniform(-this.bodyDistance, 0))
-      body_data.push(randomUniform(-this.bodyDistance / 64, 0))
+      body_data.push(randomUniform(-this.bodyDistance / 64))
     }
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodySpeed))
@@ -819,7 +818,7 @@ class System {
     if (quadrantconst < 0) {
       body_data.push(randomUniform(-this.bodySpeed, 0))
       body_data.push(randomUniform(0, this.bodySpeed))
-      body_data.push(randomUniform(-this.bodySpeed / 32), 0)
+      body_data.push(randomUniform(-this.bodySpeed / 32))
     }
     return body_data
   }
@@ -904,40 +903,66 @@ class System {
     return bdata
 
   }
+
+  invertXbody(adata){
+    let bdata = adata
+    bdata[2] = 0 - adata[2]
+    bdata[3] = adata[3]
+    bdata[4] = adata[4]
+
+    bdata[5] = 0 - adata[5]
+    bdata[6] =  adata[6]
+    bdata[7] =  adata[7]
+    return bdata
+  }
+  invertYbody(adata){
+    let bdata = adata
+    bdata[2] = adata[2]
+    bdata[3] = 0 - adata[3]
+    bdata[4] = adata[4]
+
+    bdata[5] = 0- adata[5]
+    bdata[6] =  adata[6]
+    bdata[7] =  adata[7]
+    return bdata
+  }
+
   addSinglePlanet () {
     // Void.log.debug('adding Body')
     let body_data = this.getDirectedPlanet()
     let aBody = new Body(body_data)
     let bBody = new Body(this.reverseBody(body_data))
-    let cBody = new Body(this.rotateBody(body_data))
-    let dBody = new Body(this.reverseBody(this.rotateBody(body_data)))
+    //let cBody = new Body(this.rotateBody(body_data))
+    //let dBody = new Body(this.reverseBody(this.rotateBody(body_data)))
     let otherBodies = []
     otherBodies.push(this.bodies[0])
     otherBodies.push(aBody)
-    otherBodies.push(bBody)
+    //otherBodies.push(bBody)
     otherBodies.push(cBody)
-    otherBodies.push(dBody)
+    //otherBodies.push(dBody)
     let fitness = this.evaluateN(otherBodies)
+    let quadrant=-1;
     while (fitness < 0.1 || fitness > 1) {
       // Void.log.debug('testing configuration')
-      body_data = this.getDirectedPlanet()
+      body_data = this.getDirectedPlanet(quadrant)
       aBody = new Body(body_data)
       bBody = new Body(this.reverseBody(body_data))
-      cBody = new Body(this.rotateBody(body_data))
-      dBody = new Body(this.reverseBody(this.rotateBody(body_data)))
+      //cBody = new Body(this.invertXbody(body_data))
+      //dBody = new Body(this.reverseBody(this.rotateBody(body_data)))
 
       let otherBodies = []
       otherBodies.push(this.bodies[0])
       otherBodies.push(aBody)
       otherBodies.push(bBody)
-      otherBodies.push(cBody)
-      otherBodies.push(dBody)
+      //otherBodies.push(cBody)
+      //otherBodies.push(dBody)
       fitness = this.evaluateN(otherBodies)
+      quadrant*=-1;
     }
     this.bodies.push(aBody)
     this.bodies.push(bBody)
-    this.bodies.push(cBody)
-    this.bodies.push(dBody)
+    //this.bodies.push(cBody)
+    //this.bodies.push(dBody)
     return aBody
   };
   addPlanet () {
