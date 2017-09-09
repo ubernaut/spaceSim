@@ -21,7 +21,7 @@ const animateCallbacks = []
 
 const loadSystem = () => {
   let bodyCount = 1024
-  if (Void.urlConfigs.hasOwnProperty( Void.urlConfigs.bodyCount )) {
+  if (Void.urlConfigs.hasOwnProperty('bodyCount' )) {
     if(Number.isInteger(Void.urlConfigs.bodyCount) ) {
     bodyCount = Void.urlConfigs.bodyCount
   }}
@@ -198,7 +198,7 @@ const init = rootEl => {
     scene.add(ship)
     animateCallbacks.push(animate)
 
-    if(Void.urlConfigs.hasOwnProperty( Void.urlConfigs.gamepad )){
+    if(Void.urlConfigs.hasOwnProperty( 'gamepad' )){
 
       Void.controls = createGamepadControls(Void.ship, rootEl, weapons.shoot)
     }else{
@@ -219,7 +219,7 @@ const init = rootEl => {
   // attach to the dom
   rootEl.appendChild(renderer.domElement)
 
-  if (Void.urlConfigs.hasOwnProperty( Void.urlConfigs.stars)){
+  if (Void.urlConfigs.hasOwnProperty('stars')){
     if( Void.urlConfigs.stars=='false') {
     const galaxyRadius = 5 * Math.pow(10, 20)
     addStars(galaxyRadius)
