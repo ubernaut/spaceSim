@@ -62,7 +62,8 @@ const randomMesh = meshes => meshes[Math.floor(Math.random() * meshes.length)]
 const planetsMeshes = []
 
 const loadPlanets = () => {
-  const geometry =  new THREE.SphereGeometry(1, 6, 6) //new THREE.IcosahedronBufferGeometry(1,1)//
+  //const geometry = new THREE.IcosahedronBufferGeometry(1,1)
+  const geometry =  new THREE.SphereGeometry(1, 36,36)
 
   return Promise.all(loadTextures(basicPlanetTextures))
     .then(textures => textures.map(map => new THREE.MeshPhongMaterial({ map })))
