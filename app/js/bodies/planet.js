@@ -63,7 +63,7 @@ const planetsMeshes = []
 
 const loadPlanets = () => {
   //const geometry = new THREE.IcosahedronBufferGeometry(1,1)
-  const geometry =  new THREE.SphereGeometry(1, 36,36)
+  const geometry =  new THREE.SphereGeometry(1, 24,24)
 
   return Promise.all(loadTextures(basicPlanetTextures))
     .then(textures => textures.map(map => new THREE.MeshPhongMaterial({ map })))
