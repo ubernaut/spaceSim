@@ -1,5 +1,28 @@
 import * as net from '-/net/net'
 
+const xbox = {
+  left_stick_v: 1,
+  left_stick_h: 0,
+  right_stick_v: 0,
+  right_stick_h: 0,
+  A: 0,
+  B: 1,
+  X: 2,
+  Y: 3,
+  left_bumper: 4,
+  right_bumper: 5,
+  left_trigger: 6,
+  right_trigger: 7,
+  back: 8,
+  start: 9,
+  left_click: 10,
+  right_click: 11,
+  dpad_up: 12,
+  dpad_down: 13,
+  dpad_left: 14,
+  dpad_right: 15
+}
+
 const registerGamepads = () => {
   return navigator.getGamepads() || navigator.webkitGetGamepads() || []
 }
@@ -15,7 +38,7 @@ const onScroll = ({ camera, controls, event }) => {
   }
 }
 
-const createGamepadControls = (object, domElement, shoot) => {
+const createGamepadControls = (object, domElement, shoot, createDrone) => {
   const controls = {
     movementSpeed: 0,
     movementState: {
@@ -39,20 +62,22 @@ const createGamepadControls = (object, domElement, shoot) => {
 
   controls.update = (delta, time) => {
     const p1 = registerGamepads()[0]
-    if (p1.buttons[3].pressed) {
+
+    // adjust thrust
+    if (p1.buttons[xbox.Y].pressed) {
       controls.movementSpeed += Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
-    } else if (p1.buttons[1].pressed) {
+    } else if (p1.buttons[xbox.B].pressed) {
       controls.movementSpeed -= Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
     }
 
     // configure deadzone and apply yaw + pitch
-    const yaw = p1.axes[1]
+    const yaw = p1.axes[xbox.left_stick_v]
     if (Math.abs(yaw) > 0.2) {
       controls.rotationVector.x = 1.0 * yaw
     } else {
       controls.rotationVector.x = 0
     }
-    const pitch = p1.axes[0]
+    const pitch = p1.axes[xbox.left_stick_h]
     if (Math.abs(pitch) > 0.2) {
       controls.rotationVector.y = -1.0 * pitch
     } else {
@@ -61,10 +86,10 @@ const createGamepadControls = (object, domElement, shoot) => {
 
     // roll
     const rotMult = 0.015
-    if (p1.buttons[6].pressed) {
-      controls.rotationVector.z = 1.75 * p1.buttons[6].value
-    } else if (p1.buttons[7].pressed) {
-      controls.rotationVector.z = -1.75 * p1.buttons[7].value
+    if (p1.buttons[xbox.left_trigger].pressed) {
+      controls.rotationVector.z = 1.75 * p1.buttons[xbox.left_trigger].value
+    } else if (p1.buttons[xbox.right_trigger].pressed) {
+      controls.rotationVector.z = -1.75 * p1.buttons[xbox.right_trigger].value
     } else {
       if (controls.rotationVector.z > 0) {
         controls.rotationVector.z -= 0.1
@@ -89,18 +114,18 @@ const createGamepadControls = (object, domElement, shoot) => {
     controls.object.rotation.setFromQuaternion(controls.object.quaternion, controls.object.rotation.order)
 
     // shoot!
-    if (p1.buttons[2].pressed) {
+    if (p1.buttons[xbox.X].pressed) {
       const { quaternion, position } = Void.ship
       const { color, velocity } = shoot({ quaternion, position, weaponType: 'planetCannon' })
       const payload = { quaternion, position, color, velocity, weaponType: 'planetCannon' }
       net.broadcastUpdate(Void.socket, { type: 'shotFired', payload })
     }
 
-    p1.buttons.map((b, i) => {
-      if (b.pressed) {
-        console.log(b, i)
-      }
-    })
+    // deploy drone
+    if (p1.buttons[xbox.left_bumper].pressed) {
+      const { quaternion, position } = Void.ship
+      createDrone({ quaternion, position })
+    }
   }
 
   domElement.addEventListener('mousewheel', event => onScroll({ camera: Void.camera, controls, event }), false)
