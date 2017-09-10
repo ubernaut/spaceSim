@@ -79,7 +79,7 @@ let GPUParticleSystem = THREE.GPUParticleSystem = function (options) {
         value: 1.0
       }
     },
-    blending: THREE.NormalBlending,
+    blending: THREE.AdditiveBlending,
     vertexShader: vertexShader,
     fragmentShader: fragmentShader
   })
