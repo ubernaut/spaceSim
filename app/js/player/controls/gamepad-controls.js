@@ -24,7 +24,13 @@ const xbox = {
 }
 
 const registerGamepads = () => {
-  return navigator.getGamepads() || navigator.webkitGetGamepads() || []
+  if (navigator.getGamepads) {
+    return navigator.getGamepads()
+  }
+  if (navigator.webkitGetGamepads) {
+    return navigator.webkitGetGamepads()
+  }
+  return []
 }
 
 const onScroll = ({ camera, controls, event }) => {
@@ -62,6 +68,10 @@ const createGamepadControls = (object, domElement, shoot, createDrone) => {
 
   controls.update = (delta, time) => {
     const p1 = registerGamepads()[0]
+
+    if (!p1) {
+      return
+    }
 
     // adjust thrust
     if (p1.buttons[xbox.Y].pressed) {
