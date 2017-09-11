@@ -694,8 +694,8 @@ class soPhysics {
         }
       }
     }
-    console.log("CPU")
-    console.log(this.gridSystem.acc)
+    //console.log("CPU")
+    //console.log(this.gridSystem.acc)
     this.calVelPosCuda()
 
     this.gridSystem.resetAcc()

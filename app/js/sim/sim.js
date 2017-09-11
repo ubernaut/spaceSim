@@ -8,8 +8,8 @@ import { createGamepadControls } from '-/player/controls/gamepad-controls'
 import * as weapons from '-/player/weapons'
 import { createShip } from '-/player/ship'
 import { createDrone } from '-/player/drone'
-import { getAllConfigVars } from '-/utils'
-import { soPhysics, convertSystemToMeters } from './systemBuilder'
+import { getAllConfigVars, randomUniform } from '-/utils'
+import { soPhysics, convertSystemToMeters, Galaxy } from './systemBuilder'
 import SystemBuilderWorker from './workers/systemBuilder.worker'
 // import {getConfig} from './systemBuilder'
 // import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
@@ -23,21 +23,24 @@ const animateCallbacks = []
 const loadSystem = () => {
   let bodyCount = 1024
   if (Void.urlConfigs.hasOwnProperty('bodyCount')) {
-    if (Number.isInteger(Void.urlConfigs.bodyCount)) {
+    if (Number.isInteger(parseInt(Void.urlConfigs.bodyCount))) {
       bodyCount = Void.urlConfigs.bodyCount
     }
   }
   const systemWorker = new SystemBuilderWorker()
 
-  systemWorker.postMessage([ Math.round(bodyCount / 2) ])
+  systemWorker.postMessage([ Math.round(bodyCount / 4) ])
   systemWorker.onmessage = e => {
     Void.thisSystem = e.data
 
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.0001, true, true)
-    Void.soPhysics.initGPUStuff()
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true, true)
+
+    if (Void.urlConfigs.hasOwnProperty('CPU')) {
+      Void.soPhysics.initGPUStuff()
+    }
 
     const mkBody = body => {
       if (body.name === 'star') {
@@ -60,41 +63,53 @@ const loadSystem = () => {
   Void.systemLoaded = true
 }
 
-const updateSystem = () => {
+const updateSystemCPU = () =>{
   let i = 0
   for (const body of Void.thisSystem.bodies) {
     if (body.object) {
-      // let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
-    //  if (collidedIndex !== -1) {
-        // Void.soPhysics.collisions.splice(collidedIndex, 1)
-        // if (body.name !== 'star') {
-        //   Void.scene.remove(body.object)
-        //   body.radius = Void.soPhysics.gridSystem.rad[i]
-        //   let bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
-        //   let bodyMaterial = new THREE.MeshPhongMaterial({
-        //     color: randomUniform(0.5, 1) * 0xffffff
-        //   })
-        //   const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
-        //   planet.position.x = body.position.x
-        //   planet.position.y = body.position.y
-        //   planet.position.z = body.position.z
-        //   body.object = planet
-        //   Void.scene.add(planet)
-        //
-        //   body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
-        //   body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
-        //   body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
-        // }
-      // } else {
+       let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
+     if (collidedIndex !== -1) {
+        Void.soPhysics.collisions.splice(collidedIndex, 1)
+        if (body.name !== 'star') {
+          Void.scene.remove(body.object)
+          body.radius = Void.soPhysics.gridSystem.rad[i]
+          let bodyGeometry = new THREE.SphereGeometry(body.radius, 32, 32)
+          let bodyMaterial = new THREE.MeshPhongMaterial({
+            color: randomUniform(0.5, 1) * 0xffffff
+          })
+          const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
+          planet.position.x = body.position.x
+          planet.position.y = body.position.y
+          planet.position.z = body.position.z
+          body.object = planet
+          Void.scene.add(planet)
+
+          body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
+          body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
+          body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+        }
+      } else {
+        body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
+        body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
+        body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+      }
+      if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
+        Void.scene.remove(body.object)
+        // console.log('removed body')
+        body.object = ''
+      }
+    }
+    i++
+  }
+}
+
+const updateSystemGPU = () => {
+  let i = 0
+  for (const body of Void.thisSystem.bodies) {
+    if (body.object) {
       body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
       body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
       body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
-      // }
-      // if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
-      //   Void.scene.remove(body.object)
-      //   // console.log('removed body')
-      //   body.object = ''
-      // }
     }
     i++
   }
@@ -314,10 +329,15 @@ const animate = () => {
   weapons.animate(delta, Void.time.value)
 
   if (Void.soPhysics && Void.systemLoaded) {
-    // Void.soPhysics.accelerateCuda()
-    Void.soPhysics.GPUAccelerate()
+    if (Void.urlConfigs.hasOwnProperty('CPU')) {
+      Void.soPhysics.accelerateCuda()
+      updateSystemCPU()
+    }else{
+      Void.soPhysics.GPUAccelerate()
+      updateSystemGPU()
+    }
     updateOimoPhysics()
-    updateSystem()
+
 
     animateCallbacks.map(x => x(delta, Void.time.value))
   }
