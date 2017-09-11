@@ -483,12 +483,9 @@ class soPhysics {
 
         let GPUcollisions = true
           if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
-            if (!Void.urlConfigs.GPUcollisions) {
-              GPUcollisions = false
-            }
+            GPUcollisions = Void.urlConfigs.GPUcollisions
           }
           if(GPUcollisions == true){
-              GPUcollisions = Void.urlConfigs.GPUcollisions
 
               var GPUcollisionList = this.GPUcomputeCollisions(
                         this.gridSystem.pos,
