@@ -307,7 +307,7 @@ class soPhysics {
                 var rad2 = Math.sqrt(radius);
                 var grav_mag = 0.0;
     						var grav =0;
-                if (this.thread.x!=0 && this.thread.x != i && rad2 > 0.666 * (rad[i] + rad[this.thread.x])) {
+                if (this.thread.x != i && rad2 > 0.666 * (rad[i] + rad[this.thread.x])) {
                   grav_mag = this.constants.G / (Math.pow((radius ), (3.0 / 2.0)));
     							if(this.thread.y==0){
     								grav = grav_mag * d_x;
@@ -336,7 +336,7 @@ class soPhysics {
                   var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
                   var rad2 = Math.sqrt(radius);
                   if(this.thread.x != i){
-                    if ( rad2 < 0.66*(rad[i] + rad[this.thread.x])) {
+                    if ( rad2 < (rad[i] + rad[this.thread.x])) {
                         //Collision Detected.
         							  result = i;
                     }else{
@@ -540,10 +540,7 @@ class soPhysics {
     let posi = pos[ith]
     let radi = rad[ith]
     let radj = rad[jth]
-    if(ith !=0  && jth !=0)
-    {
-      let otherCollisions = true
-    }
+
     let d_x = pos[jth][0] - pos[ith][0]
     let d_y = pos[jth][1] - pos[ith][1]
     let d_z = pos[jth][2] - pos[ith][2]
@@ -551,7 +548,7 @@ class soPhysics {
     let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
     let rad2 = Math.sqrt(radius)
 
-    if (ith != 0 && rad2 < 0.666 * (rad[ith] + rad[jth])) {
+    if (ith != 0 && rad2 <  (rad[ith] + rad[jth])) {
       pos[jth][0] = (pos[ith][0] * mass[ith] + pos[jth][0] * mass[jth]) / ((mass[ith] + mass[jth]))
       pos[jth][1] = (pos[ith][1] * mass[ith] + pos[jth][1] * mass[jth]) / ((mass[ith] + mass[jth]))
       pos[jth][2] = (pos[ith][2] * mass[ith] + pos[jth][2] * mass[jth]) / ((mass[ith] + mass[jth]))
@@ -559,14 +556,17 @@ class soPhysics {
       vel[jth][1] = (((mass[ith] * vel[ith][1]) + (mass[jth] * vel[jth][1]) / ((mass[ith] + mass[jth]))))
       vel[jth][2] = (((mass[ith] * vel[ith][2]) + (mass[jth] * vel[jth][2]) / ((mass[ith] + mass[jth]))))
       mass[jth] = mass[ith] + mass[jth]
-    if(this.metric){
-      rad[jth] = ((Math.sqrt(mass[jth]+ 0.000001)) / 50)
-    }else{
-      let newRad = ((Math.sqrt(mass[jth] + 0.000001) / 50))
-      rad[jth] = newRad;
-      //rad[jth] *=149600000000
+
+      if(jth!=0){
+        rad[jth] = ((Math.sqrt(mass[jth]+ 0.000001)) / 50)}
     }
-    mass[ith] = 0.00000000000000000000000000000000000000000000000001
+    if (names[ith] != 'star') {
+        names[ith]="DELETED"
+        mass[ith] = 0.00000000000000000000000000000000000000000000000001
+
+        this.gridSystem.removed.push(ith)
+    }
+
     pos[ith][0] = 0
     pos[ith][1] = 0
     pos[ith][2] = 0
@@ -598,14 +598,13 @@ class soPhysics {
     }
     // console.log("ith "+names[ith])
     // console.log("jth "+names[jth])
-    names[ith] = 'DELETED'
-    this.collisions.push(names[jth])
 
+    this.collisions.push(names[jth])
     this.gridSystem.collisions.push(jth)
-    this.gridSystem.removed.push(ith)
+
     this.gridSystem.getPlayerIndex()
   }
-  }
+
   evaluateStep () {
     this.accelerate()
     for (let body of this.system.bodies) {

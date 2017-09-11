@@ -66,8 +66,11 @@ const loadSystem = () => {
 const updateSystemCPU = () =>{
   let i = 0
   for (const body of Void.thisSystem.bodies) {
+    body.velocity = Void.soPhysics.gridSystem.vel[i];
+    body.mass = Void.soPhysics.gridSystem.mass[i];
     body.position = Void.soPhysics.gridSystem.pos[i];
     body.radius = Void.soPhysics.gridSystem.rad[i];
+    body.name = Void.soPhysics.gridSystem.names[i];
     if (body.object) {
        let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
      if (collidedIndex !== -1) {
@@ -80,8 +83,7 @@ const updateSystemCPU = () =>{
             color: randomUniform(0.5, 1) * 0xffffff
           })
           const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
-          planet.scale.set(body.radius, body.radius, body.
-            radius)
+          planet.scale.set(body.radius, body.radius, body.radius)
           planet.position.x = body.position.x
           planet.position.y = body.position.y
           planet.position.z = body.position.z
@@ -91,6 +93,9 @@ const updateSystemCPU = () =>{
           body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
           body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
           body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
+        }else{
+          // body.radius = Void.soPhysics.gridSystem.rad[i]
+          //body.object.scale.set(body.radius, body.radius, body.radius)
         }
       } else {
         body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
