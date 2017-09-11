@@ -372,7 +372,12 @@ const animate = () => {
       updateSystemCPU()
     }else{
       Void.soPhysics.GPUAccelerate()
-      updateSystemCPU()
+      if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
+        if (Void.urlConfigs.GPUcollisions) {
+          updateSystemCPU()
+        }
+        else{updateSystemGPU()}
+      }else{updateSystemCPU()}
       //updateSystemGPU()
     }
     updateOimoPhysics()
