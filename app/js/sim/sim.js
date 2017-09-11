@@ -36,7 +36,7 @@ const loadSystem = () => {
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.01, true, true)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005, true, true)
 
     if (Void.urlConfigs.hasOwnProperty('CPU')) {
       Void.soPhysics.initGPUStuff()

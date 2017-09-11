@@ -329,7 +329,8 @@ class soPhysics {
           });
           this.GPUcomputeCollisions = this.gpu.createKernel(function (pos, mass, acc, rad){
                 var result = -1
-                for(var i =0; i<1; i++){ //this.constants.size
+                //for(var i =0; i<1; i++){ //this.constants.size
+                  var i =0;
                   var d_x = pos[this.thread.x][0] - pos[i][0];
                   var d_y = pos[this.thread.x][1] - pos[i][1];
                   var d_z = pos[this.thread.x][2] - pos[i][2];
@@ -345,7 +346,7 @@ class soPhysics {
                   }else{
 
                   }
-                }
+                //}
                 return result;
             },{ output:[this.gridSystem.pos.length],
                 constants: {size:this.gridSystem.pos.length}
