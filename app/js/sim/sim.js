@@ -27,16 +27,35 @@ const loadSystem = () => {
       bodyCount = Void.urlConfigs.bodyCount
     }
   }
+  let bodyDistance = 2
+  if (Void.urlConfigs.hasOwnProperty('bodyDistance')) {
+    if (Number.isInteger(parseInt(Void.urlConfigs.bodyDistance))) {
+      bodyDistance = Void.urlConfigs.bodyDistance
+    }
+  }
+  let bodySpeed = .05
+  if (Void.urlConfigs.hasOwnProperty('bodySpeed')) {
+    if (Number.isInteger(parseInt(Void.urlConfigs.bodySpeed))) {
+      bodySpeed = Void.urlConfigs.bodySpeed
+    }
+  }
+  let detltaT = .005
+  if (Void.urlConfigs.hasOwnProperty('detltaT')) {
+    if (Number.isInteger(parseInt(Void.urlConfigs.detltaT))) {
+      detltaT = Void.urlConfigs.detltaT
+    }
+  }
+
   const systemWorker = new SystemBuilderWorker()
 
-  systemWorker.postMessage([ Math.round(bodyCount / 4) ])
+  systemWorker.postMessage([ Math.round(bodyCount / 4), bodyDistance, bodySpeed ])
   systemWorker.onmessage = e => {
     Void.thisSystem = e.data
 
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.005, true, true)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, detltaT, true, true)
 
     if (Void.urlConfigs.hasOwnProperty('CPU')) {
       Void.soPhysics.initGPUStuff()
