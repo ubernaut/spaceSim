@@ -372,15 +372,18 @@ const animate = () => {
       updateSystemCPU()
     }else{
       Void.soPhysics.GPUAccelerate()
-      if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
-        if (Void.urlConfigs.GPUcollisions) {
-          updateSystemCPU()
+        let GPUcollisions = true
+        if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
+          GPUcollisions = Void.urlConfigs.GPUcollisions
         }
-        else{updateSystemGPU()}
-      }else{updateSystemCPU()}
-      //updateSystemGPU()
+        if(GPUcollisions == true){
+          updateSystemCPU()
+        }else{
+          updateSystemGPU()
+        }
+      //
     }
-    updateOimoPhysics()
+    //updateOimoPhysics()
 
 
     animateCallbacks.map(x => x(delta, Void.time.value))
