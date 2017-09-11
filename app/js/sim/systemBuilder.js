@@ -483,8 +483,12 @@ class soPhysics {
 
         let GPUcollisions = true
           if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
-            if (Void.urlConfigs.GPUcollisions) {
-              GPUcollisions = Void.urlConfigs.bodySpeed
+            if (!Void.urlConfigs.GPUcollisions) {
+              GPUcollisions = false
+            }
+          }
+          if(GPUcollisions == true){
+              GPUcollisions = Void.urlConfigs.GPUcollisions
 
               var GPUcollisionList = this.GPUcomputeCollisions(
                         this.gridSystem.pos,
@@ -509,7 +513,6 @@ class soPhysics {
                 }
               }
             }
-        }
         //result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
         let bottom = []
         for(let i =0;i<this.gridSystem.pos.length; i++)
