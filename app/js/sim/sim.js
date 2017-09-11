@@ -36,7 +36,7 @@ const loadSystem = () => {
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.001, true, true)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, 0.01, true, true)
 
     if (Void.urlConfigs.hasOwnProperty('CPU')) {
       Void.soPhysics.initGPUStuff()
@@ -250,12 +250,15 @@ const init = rootEl => {
 
   // attach to the dom
   rootEl.appendChild(renderer.domElement)
-
+  let starflag = true
   if (Void.urlConfigs.hasOwnProperty('stars')) {
     if (Void.urlConfigs.stars === 'false') {
-      const galaxyRadius = 5 * Math.pow(10, 20)
-      addStars(galaxyRadius)
+      starflag=false;
     }
+  }
+  if(starflag){
+    const galaxyRadius = 5 * Math.pow(10, 20)
+    addStars(galaxyRadius)
   }
 
   window.addEventListener('resize', onWindowResize, false)
