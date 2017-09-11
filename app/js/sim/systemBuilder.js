@@ -307,7 +307,7 @@ class soPhysics {
                 var rad2 = Math.sqrt(radius);
                 var grav_mag = 0.0;
     						var grav =0;
-                if (this.thread.x != i && rad2 > 0.666 * (rad[i] + rad[this.thread.x])) {
+                if (this.thread.x != 0 && this.thread.x != i && rad2 > 0.666 * (rad[i] + rad[this.thread.x])) {
                   grav_mag = this.constants.G / (Math.pow((radius ), (3.0 / 2.0)));
     							if(this.thread.y==0){
     								grav = grav_mag * d_x;
