@@ -484,7 +484,7 @@ class soPhysics {
                   this.gridSystem.acc,
                   this.gridSystem.rad
                 );
-        for( var i=1 ; i< GPUcollisions.length; i++){
+        for( var i=0 ; i< GPUcollisions.length; i++){
           if(GPUcollisions[i]!= -1 ){
             if(Void.soPhysics.gridSystem.names[i] != 'DELETED' &&
               Void.soPhysics.gridSystem.names[GPUcollisions[i]] != 'DELETED'){
@@ -551,14 +551,14 @@ class soPhysics {
     let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
     let rad2 = Math.sqrt(radius)
 
-    if (rad2 < 0.666 * (rad[ith] + rad[jth])) {
-    pos[jth][0] = (pos[ith][0] * mass[ith] + pos[jth][0] * mass[jth]) / ((mass[ith] + mass[jth]))
-    pos[jth][1] = (pos[ith][1] * mass[ith] + pos[jth][1] * mass[jth]) / ((mass[ith] + mass[jth]))
-    pos[jth][2] = (pos[ith][2] * mass[ith] + pos[jth][2] * mass[jth]) / ((mass[ith] + mass[jth]))
-    vel[jth][0] = (((mass[ith] * vel[ith][0]) + (mass[jth] * vel[jth][0]) / ((mass[ith] + mass[jth]))))
-    vel[jth][1] = (((mass[ith] * vel[ith][1]) + (mass[jth] * vel[jth][1]) / ((mass[ith] + mass[jth]))))
-    vel[jth][2] = (((mass[ith] * vel[ith][2]) + (mass[jth] * vel[jth][2]) / ((mass[ith] + mass[jth]))))
-    mass[jth] = mass[ith] + mass[jth]
+    if (ith != 0 && rad2 < 0.666 * (rad[ith] + rad[jth])) {
+      pos[jth][0] = (pos[ith][0] * mass[ith] + pos[jth][0] * mass[jth]) / ((mass[ith] + mass[jth]))
+      pos[jth][1] = (pos[ith][1] * mass[ith] + pos[jth][1] * mass[jth]) / ((mass[ith] + mass[jth]))
+      pos[jth][2] = (pos[ith][2] * mass[ith] + pos[jth][2] * mass[jth]) / ((mass[ith] + mass[jth]))
+      vel[jth][0] = (((mass[ith] * vel[ith][0]) + (mass[jth] * vel[jth][0]) / ((mass[ith] + mass[jth]))))
+      vel[jth][1] = (((mass[ith] * vel[ith][1]) + (mass[jth] * vel[jth][1]) / ((mass[ith] + mass[jth]))))
+      vel[jth][2] = (((mass[ith] * vel[ith][2]) + (mass[jth] * vel[jth][2]) / ((mass[ith] + mass[jth]))))
+      mass[jth] = mass[ith] + mass[jth]
     if(this.metric){
       rad[jth] = ((Math.sqrt(mass[jth]+ 0.000001)) / 50)
     }else{
