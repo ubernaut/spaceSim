@@ -27,7 +27,7 @@ const loadSystem = () => {
       bodyCount = Void.urlConfigs.bodyCount
     }
   }
-  let bodyDistance = 2
+  let bodyDistance = 1
   if (Void.urlConfigs.hasOwnProperty('bodyDistance')) {
     if (Number.isInteger(parseInt(Void.urlConfigs.bodyDistance))) {
       bodyDistance = Void.urlConfigs.bodyDistance

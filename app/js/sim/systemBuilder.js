@@ -330,7 +330,7 @@ class soPhysics {
           this.GPUcomputeCollisions = this.gpu.createKernel(function (pos, mass, acc, rad){
                 var result = -1;
                 var i =0;
-                for(var i =0; i<1; i++){ //this.constants.size
+                for(var i =0; i<this.constants.size; i++){ //this.constants.size
 
                   var d_x = pos[this.thread.x][0] - pos[i][0];
                   var d_y = pos[this.thread.x][1] - pos[i][1];
@@ -480,27 +480,35 @@ class soPhysics {
                             this.gridSystem.acc,
                             this.gridSystem.rad
                           );
-        var GPUcollisions = this.GPUcomputeCollisions(
-                  this.gridSystem.pos,
-                  this.gridSystem.mass,
-                  this.gridSystem.acc,
-                  this.gridSystem.rad
-                );
-        for( var i=0 ; i< GPUcollisions.length; i++){
-          if(GPUcollisions[i]!= -1 ){
-            if(Void.soPhysics.gridSystem.names[i] != 'DELETED' &&
-              Void.soPhysics.gridSystem.names[GPUcollisions[i]] != 'DELETED'){
-              this.collisionDetected(this.gridSystem.player,
-                                     this.gridSystem.names,
-                                     this.gridSystem.mass,
-                                     this.gridSystem.pos,
-                                     this.gridSystem.vel,
-                                     this.gridSystem.acc,
-                                     this.gridSystem.rad,
-                                     i,
-                                     GPUcollisions[i])
+
+        let GPUcollisions = true
+          if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
+            if (Void.urlConfigs.GPUcollisions) {
+              GPUcollisions = Void.urlConfigs.bodySpeed
+
+              var GPUcollisionList = this.GPUcomputeCollisions(
+                        this.gridSystem.pos,
+                        this.gridSystem.mass,
+                        this.gridSystem.acc,
+                        this.gridSystem.rad
+                      );
+              for( var i=0 ; i< GPUcollisionList.length; i++){
+                if(GPUcollisionList[i]!= -1 ){
+                  if(Void.soPhysics.gridSystem.names[i] != 'DELETED' &&
+                    Void.soPhysics.gridSystem.names[GPUcollisionList[i]] != 'DELETED'){
+                    this.collisionDetected(this.gridSystem.player,
+                                           this.gridSystem.names,
+                                           this.gridSystem.mass,
+                                           this.gridSystem.pos,
+                                           this.gridSystem.vel,
+                                           this.gridSystem.acc,
+                                           this.gridSystem.rad,
+                                           i,
+                                           GPUcollisionList[i])
+                  }
+                }
+              }
             }
-          }
         }
         //result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
         let bottom = []
