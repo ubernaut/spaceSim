@@ -348,8 +348,8 @@ const animate = () => {
       updateSystemCPU()
     }else{
       Void.soPhysics.GPUAccelerate()
-      //updateSystemCPU()
-      updateSystemGPU()
+      updateSystemCPU()
+      //updateSystemGPU()
     }
     updateOimoPhysics()
 

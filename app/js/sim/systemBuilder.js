@@ -328,7 +328,7 @@ class soPhysics {
               constants: {size:this.gridSystem.pos.length, G:this.G}
           });
           this.GPUcomputeCollisions = this.gpu.createKernel(function (pos, mass, acc, rad){
-                var result = 0;
+                var result = -1
                 for(var i =0; i<this.constants.size; i++){
                   var d_x = pos[this.thread.x][0] - pos[i][0];
                   var d_y = pos[this.thread.x][1] - pos[i][1];
@@ -336,14 +336,14 @@ class soPhysics {
                   var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
                   var rad2 = Math.sqrt(radius);
                   if(this.thread.x != i){
-                    if (( rad2 < 0.666 * (rad[i] + rad[this.thread.x]))) {
+                    if ( rad2 < 0.66*(rad[i] + rad[this.thread.x])) {
                         //Collision Detected.
-        							  return i;
+        							  result = i;
                     }else{
-                        return -1;
+
                     }
                   }else{
-                      return -1;
+
                   }
                 }
                 return result;
@@ -478,13 +478,28 @@ class soPhysics {
                             this.gridSystem.acc,
                             this.gridSystem.rad
                           );
-
-
-
-
-
-
-
+        var GPUcollisions = this.GPUcomputeCollisions(
+                  this.gridSystem.pos,
+                  this.gridSystem.mass,
+                  this.gridSystem.acc,
+                  this.gridSystem.rad
+                );
+        for( var i=1 ; i< GPUcollisions.length; i++){
+          if(GPUcollisions[i]!= -1 ){
+            if(Void.soPhysics.gridSystem.names[i] != 'DELETED' &&
+              Void.soPhysics.gridSystem.names[GPUcollisions[i]] != 'DELETED'){
+              this.collisionDetected(this.gridSystem.player,
+                                     this.gridSystem.names,
+                                     this.gridSystem.mass,
+                                     this.gridSystem.pos,
+                                     this.gridSystem.vel,
+                                     this.gridSystem.acc,
+                                     this.gridSystem.rad,
+                                     i,
+                                     GPUcollisions[i])
+            }
+          }
+        }
         //result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
         let bottom = []
         for(let i =0;i<this.gridSystem.pos.length; i++)
@@ -493,31 +508,12 @@ class soPhysics {
           result[1][i],
           result[2][i]])}
         //this.calVelPosCuda()
+
+
         this.gridSystem.acc = bottom;
         this.calVelPosCuda()
 
-        // var GPUcollisions = this.GPUcomputeCollisions(
-        //   this.gridSystem.pos,
-        //   this.gridSystem.mass,
-        //   this.gridSystem.acc,
-        //   this.gridSystem.rad
-        // );
-        // for( var i=1 ; i< GPUcollisions.length; i++){
-        //   if(GPUcollisions[i]!= -1 ){
-        //     if(Void.soPhysics.gridSystem.names[i] != 'DELETED' &&
-        //       Void.soPhysics.gridSystem.names[GPUcollisions[i]] != 'DELETED'){
-        //       this.collisionDetected(this.gridSystem.player,
-        //                              this.gridSystem.names,
-        //                              this.gridSystem.mass,
-        //                              this.gridSystem.pos,
-        //                              this.gridSystem.vel,
-        //                              this.gridSystem.acc,
-        //                              this.gridSystem.rad,
-        //                              i,
-        //                              GPUcollisions[i])
-        //     }
-        //   }
-        // }
+
 
         this.gridSystem.resetAcc()
         this.convertToMetric()
@@ -540,10 +536,14 @@ class soPhysics {
     }
   }
   combineBodies (player, names, mass, pos, vel, acc, rad, ith, jth) {
-    let posj = pos[jth];
-    let posi = pos[ith];
+    let posj = pos[jth]
+    let posi = pos[ith]
     let radi = rad[ith]
     let radj = rad[jth]
+    if(ith !=0  && jth !=0)
+    {
+      let otherCollisions = true
+    }
     let d_x = pos[jth][0] - pos[ith][0]
     let d_y = pos[jth][1] - pos[ith][1]
     let d_z = pos[jth][2] - pos[ith][2]
