@@ -21,7 +21,7 @@ class Body {
     this.orientation = new Point()
     this.angVelocity = new Point()
     this.acceleration.reset()
-    this.radius = 0.03
+    this.radius = ((Math.sqrt(this.mass + 0.000001) / 50))
   }
 };
 class Point {
@@ -307,7 +307,7 @@ class soPhysics {
                 var rad2 = Math.sqrt(radius);
                 var grav_mag = 0.0;
     						var grav =0;
-                if (this.thread.x!=0 && this.thread.x != i && rad2 > 0.333 * (rad[i] + rad[this.thread.x])) {
+                if (this.thread.x!=0 && this.thread.x != i && rad2 > 0.666 * (rad[i] + rad[this.thread.x])) {
                   grav_mag = this.constants.G / (Math.pow((radius ), (3.0 / 2.0)));
     							if(this.thread.y==0){
     								grav = grav_mag * d_x;
@@ -326,7 +326,32 @@ class soPhysics {
               return result;
           },{ output:[this.gridSystem.pos.length, 3],
               constants: {size:this.gridSystem.pos.length, G:this.G}
-              });
+          });
+          this.GPUcomputeCollisions = this.gpu.createKernel(function (pos, mass, acc, rad){
+                var result = 0;
+                for(var i =0; i<this.constants.size; i++){
+                  var d_x = pos[this.thread.x][0] - pos[i][0];
+                  var d_y = pos[this.thread.x][1] - pos[i][1];
+                  var d_z = pos[this.thread.x][2] - pos[i][2];
+                  var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
+                  var rad2 = Math.sqrt(radius);
+                  if(this.thread.x != i){
+                    if (( rad2 < 0.666 * (rad[i] + rad[this.thread.x]))) {
+                        //Collision Detected.
+        							  return i;
+                    }else{
+                        return -1;
+                    }
+                  }else{
+                      return -1;
+                  }
+                }
+                return result;
+            },{ output:[this.gridSystem.pos.length],
+                constants: {size:this.gridSystem.pos.length}
+                });
+
+
     }
     initTransposeKernel(){
       this.gpu = new GPU()
@@ -443,84 +468,21 @@ class soPhysics {
              var shit =this.GPUcombineAcceleration;
 
     }
-//     initGPUStuff(){
-//         this.gpu = new GPU()
-//         this.GPUcomputeAcceleration =  this.gpu.createKernel(function ( pos,mass, acc,rad,CurrentDimension){
-//
-//           var G = 2.93558 * Math.pow(10, -4);
-//           var accx = 0;
-//           var accy = 0;
-//           var accz = 0;
-//           var result = 0;
-//
-//
-//           for(var i =0; i<this.constants.size; i++){
-//
-//             var d_x = pos[this.thread.x][0] - pos[i][0];
-//             var d_y = pos[this.thread.x][1] - pos[i][1];
-//             var d_z = pos[this.thread.x][2] - pos[i][2];
-//             var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
-//             var rad2 = Math.sqrt(radius);
-//             var grav_mag = 0.0;
-//
-//             if (this.thread.x!=0 && this.thread.x != i && rad2 > 0.333 * (rad[i] + rad[this.thread.x])) {
-//               grav_mag = G / (Math.pow((radius ), (3.0 / 2.0)));
-//               if(CurrentDimension ==0){
-//                 var grav_x = grav_mag * d_x;
-//                 accx=accx+ (0-(acc[this.thread.x][0] + grav_x * mass[i]));
-//               }else if(CurrentDimension ==1){
-//                 var grav_y = grav_mag * d_y;
-//                 accy=accy+ (0-(acc[this.thread.x][1] + grav_y * mass[i]));
-//               }else{
-//                 var grav_z = grav_mag * d_z;
-//                 accz=accx+( 0-(acc[this.thread.x][2] + grav_z * mass[i]));
-//               }
-//             } else {
-//               grav_mag = 0;
-//               //return 0;
-//               //collision detected
-//             }
-//         }
-//         if(CurrentDimension ==0){
-//           return accx;
-//         }else if(CurrentDimension ==1){
-//           return accy;
-//         }else{
-//           return accz;
-//         }
-//
-//       },{constants: {size:this.gridSystem.pos.length},
-//         dimensions:[this.gridSystem.pos.length],
-//         loopMaxIterations:this.gridSystem.pos.length});
-// }
+
       GPUAccelerate(){
         this.convertToStellar()
 
-        // var result =this.GPUcomputeAcceleration(
-        //                     this.gridSystem.pos,
-        //                     this.gridSystem.mass,
-        //                     this.gridSystem.acc,
-        //                     this.gridSystem.rad
-        //                   );
         var result =this.GPUcomputeAcceleration(
                             this.gridSystem.pos,
                             this.gridSystem.mass,
                             this.gridSystem.acc,
                             this.gridSystem.rad
                           );
-        //console.log(result)
-        // result.push(this.GPUcomputeAcceleration(
-        //                     this.gridSystem.pos,
-        //                     this.gridSystem.mass,
-        //                     this.gridSystem.acc,
-        //                     this.gridSystem.rad,
-        //                   ));
-        // result.push(this.GPUcomputeAcceleration(
-        //                     this.gridSystem.pos,
-        //                     this.gridSystem.mass,
-        //                     this.gridSystem.acc,
-        //                     this.gridSystem.rad,
-        //                   2));
+
+
+
+
+
 
 
         //result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
@@ -533,8 +495,38 @@ class soPhysics {
         //this.calVelPosCuda()
         this.gridSystem.acc = bottom;
         this.calVelPosCuda()
+
+        // var GPUcollisions = this.GPUcomputeCollisions(
+        //   this.gridSystem.pos,
+        //   this.gridSystem.mass,
+        //   this.gridSystem.acc,
+        //   this.gridSystem.rad
+        // );
+        // for( var i=1 ; i< GPUcollisions.length; i++){
+        //   if(GPUcollisions[i]!= -1 ){
+        //     if(Void.soPhysics.gridSystem.names[i] != 'DELETED' &&
+        //       Void.soPhysics.gridSystem.names[GPUcollisions[i]] != 'DELETED'){
+        //       this.collisionDetected(this.gridSystem.player,
+        //                              this.gridSystem.names,
+        //                              this.gridSystem.mass,
+        //                              this.gridSystem.pos,
+        //                              this.gridSystem.vel,
+        //                              this.gridSystem.acc,
+        //                              this.gridSystem.rad,
+        //                              i,
+        //                              GPUcollisions[i])
+        //     }
+        //   }
+        // }
+
         this.gridSystem.resetAcc()
         this.convertToMetric()
+
+
+
+
+
+
         //console.log("GPU:")
         //console.log(bottom)
         //this.gridSystem.resetAcc()
@@ -548,6 +540,18 @@ class soPhysics {
     }
   }
   combineBodies (player, names, mass, pos, vel, acc, rad, ith, jth) {
+    let posj = pos[jth];
+    let posi = pos[ith];
+    let radi = rad[ith]
+    let radj = rad[jth]
+    let d_x = pos[jth][0] - pos[ith][0]
+    let d_y = pos[jth][1] - pos[ith][1]
+    let d_z = pos[jth][2] - pos[ith][2]
+
+    let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
+    let rad2 = Math.sqrt(radius)
+
+    if (rad2 < 0.666 * (rad[ith] + rad[jth])) {
     pos[jth][0] = (pos[ith][0] * mass[ith] + pos[jth][0] * mass[jth]) / ((mass[ith] + mass[jth]))
     pos[jth][1] = (pos[ith][1] * mass[ith] + pos[jth][1] * mass[jth]) / ((mass[ith] + mass[jth]))
     pos[jth][2] = (pos[ith][2] * mass[ith] + pos[jth][2] * mass[jth]) / ((mass[ith] + mass[jth]))
@@ -555,7 +559,13 @@ class soPhysics {
     vel[jth][1] = (((mass[ith] * vel[ith][1]) + (mass[jth] * vel[jth][1]) / ((mass[ith] + mass[jth]))))
     vel[jth][2] = (((mass[ith] * vel[ith][2]) + (mass[jth] * vel[jth][2]) / ((mass[ith] + mass[jth]))))
     mass[jth] = mass[ith] + mass[jth]
-    rad[jth] = ((Math.sqrt(mass[jth])) / 50) + 0.001
+    if(this.metric){
+      rad[jth] = ((Math.sqrt(mass[jth]+ 0.000001)) / 50)
+    }else{
+      let newRad = ((Math.sqrt(mass[jth] + 0.000001) / 50))
+      rad[jth] = newRad;
+      //rad[jth] *=149600000000
+    }
     mass[ith] = 0.00000000000000000000000000000000000000000000000001
     pos[ith][0] = 0
     pos[ith][1] = 0
@@ -594,6 +604,7 @@ class soPhysics {
     this.gridSystem.collisions.push(jth)
     this.gridSystem.removed.push(ith)
     this.gridSystem.getPlayerIndex()
+  }
   }
   evaluateStep () {
     this.accelerate()
@@ -647,6 +658,7 @@ class soPhysics {
     }
   }
   convertToMetric () {
+    this.metric = true
     for (let i = 0; i < this.gridSystem.count; i++) {
       this.gridSystem.rad[i] *= 149600000000
 
@@ -664,6 +676,7 @@ class soPhysics {
     }
   }
   convertToStellar () {
+    this.metric= false
     for (let i = 0; i < this.gridSystem.count; i++) {
       this.gridSystem.rad[i] /= 149600000000
 
@@ -704,7 +717,7 @@ class soPhysics {
         this.gridSystem.removeBody(i)
       }
     }
-    if (this.metric) { this.convertToMetric() }
+    if (!this.metric) { this.convertToMetric() }
     this.gridSystem.collisions = []
   }
 
