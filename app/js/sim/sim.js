@@ -62,8 +62,9 @@ const loadSystem = () => {
     }
 
     const mkBody = body => {
+      body.radius= Void.soPhysics.computeRadiusStellarToMetric(body.mass)
       if (body.name === 'star') {
-        const star = createRandomStar({ radius: body.radius, position: body.position, time: Void.time })
+        const star = createRandomStar({ radius: 6*body.radius, position: body.position, time: Void.time })
         body.object = star.chromosphere
         // Void.scene.add(star.photosphere)
         Void.scene.add(star.chromosphere)

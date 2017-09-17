@@ -1,4 +1,4 @@
-import { System } from '-/sim/systemBuilder'
+import { System, GridSystem, SoPhysics } from '-/sim/systemBuilder'
 
 
 self.onmessage = function(e) {

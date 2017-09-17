@@ -21,7 +21,7 @@ class Body {
     this.orientation = new Point()
     this.angVelocity = new Point()
     this.acceleration.reset()
-    this.radius = ((Math.sqrt(this.mass + 0.000001) / 50))
+    this.radius = (-2270951618.457 + 39745256.058*Math.log(this.mass*2*Math.pow(10,30)))/ 149600000000
   }
 };
 class Point {
@@ -545,6 +545,17 @@ class soPhysics {
       this.combineBodies(player, names, mass, pos, vel, acc, rad, ith, jth)
     }
   }
+  computeRadius(bodyMass){
+  return (-2270951618.457 + 39745256.058*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
+  //return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
+  //return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
+}
+
+computeRadiusStellarToMetric(bodyMass){
+  return (-2270951618.457 + 39745256.058*Math.log(bodyMass*2*Math.pow(10,30)))
+  //return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
+  //return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
+}
   combineBodies (player, names, mass, pos, vel, acc, rad, ith, jth) {
     let posj = pos[jth]
     let posi = pos[ith]
@@ -568,7 +579,7 @@ class soPhysics {
       mass[jth] = mass[ith] + mass[jth]
 
       if(jth!=0){
-        rad[jth] = ((Math.sqrt(mass[jth]+ 0.000001)) / 50)}
+        rad[jth] = this.computeRadius(mass[jth])//((Math.sqrt(mass[jth]+ 0.000001)) / 50)}
     }
     if (names[ith] != 'star') {
         names[ith]="DELETED"
@@ -614,6 +625,7 @@ class soPhysics {
 
     this.gridSystem.getPlayerIndex()
   }
+}
 
   evaluateStep () {
     this.accelerate()
