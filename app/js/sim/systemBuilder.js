@@ -339,7 +339,7 @@ class soPhysics {
                   var distance = Math.sqrt(radius);
                   var bothRads = (rad[i] + rad[this.thread.x])
                   if(this.thread.x != i){
-                    if ( distance <bothRads) {
+                    if ( distance <0.66*bothRads) {
                         //Collision Detected.
         							  result = i;
                     }else{
