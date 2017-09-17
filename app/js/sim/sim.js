@@ -93,19 +93,29 @@ const loadSystem = () => {
     Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 2), { concurrency: 12 })
   }
   Void.systemLoaded = true
-
+Void.biggestBody = 0;
 
 }
 
 const updateSystemCPU = () =>{
   let i = 0
+  var biggestBody ="";
+  ;
   for (const body of Void.thisSystem.bodies) {
+
     body.velocity = Void.soPhysics.gridSystem.vel[i];
     body.mass = Void.soPhysics.gridSystem.mass[i];
-    body.position = Void.soPhysics.gridSystem.pos[i];
+    body.position.x = Void.soPhysics.gridSystem.pos[i][0];
+    body.position.y = Void.soPhysics.gridSystem.pos[i][1];
+    body.position.z = Void.soPhysics.gridSystem.pos[i][2];
     body.radius = Void.soPhysics.gridSystem.rad[i];
     body.name = Void.soPhysics.gridSystem.names[i];
-    if (body.object) {
+    if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
+      Void.scene.remove(body.object)
+      // console.log('removed body')
+      body.object = ''
+    }
+    else if (body.object) {
        let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
      if (collidedIndex !== -1) {
         Void.soPhysics.collisions.splice(collidedIndex, 1)
@@ -128,25 +138,31 @@ const updateSystemCPU = () =>{
           body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
           body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
         }else{
-          console.log(body.object.scale.x)
+          //console.log(body.object.scale.x)
           body.radius = Void.soPhysics.gridSystem.rad[i]
           Void.thisSystem.bodies[0].radius =body.radius
           Void.thisSystem.bodies[0].object.scale.set(body.radius, body.radius, body.radius)
           body.object.scale.set(body.radius, body.radius, body.radius)
-          console.log(body.object.scale.x)
+          //console.log(body.object.scale.x)
         }
       } else {
         body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
         body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
         body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
       }
-      if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
-        Void.scene.remove(body.object)
-        // console.log('removed body')
-        body.object = ''
-      }
+
     }
     i++
+    if(biggestBody==""){
+      biggestBody=body
+    }else{
+      if(body.radius>biggestBody.radius){
+        biggestBody=body;
+        console.log(biggestBody)
+        console.log(i)
+        Void.biggestBody = i;
+      }
+    }
   }
 }
 

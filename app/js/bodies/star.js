@@ -163,7 +163,7 @@ const createChromosphere = (radius, rgb, time) => {
 }
 
 const createPhotosphere = (radius, rgb, time) => {
-  const photosphereGeometry = new THREE.SphereGeometry(radius , 16, 16)
+  const photosphereGeometry = new THREE.SphereGeometry(radius * 0.99, 16, 16)
   const photosphereMaterial = new THREE.ShaderMaterial({
     uniforms: getUniforms(radius, rgb, time),
     vertexShader,

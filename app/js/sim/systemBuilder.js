@@ -330,15 +330,16 @@ class soPhysics {
           this.GPUcomputeCollisions = this.gpu.createKernel(function (pos, mass, acc, rad){
                 var result = -1;
                 var i =0;
-                for(var i =0; i<this.constants.size; i++){ //this.constants.size
+                for(var i=this.constants.size-1; i>=0; i--){ //this.constants.size
 
-                  var d_x = pos[this.thread.x][0] - pos[i][0];
-                  var d_y = pos[this.thread.x][1] - pos[i][1];
-                  var d_z = pos[this.thread.x][2] - pos[i][2];
+                  var d_x = Math.abs(pos[this.thread.x][0] - pos[i][0]);
+                  var d_y = Math.abs(pos[this.thread.x][1] - pos[i][1]);
+                  var d_z = Math.abs(pos[this.thread.x][2] - pos[i][2]);
                   var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2);
-                  var rad2 = Math.sqrt(radius);
+                  var distance = Math.sqrt(radius);
+                  var bothRads = (rad[i] + rad[this.thread.x])
                   if(this.thread.x != i){
-                    if ( rad2 < (rad[i] + rad[this.thread.x])) {
+                    if ( distance <bothRads) {
                         //Collision Detected.
         							  result = i;
                     }else{
@@ -494,6 +495,9 @@ class soPhysics {
                         this.gridSystem.rad
                       );
               for( var i=0 ; i< GPUcollisionList.length; i++){
+                if(i==3997){
+                  var gothim=""
+                }
                 if(GPUcollisionList[i]!= -1 ){
                   if(Void.soPhysics.gridSystem.names[i] != 'DELETED' &&
                     Void.soPhysics.gridSystem.names[GPUcollisionList[i]] != 'DELETED'){
@@ -507,6 +511,9 @@ class soPhysics {
                                            i,
                                            GPUcollisionList[i])
                   }
+                }
+                if(Void.biggestBody != 0){
+                  this.detectCollision(0,Void.biggestBody)
                 }
               }
             }
@@ -562,6 +569,31 @@ computeRadiusStellarToMetric(bodyMass){
   //return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
   //return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
 }
+
+detectCollision ( ith, jth){
+  let posj = this.gridSystem.pos[jth]
+  let posi = this.gridSystem.pos[ith]
+  let radi = this.gridSystem.rad[ith]
+  let radj = this.gridSystem.rad[jth]
+
+  let d_x = this.gridSystem.pos[jth][0] - this.gridSystem.pos[ith][0]
+  let d_y = this.gridSystem.pos[jth][1] - this.gridSystem.pos[ith][1]
+  let d_z = this.gridSystem.pos[jth][2] - this.gridSystem.pos[ith][2]
+
+  if(ith ==3997 || jth == 3997){
+    var GOTHIM=""
+  }
+
+  let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
+  let rad2 = Math.sqrt(radius)
+
+  let bodyRadii =(this.gridSystem.rad[ith] + this.gridSystem.rad[jth])
+  let diff = rad2 - bodyRadii
+  if ( rad2 <  (this.gridSystem.rad[ith] + this.gridSystem.rad[jth])) {
+    return true
+  }else{return false}
+}
+
   combineBodies (player, names, mass, pos, vel, acc, rad, ith, jth) {
     let posj = pos[jth]
     let posi = pos[ith]
@@ -572,10 +604,19 @@ computeRadiusStellarToMetric(bodyMass){
     let d_y = pos[jth][1] - pos[ith][1]
     let d_z = pos[jth][2] - pos[ith][2]
 
+    if(ith ==3997 || jth == 3997){
+      var GOTHIM=""
+    }
+
     let radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
     let rad2 = Math.sqrt(radius)
 
-    if (ith != 0 && rad2 <  (rad[ith] + rad[jth])) {
+    //if ( rad2 <  (rad[ith] + rad[jth])) {
+      if(ith==0){//swap so star isn't deleted
+        var holder = jth
+        jth = ith
+        ith =holder
+      }
       pos[jth][0] = (pos[ith][0] * mass[ith] + pos[jth][0] * mass[jth]) / ((mass[ith] + mass[jth]))
       pos[jth][1] = (pos[ith][1] * mass[ith] + pos[jth][1] * mass[jth]) / ((mass[ith] + mass[jth]))
       pos[jth][2] = (pos[ith][2] * mass[ith] + pos[jth][2] * mass[jth]) / ((mass[ith] + mass[jth]))
@@ -589,8 +630,9 @@ computeRadiusStellarToMetric(bodyMass){
       //}
     if (names[ith] != 'star') {
         names[ith]="DELETED"
-        mass[ith] = 0.00000000000000000000000000000000000000000000000001
-
+        mass[ith]=0
+        rad[ith]=0
+        pos[ith]=[0,0,0]
         this.gridSystem.removed.push(ith)
     }
 
@@ -630,7 +672,7 @@ computeRadiusStellarToMetric(bodyMass){
     this.gridSystem.collisions.push(jth)
 
     this.gridSystem.getPlayerIndex()
-  }
+  //}
 }
 
   evaluateStep () {
@@ -1110,8 +1152,9 @@ const convertSystemToMeters = system => {
     body.velocity.y *= 149600000000
     body.velocity.z *= 149600000000
 
-    body.radius = ((Math.sqrt(body.mass)) / 50) + 0.001
-    body.radius *= 149600000000
+//    body.radius *= 149600000000
+
+    body.radius = 0.018*Math.pow((body.mass* 2*Math.pow(10,30) ), 0.35)
     return body
   })
 }
