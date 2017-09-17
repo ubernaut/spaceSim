@@ -21,6 +21,7 @@ let renderer
 const animateCallbacks = []
 
 const loadSystem = () => {
+
   let bodyCount = 1024
   if (Void.urlConfigs.hasOwnProperty('bodyCount')) {
     if (Number.isInteger(parseInt(Void.urlConfigs.bodyCount))) {
@@ -57,6 +58,10 @@ const loadSystem = () => {
 
     Void.soPhysics = new soPhysics(Void.thisSystem, 0, detltaT, true, true)
 
+    for(var i=0;i<Void.soPhysics.gridSystem.rad.length;i++){
+      Void.soPhysics.gridSystem.rad[i]=Void.soPhysics.computeRadiusStellarToMetric(Void.soPhysics.gridSystem.mass[i])
+    }
+
     if (Void.urlConfigs.hasOwnProperty('CPU')) {
       Void.soPhysics.initGPUStuff()
     }
@@ -64,7 +69,14 @@ const loadSystem = () => {
     const mkBody = body => {
       body.radius= Void.soPhysics.computeRadiusStellarToMetric(body.mass)
       if (body.name === 'star') {
-        const star = createRandomStar({ radius: 6*body.radius, position: body.position, time: Void.time })
+        console.log(body.radius)
+        const scaleGrid= new THREE.PolarGridHelper(6*body.radius, 6,6,36)
+        scaleGrid.rotation.x=(Math.PI/2)
+        Void.scene.add(scaleGrid)
+        //const star = createRandomStar({ radius: 6*body.radius, position: body.position, time: Void.time })
+        const star = createRandomStar({ radius: 1, position: body.position, time: Void.time })
+        star.chromosphere.scale.set(body.radius,body.radius,body.radius)
+
         body.object = star.chromosphere
         // Void.scene.add(star.photosphere)
         Void.scene.add(star.chromosphere)
@@ -81,6 +93,8 @@ const loadSystem = () => {
     Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 2), { concurrency: 12 })
   }
   Void.systemLoaded = true
+
+
 }
 
 const updateSystemCPU = () =>{
@@ -114,8 +128,12 @@ const updateSystemCPU = () =>{
           body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
           body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
         }else{
-          // body.radius = Void.soPhysics.gridSystem.rad[i]
-          //body.object.scale.set(body.radius, body.radius, body.radius)
+          console.log(body.object.scale.x)
+          body.radius = Void.soPhysics.gridSystem.rad[i]
+          Void.thisSystem.bodies[0].radius =body.radius
+          Void.thisSystem.bodies[0].object.scale.set(body.radius, body.radius, body.radius)
+          body.object.scale.set(body.radius, body.radius, body.radius)
+          console.log(body.object.scale.x)
         }
       } else {
         body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]

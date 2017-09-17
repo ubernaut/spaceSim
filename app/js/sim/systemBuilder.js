@@ -21,7 +21,7 @@ class Body {
     this.orientation = new Point()
     this.angVelocity = new Point()
     this.acceleration.reset()
-    this.radius = (-2270951618.457 + 39745256.058*Math.log(this.mass*2*Math.pow(10,30)))/ 149600000000
+    this.radius = 0.018*Math.pow(this.mass, 0.35)/ 149600000000
   }
 };
 class Point {
@@ -546,13 +546,19 @@ class soPhysics {
     }
   }
   computeRadius(bodyMass){
-  return (-2270951618.457 + 39745256.058*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
+    bodyMass *= 2*Math.pow(10,30) //convert to kg
+    const rad = 0.018*Math.pow(bodyMass, 0.35)/ 149600000000
+    //const rad =(-2270951618.457 + 39745256.058*Math.log(bodyMass))/ 149600000000
+  return rad
   //return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
   //return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
 }
 
 computeRadiusStellarToMetric(bodyMass){
-  return (-2270951618.457 + 39745256.058*Math.log(bodyMass*2*Math.pow(10,30)))
+  bodyMass *= 2*Math.pow(10,30) //convert to kg
+  const rad = 0.018*Math.pow(bodyMass, 0.35)
+  //const rad = (-2270951618.457 + 39745256.058*Math.log(bodyMass))
+  return rad
   //return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
   //return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
 }
@@ -578,9 +584,9 @@ computeRadiusStellarToMetric(bodyMass){
       vel[jth][2] = (((mass[ith] * vel[ith][2]) + (mass[jth] * vel[jth][2]) / ((mass[ith] + mass[jth]))))
       mass[jth] = mass[ith] + mass[jth]
 
-      if(jth!=0){
+      //if(jth!=0){
         rad[jth] = this.computeRadius(mass[jth])//((Math.sqrt(mass[jth]+ 0.000001)) / 50)}
-    }
+      //}
     if (names[ith] != 'star') {
         names[ith]="DELETED"
         mass[ith] = 0.00000000000000000000000000000000000000000000000001
@@ -784,7 +790,7 @@ class System {
     }
   }
   getStar (body_data) {
-    body_data.push(randomUniform(0.4, 2))
+    body_data.push(randomUniform(0.6, 3))
     for (let j = 0; j <= 2; j++) {
       body_data.push(0.0)
     }
@@ -795,35 +801,35 @@ class System {
     body_data.push(0.0)
     return body_data
   }
-  getSymPlanets () {
-    let body_data = []
-
-    // body name
-    body_data.push(`body ${uuid()}`)
-    body_data.push(randomUniform(0.0, 0.1))
-    if (quadrantconst > 0) {
-      body_data.push(randomUniform(0, this.bodyDistance))
-      body_data.push(randomUniform(0, this.bodyDistance))
-      body_data.push(0.0)
-      body_data.push(randomUniform(0, this.bodySpeed))
-      body_data.push(randomUniform(-this.bodySpeed, 0))
-      body_data.push(0.0)
-    }
-    if (quadrantconst < 0) {
-      body_data.push(randomUniform(-this.bodyDistance, 0))
-      body_data.push(randomUniform(-this.bodyDistance, 0))
-      body_data.push(0.0)
-      body_data.push(randomUniform(-this.bodySpeed, 0))
-      body_data.push(randomUniform(0, this.bodySpeed))
-      body_data.push(0.0)
-    }
-  }
+  // getSymPlanets () {
+  //   let body_data = []
+  //
+  //   // body name
+  //   body_data.push(`body ${uuid()}`)
+  //   body_data.push(randomUniform(0.0, 0.1))
+  //   if (quadrantconst > 0) {
+  //     body_data.push(randomUniform(0, this.bodyDistance))
+  //     body_data.push(randomUniform(0, this.bodyDistance))
+  //     body_data.push(0.0)
+  //     body_data.push(randomUniform(0, this.bodySpeed))
+  //     body_data.push(randomUniform(-this.bodySpeed, 0))
+  //     body_data.push(0.0)
+  //   }
+  //   if (quadrantconst < 0) {
+  //     body_data.push(randomUniform(-this.bodyDistance, 0))
+  //     body_data.push(randomUniform(-this.bodyDistance, 0))
+  //     body_data.push(0.0)
+  //     body_data.push(randomUniform(-this.bodySpeed, 0))
+  //     body_data.push(randomUniform(0, this.bodySpeed))
+  //     body_data.push(0.0)
+  //   }
+  // }
   getDirectedPlanet (quadrantconst=1) {
     let body_data = []
 
     // body name
     body_data.push(`body ${uuid()}`)
-    let min = 8.6 * Math.pow(10, -11)
+    let min = 8 * Math.pow(10, -10)
     let max = 0.00001
 
     let test = Math.random()
