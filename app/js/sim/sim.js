@@ -40,10 +40,10 @@ const loadSystem = () => {
       bodySpeed = Void.urlConfigs.bodySpeed
     }
   }
-  let detltaT = .005
-  if (Void.urlConfigs.hasOwnProperty('detltaT')) {
-    if (Number.isInteger(parseInt(Void.urlConfigs.detltaT))) {
-      detltaT = Void.urlConfigs.detltaT
+  let deltaT = .005
+  if (Void.urlConfigs.hasOwnProperty('deltaT')) {
+    if (Number.isInteger(parseInt(Void.urlConfigs.deltaT))) {
+      deltaT = Void.urlConfigs.deltaT
     }
   }
 
@@ -56,7 +56,7 @@ const loadSystem = () => {
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, detltaT, true, true)
+    Void.soPhysics = new soPhysics(Void.thisSystem, 0, deltaT, true, true)
 
     for(var i=0;i<Void.soPhysics.gridSystem.rad.length;i++){
       Void.soPhysics.gridSystem.rad[i]=Void.soPhysics.computeRadiusStellarToMetric(Void.soPhysics.gridSystem.mass[i])
