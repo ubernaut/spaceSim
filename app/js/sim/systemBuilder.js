@@ -885,22 +885,22 @@ class System {
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodyDistance))
       body_data.push(randomUniform(0, this.bodyDistance))
-      body_data.push(randomUniform(0, this.bodyDistance / 64))
+      body_data.push(randomUniform(0, this.bodyDistance / 128))
     }
     if (quadrantconst < 0) {
       body_data.push(randomUniform(-this.bodyDistance, 0))
       body_data.push(randomUniform(-this.bodyDistance, 0))
-      body_data.push(randomUniform(-this.bodyDistance / 64))
+      body_data.push(randomUniform(-this.bodyDistance / 128))
     }
     if (quadrantconst > 0) {
       body_data.push(randomUniform(0, this.bodySpeed))
       body_data.push(randomUniform(-this.bodySpeed, 0))
-      body_data.push(randomUniform(0, this.bodySpeed / 32))
+      body_data.push(randomUniform(0, this.bodySpeed / 128))
     }
     if (quadrantconst < 0) {
       body_data.push(randomUniform(-this.bodySpeed, 0))
       body_data.push(randomUniform(0, this.bodySpeed))
-      body_data.push(randomUniform(-this.bodySpeed / 32))
+      body_data.push(randomUniform(-this.bodySpeed / 128))
     }
     return body_data
   }

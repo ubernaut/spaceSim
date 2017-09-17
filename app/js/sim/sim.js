@@ -69,10 +69,25 @@ const loadSystem = () => {
     const mkBody = body => {
       body.radius= Void.soPhysics.computeRadiusStellarToMetric(body.mass)
       if (body.name === 'star') {
-        console.log(body.radius)
-        const scaleGrid= new THREE.PolarGridHelper(6*body.radius, 6,6,36)
-        scaleGrid.rotation.x=(Math.PI/2)
-        Void.scene.add(scaleGrid)
+
+         let scaleGrid=[]
+
+         scaleGrid.push( new THREE.PolarGridHelper(58000000000, 1,1,128, 0x000000, 0x999999))
+         scaleGrid.push( new THREE.PolarGridHelper(108000000000, 1,1,128, 0x000000, 0xFF5555))
+         scaleGrid.push( new THREE.PolarGridHelper(150000000000, 1,1,128, 0x000000, 0x9999FF))
+         scaleGrid.push( new THREE.PolarGridHelper(227000000000, 1,1,128, 0x000000, 0xFF9900F))
+         scaleGrid.push( new THREE.PolarGridHelper(778000000000, 1,1,128, 0x000000, 0xFF9999))
+         scaleGrid.push( new THREE.PolarGridHelper(1427000000000, 1,1,128, 0x000000, 0xFFFF99))
+         scaleGrid.push( new THREE.PolarGridHelper(2871000000000, 1,1,128, 0x000000, 0x99FFFF))
+         scaleGrid.push( new THREE.PolarGridHelper(4497000000000, 1,1,128, 0x000000, 0x0000FF))
+         scaleGrid.push( new THREE.PolarGridHelper(5913000000000, 1,1,128, 0x000000, 0xFFFFFF))
+
+        for(var grid of scaleGrid){
+            grid.rotation.x=(Math.PI/2)
+            Void.scene.add(grid)
+        }
+
+
         //const star = createRandomStar({ radius: 6*body.radius, position: body.position, time: Void.time })
         const star = createRandomStar({ radius: 1, position: body.position, time: Void.time })
         star.chromosphere.scale.set(body.radius,body.radius,body.radius)
