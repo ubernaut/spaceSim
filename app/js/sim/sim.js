@@ -78,9 +78,10 @@ const loadSystem = () => {
         star.chromosphere.scale.set(body.radius,body.radius,body.radius)
 
         body.object = star.chromosphere
+        star.chromosphere.add(star.pointLight)
         // Void.scene.add(star.photosphere)
         Void.scene.add(star.chromosphere)
-        Void.scene.add(star.pointLight)
+        //Void.scene.add()
         animateCallbacks.push(star.animate)
       } else {
         const planet = createPlanet({ radius: body.radius, position: body.position })
