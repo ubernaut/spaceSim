@@ -832,7 +832,7 @@ class System {
     }
   }
   getStar (body_data) {
-    body_data.push(randomUniform(0.6, 3))
+    body_data.push(randomUniform(0.6, 4))
     for (let j = 0; j <= 2; j++) {
       body_data.push(0.0)
     }
