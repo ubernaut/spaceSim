@@ -5,18 +5,18 @@ import {randomUniform} from '-/utils'
 class Galaxy {
   constructor () {
     this.stars = []
-    this.theta = 1
-    this.dTheta = 0.05
-    this.maxTheta = 10
-    this.alpha = 5 * Math.pow(10, 18)
+    this.theta = 0
+    this.dTheta = 0.02
+    this.maxTheta = 8
+    this.alpha = 5 * Math.pow(10, 19)
     this.beta = 0.25
     this.e = 2.71828182845904523536
-    this.starDensity = 1
+    this.starDensity = 10
     while (this.theta < this.maxTheta) {
       this.theta += this.dTheta
-      let randMax = this.alpha / (1 + this.theta / 2)
+      let randMax = this.alpha / (1 + this.theta )
       let randMin = 0 - randMax
-      this.starDensity = 10 / (1 + this.theta / 2)
+      this.starDensity = 10 / (1 + this.theta )
       for (let i = 0; i <= this.starDensity; i++) {
         let xPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.cos(this.theta)
         let yPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.sin(this.theta)
