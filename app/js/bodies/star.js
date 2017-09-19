@@ -32,7 +32,7 @@ const starTypes = {
   M6: [ 255, 187, 123 ]
 }
 
-const createRandomStar = ({ radius, position, time = 0 }) => {
+const getRandomStarType=()=>{
   let starColor = 'F8'
 
   const starrand = randomUniform(1, 10000)
@@ -105,9 +105,36 @@ const createRandomStar = ({ radius, position, time = 0 }) => {
     // self.otype()
     starColor = 'O5'
   }
-  console.log('star is type: ' + starColor)
+  return starColor
+}
+const createRandomStar = ({ radius, position, time = 0 }) => {
+
+  const starColor = getRandomStarType()
 
   return createStar({ radius: radius, position: position, color: starColor, time: Void.time })
+}
+
+const createRandomDistantStar =({ radius, position, simple=false })=>{
+  let star ={}
+
+  star.type = getRandomStarType()
+  star.color = starTypes[star.type]
+  if(simple){
+    const geometry =  new THREE.Vector3()
+    const material = new THREE.PointsMaterial({ color: rgb2hex(star.color), size: 10000000000000000, sizeAttenuation: true, fog: false })
+    star.object =   new THREE.Points(geometry,  material )
+    star.object.matrixAutoUpdate = false
+    star.object.updateMatrix()
+  }else{
+    const geometry = new THREE.IcosahedronBufferGeometry(radius, 0)
+    const material = new THREE.MeshBasicMaterial({color: rgb2hex(star.color),emissive:rgb2hex(star.color) })
+    star.object =   new THREE.Mesh(geometry,  material )
+  }
+  star.object.position.x = position.x
+  star.object.position.y = position.y
+  star.object.position.z = position.z
+
+  return star
 }
 
 const createStar = ({ radius, position, color, time = 0 }) => {
@@ -202,5 +229,6 @@ const getUniforms = (radius, rgb, time = 0) => {
 export {
   createStar,
   createRandomStar,
-  starTypes
+  starTypes,
+  createRandomDistantStar
 }
