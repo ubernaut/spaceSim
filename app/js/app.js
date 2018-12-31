@@ -4,7 +4,8 @@ import '../styles/app.css'
 import bunyan from 'browser-bunyan'
 
 import * as net from '-/net/net'
-import * as sim from '-/sim/sim'
+import sim from '-/sim'
+import { animate } from '-/sim/scene'
 import { shoot } from '-/player/weapons'
 import { createBasicUI } from '-/ui/ui'
 import { getAllConfigVars } from '-/utils'
@@ -35,6 +36,9 @@ const Void = (window.Void = {
   scene: null,
   world: null,
   controls: null,
+  renderer: null,
+  composer: null,
+  animateCallbacks: [],
   gui: {
     values: {
       starType: 'O5'
@@ -103,8 +107,8 @@ const registerEventListeners = () => {
  * Init
  */
 
-sim.init(document.getElementById('root'))
-sim.animate()
+sim(document.getElementById('root'))
+animate()
 
 createBasicUI(Void.gui.values, color => {
   const split = color.split(',')
