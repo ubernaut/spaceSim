@@ -1,4 +1,5 @@
 import 'babel-polyfill'
+import '../styles/app.css'
 
 import bunyan from 'browser-bunyan'
 
@@ -13,7 +14,7 @@ import { getAllConfigVars } from '-/utils'
  */
 
 const Void = window.Void = {
-  urlConfigs:getAllConfigVars(),
+  urlConfigs: getAllConfigVars(),
   server: {
     host: 'http://thedagda.co',
     // host: 'http://localhost',
