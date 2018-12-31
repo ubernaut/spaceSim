@@ -6,7 +6,7 @@ import { convertSystemToMeters } from '@void/core/system-builder/utils'
 import { createRandomStar } from '-/bodies/star'
 import { createPlanet } from '-/bodies/planet'
 import { randomUniform } from '-/utils'
-import SystemBuilderWorker from './workers/systemBuilder.worker'
+import SystemBuilderWorker from '-/workers/systemBuilder.worker'
 
 const loadSystem = () => {
   let bodyCount = 1024

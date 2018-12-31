@@ -1,10 +1,10 @@
 import 'babel-polyfill'
+import bunyan from 'browser-bunyan'
 import '../styles/app.css'
 
-import bunyan from 'browser-bunyan'
+import { createViewer } from '@void/core/viewer'
 
 import * as net from '-/net/net'
-import sim from '-/sim'
 import { createBasicUI } from '-/ui/ui'
 import { getAllConfigVars } from '-/utils'
 
@@ -111,7 +111,7 @@ createBasicUI(Void.gui.values, color => {
   Void.uniforms.sun.color.blue.value = (split[2] / 255.0) * 0.75
 })
 
-sim(document.getElementById('root'))
+createViewer('root')
 
 registerEventListeners()
 
