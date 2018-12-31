@@ -10,7 +10,10 @@ import * as weapons from '-/player/weapons'
 import { createShip } from '-/player/ship'
 import { createDrone } from '-/player/drone'
 import { getAllConfigVars, randomUniform } from '-/utils'
-import { soPhysics, convertSystemToMeters } from './systemBuilder'
+
+import soPhysics from '@void/core/system-builder/soPhysics'
+import { convertSystemToMeters } from '@void/core/system-builder/utils'
+
 import SystemBuilderWorker from './workers/systemBuilder.worker'
 // import {getConfig} from './systemBuilder'
 // import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'

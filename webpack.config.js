@@ -21,14 +21,11 @@ module.exports = {
 
   resolve: {
     modules: [ 'node_modules' ],
-    extensions: [
-      '*',
-      '.json',
-      '.js'
-    ],
+    extensions: [ '*', '.json', '.js' ],
     alias: {
       '-': resolve('app/js'),
-      'app': resolve('app')
+      app: resolve('app'),
+      '@void': resolve('packages')
     }
   },
 
@@ -41,15 +38,11 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: [
-          'babel-loader'
-        ]
+        loaders: [ 'babel-loader' ]
       },
       {
         test: /\.(glsl|md|obj)$/,
-        loaders: [
-          'raw-loader'
-        ]
+        loaders: [ 'raw-loader' ]
       },
       {
         test: /\.worker.js$/,

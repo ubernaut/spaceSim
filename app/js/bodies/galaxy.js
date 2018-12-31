@@ -3,7 +3,7 @@ import {
   createRandomStar,
   createRandomDistantStar
 } from '-/bodies/star'
-import { Point } from '-/sim/systemBuilder'
+import Point from '@void/core/system-builder/Point'
 import uuid from 'uuid/v4'
 import { randomUniform } from '-/utils'
 class Galaxy {
