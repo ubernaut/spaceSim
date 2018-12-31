@@ -4,6 +4,8 @@ const webpack = require('webpack')
 const resolve = target => path.join(__dirname, target)
 
 module.exports = {
+  mode: 'development',
+
   entry: {
     bundle: resolve('app/js/app.js')
   },
@@ -29,7 +31,7 @@ module.exports = {
   },
 
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.css$/,
         loader: 'style!css'
@@ -73,13 +75,6 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: 'vendor.js',
-      minChunks: module => {
-        return module.context && module.context.indexOf('node_modules') !== -1
-      }
-    })
+    new webpack.HotModuleReplacementPlugin()
   ]
 }
