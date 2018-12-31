@@ -29,7 +29,6 @@ class System {
     } else {
       this.buildSol()
     }
-    // Void.log.debug('bodyCount: ' + this.bodies.length)
     this.stability = 0.5 - evaluate(this.bodies)
 
     this.avgStability = 0.5 - evaluate(this.bodies)
@@ -199,7 +198,6 @@ class System {
   }
 
   addSinglePlanet () {
-    // Void.log.debug('adding Body')
     let body_data = this.getDirectedPlanet()
     let aBody = new Body(body_data)
     let bBody = new Body(this.reverseBody(body_data))
@@ -214,7 +212,6 @@ class System {
     let fitness = this.evaluateN(otherBodies)
 
     while (fitness < 0.1 || fitness > 1) {
-      // Void.log.debug('testing configuration')
       body_data = this.getDirectedPlanet()
       aBody = new Body(body_data)
       bBody = new Body(this.reverseBody(body_data))
@@ -235,15 +232,13 @@ class System {
     this.bodies.push(dBody)
     return aBody
   }
+
   addPlanet () {
-    // Void.log.debug('adding body')
     let body_data = []
     body_data.push(guid())
     body_data = this.getPlanet(body_data)
     let aBody = new Body(body_data)
     this.bodies.push(aBody)
-    // Void.log.debug('new stability')
-    // Void.log.debug(this.evaluate(this.bodies))
     while (this.evaluate(this.bodies) > 1) {
       this.bodies.pop()
       this.addPlanet()

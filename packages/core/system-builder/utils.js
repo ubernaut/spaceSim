@@ -1,15 +1,14 @@
 const evaluate = someBodies => {
-  // Void.log.debug('bodies')
-  // Void.log.debug(someBodies)
   let kinetic = 0.0
   let potential = 0.0
   let G = 2.93558 * Math.pow(10, -4)
+
   for (let body of someBodies) {
-    // Void.log.debug(body)
     let vel = body.velocity
     let vel_sq = Math.pow(vel.x, 2) + Math.pow(vel.y, 2) + Math.pow(vel.z, 2)
     kinetic += 0.5 * body.mass * vel_sq
   }
+
   for (let i = 0; i < someBodies.length; i++) {
     let current_body = someBodies[i]
     let current_position = current_body.position
@@ -28,6 +27,7 @@ const evaluate = someBodies => {
       }
     }
   }
+
   try {
     return Math.abs(kinetic / potential)
   } catch (err) {

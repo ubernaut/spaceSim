@@ -23,7 +23,6 @@ class GridSystem {
       this.insertBody(body, i)
       i += 1
     }
-    // Void.log.debug(bodies)
   }
   getPlayerIndex () {
     let i = 0
