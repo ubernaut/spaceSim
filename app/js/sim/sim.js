@@ -22,7 +22,6 @@ let renderer
 const animateCallbacks = []
 
 const loadSystem = () => {
-
   let bodyCount = 1024
   if (Void.urlConfigs.hasOwnProperty('bodyCount')) {
     if (Number.isInteger(parseInt(Void.urlConfigs.bodyCount))) {
@@ -35,13 +34,13 @@ const loadSystem = () => {
       bodyDistance = Void.urlConfigs.bodyDistance
     }
   }
-  let bodySpeed = .05
+  let bodySpeed = 0.05
   if (Void.urlConfigs.hasOwnProperty('bodySpeed')) {
     if (Number.isInteger(parseInt(Void.urlConfigs.bodySpeed))) {
       bodySpeed = Void.urlConfigs.bodySpeed
     }
   }
-  let deltaT = .005
+  let deltaT = 0.005
   if (Void.urlConfigs.hasOwnProperty('deltaT')) {
     if (Number.isInteger(parseInt(Void.urlConfigs.deltaT))) {
       deltaT = Void.urlConfigs.deltaT
@@ -59,8 +58,12 @@ const loadSystem = () => {
 
     Void.soPhysics = new soPhysics(Void.thisSystem, 0, deltaT, true, true)
 
-    for(var i=0;i<Void.soPhysics.gridSystem.rad.length;i++){
-      Void.soPhysics.gridSystem.rad[i]=Void.soPhysics.computeRadiusStellarToMetric(Void.soPhysics.gridSystem.mass[i])
+    for (var i = 0; i < Void.soPhysics.gridSystem.rad.length; i++) {
+      Void.soPhysics.gridSystem.rad[
+        i
+      ] = Void.soPhysics.computeRadiusStellarToMetric(
+        Void.soPhysics.gridSystem.mass[i]
+      )
     }
 
     if (Void.urlConfigs.hasOwnProperty('CPU')) {
@@ -68,79 +71,139 @@ const loadSystem = () => {
     }
 
     const mkBody = body => {
-      body.radius= Void.soPhysics.computeRadiusStellarToMetric(body.mass)
+      body.radius = Void.soPhysics.computeRadiusStellarToMetric(body.mass)
       if (body.name === 'star') {
+        let scaleGrid = []
 
-         let scaleGrid=[]
+        scaleGrid.push(
+          new THREE.PolarGridHelper(58000000000, 1, 1, 128, 0x000000, 0x999999)
+        )
+        scaleGrid.push(
+          new THREE.PolarGridHelper(108000000000, 1, 1, 128, 0x000000, 0xff5555)
+        )
+        scaleGrid.push(
+          new THREE.PolarGridHelper(150000000000, 1, 1, 128, 0x000000, 0x9999ff)
+        )
+        scaleGrid.push(
+          new THREE.PolarGridHelper(
+            227000000000,
+            1,
+            1,
+            128,
+            0x000000,
+            0xff9900f
+          )
+        )
+        scaleGrid.push(
+          new THREE.PolarGridHelper(778000000000, 1, 1, 128, 0x000000, 0xff9999)
+        )
+        scaleGrid.push(
+          new THREE.PolarGridHelper(
+            1427000000000,
+            1,
+            1,
+            128,
+            0x000000,
+            0xffff99
+          )
+        )
+        scaleGrid.push(
+          new THREE.PolarGridHelper(
+            2871000000000,
+            1,
+            1,
+            128,
+            0x000000,
+            0x99ffff
+          )
+        )
+        scaleGrid.push(
+          new THREE.PolarGridHelper(
+            4497000000000,
+            1,
+            1,
+            128,
+            0x000000,
+            0x0000ff
+          )
+        )
+        scaleGrid.push(
+          new THREE.PolarGridHelper(
+            5913000000000,
+            1,
+            1,
+            128,
+            0x000000,
+            0xffffff
+          )
+        )
 
-         scaleGrid.push( new THREE.PolarGridHelper(58000000000, 1,1,128, 0x000000, 0x999999))
-         scaleGrid.push( new THREE.PolarGridHelper(108000000000, 1,1,128, 0x000000, 0xFF5555))
-         scaleGrid.push( new THREE.PolarGridHelper(150000000000, 1,1,128, 0x000000, 0x9999FF))
-         scaleGrid.push( new THREE.PolarGridHelper(227000000000, 1,1,128, 0x000000, 0xFF9900F))
-         scaleGrid.push( new THREE.PolarGridHelper(778000000000, 1,1,128, 0x000000, 0xFF9999))
-         scaleGrid.push( new THREE.PolarGridHelper(1427000000000, 1,1,128, 0x000000, 0xFFFF99))
-         scaleGrid.push( new THREE.PolarGridHelper(2871000000000, 1,1,128, 0x000000, 0x99FFFF))
-         scaleGrid.push( new THREE.PolarGridHelper(4497000000000, 1,1,128, 0x000000, 0x0000FF))
-         scaleGrid.push( new THREE.PolarGridHelper(5913000000000, 1,1,128, 0x000000, 0xFFFFFF))
-
-        for(var grid of scaleGrid){
-            grid.rotation.x=(Math.PI/2)
-            Void.scene.add(grid)
+        for (var grid of scaleGrid) {
+          grid.rotation.x = Math.PI / 2
+          Void.scene.add(grid)
         }
 
-
-        //const star = createRandomStar({ radius: 6*body.radius, position: body.position, time: Void.time })
-        const star = createRandomStar({ radius: 1, position: body.position, time: Void.time })
-        star.chromosphere.scale.set(body.radius,body.radius,body.radius)
+        // const star = createRandomStar({ radius: 6*body.radius, position: body.position, time: Void.time })
+        const star = createRandomStar({
+          radius: 1,
+          position: body.position,
+          time: Void.time
+        })
+        star.chromosphere.scale.set(body.radius, body.radius, body.radius)
 
         body.object = star.chromosphere
         star.chromosphere.add(star.pointLight)
         // Void.scene.add(star.photosphere)
         Void.scene.add(star.chromosphere)
-        //Void.scene.add()
+        // Void.scene.add()
         animateCallbacks.push(star.animate)
       } else {
-        const planet = createPlanet({ radius: body.radius, position: body.position })
+        const planet = createPlanet({
+          radius: body.radius,
+          position: body.position
+        })
         if (planet) {
           body.object = planet
           Void.scene.add(planet)
         }
       }
     }
-    Promise.map(Void.thisSystem.bodies, body => Promise.resolve(mkBody(body)).delay(Math.random() * 2), { concurrency: 12 })
+    Promise.map(
+      Void.thisSystem.bodies,
+      body => Promise.resolve(mkBody(body)).delay(Math.random() * 2),
+      { concurrency: 12 }
+    )
   }
   Void.systemLoaded = true
-Void.biggestBody = 0;
-
+  Void.biggestBody = 0
 }
 
-const updateSystemCPU = () =>{
+const updateSystemCPU = () => {
   let i = 0
-  var biggestBody ="";
-  ;
+  var biggestBody = ''
   for (const body of Void.thisSystem.bodies) {
-
-    body.velocity = Void.soPhysics.gridSystem.vel[i];
-    body.mass = Void.soPhysics.gridSystem.mass[i];
-    body.position.x = Void.soPhysics.gridSystem.pos[i][0];
-    body.position.y = Void.soPhysics.gridSystem.pos[i][1];
-    body.position.z = Void.soPhysics.gridSystem.pos[i][2];
-    body.radius = Void.soPhysics.gridSystem.rad[i];
-    body.name = Void.soPhysics.gridSystem.names[i];
+    body.velocity = Void.soPhysics.gridSystem.vel[i]
+    body.mass = Void.soPhysics.gridSystem.mass[i]
+    body.position.x = Void.soPhysics.gridSystem.pos[i][0]
+    body.position.y = Void.soPhysics.gridSystem.pos[i][1]
+    body.position.z = Void.soPhysics.gridSystem.pos[i][2]
+    body.radius = Void.soPhysics.gridSystem.rad[i]
+    body.name = Void.soPhysics.gridSystem.names[i]
     if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
       Void.scene.remove(body.object)
       // console.log('removed body')
       body.object = ''
-    }
-    else if (body.object) {
-       let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
-     if (collidedIndex !== -1) {
+    } else if (body.object) {
+      let collidedIndex = Void.soPhysics.collisions.indexOf(body.name)
+      if (collidedIndex !== -1) {
         Void.soPhysics.collisions.splice(collidedIndex, 1)
         if (body.name !== 'star') {
           Void.scene.remove(body.object)
           body.radius = Void.soPhysics.gridSystem.rad[i]
           const bodyGeometry = new THREE.IcosahedronBufferGeometry(1, 2)
-          let bodyMaterial = new THREE.MeshPhongMaterial({color: randomUniform(0.5, 1) * 0xffffff})
+          let bodyMaterial = new THREE.MeshPhongMaterial({
+            color: randomUniform(0.5, 1) * 0xffffff
+          })
           const planet = new THREE.Mesh(bodyGeometry, bodyMaterial)
           planet.scale.set(body.radius, body.radius, body.radius)
           planet.position.x = body.position.x
@@ -152,30 +215,33 @@ const updateSystemCPU = () =>{
           body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
           body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
           body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
-        }else{
-          //console.log(body.object.scale.x)
+        } else {
+          // console.log(body.object.scale.x)
           body.radius = Void.soPhysics.gridSystem.rad[i]
-          Void.thisSystem.bodies[0].radius =body.radius
-          Void.thisSystem.bodies[0].object.scale.set(body.radius, body.radius, body.radius)
+          Void.thisSystem.bodies[0].radius = body.radius
+          Void.thisSystem.bodies[0].object.scale.set(
+            body.radius,
+            body.radius,
+            body.radius
+          )
           body.object.scale.set(body.radius, body.radius, body.radius)
-          //console.log(body.object.scale.x)
+          // console.log(body.object.scale.x)
         }
       } else {
         body.object.position.x = Void.soPhysics.gridSystem.pos[i][0]
         body.object.position.y = Void.soPhysics.gridSystem.pos[i][1]
         body.object.position.z = Void.soPhysics.gridSystem.pos[i][2]
       }
-
     }
     i++
-    if(biggestBody==""){
-      biggestBody=body
-    }else{
-      if(body.radius>biggestBody.radius){
-        biggestBody=body;
+    if (biggestBody == '') {
+      biggestBody = body
+    } else {
+      if (body.radius > biggestBody.radius) {
+        biggestBody = body
         console.log(biggestBody)
         console.log(i)
-        Void.biggestBody = i;
+        Void.biggestBody = i
       }
     }
   }
@@ -231,7 +297,7 @@ const squareGrid = () => {
 }
 
 const addPostprocessing = ({ renderer, scene, camera }) => {
-    // postprocessing
+  // postprocessing
   composer = new EffectComposer(renderer)
   composer.addPass(new RenderPass(scene, camera))
 
@@ -258,16 +324,16 @@ const addUniverse = scene => {
   const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
   // scene.add(galaxy)
 
-  const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32)
+  const universeGeometry = new THREE.SphereGeometry(
+    4.4 * Math.pow(10, 26),
+    32,
+    32
+  )
   const universeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
   const universe = new THREE.Mesh(universeGeometry, universeMaterial)
   // scene.add(universe)
 
-  return [
-    oort,
-    galaxy,
-    universe
-  ]
+  return [ oort, galaxy, universe ]
 }
 
 const deployDrone = ship => createDroneOpts => {
@@ -290,10 +356,15 @@ const init = rootEl => {
   // camera
   const IAU = 9.4607 * Math.pow(10, 15)
   const farClip = 5 * IAU
-  const camera = Void.camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, farClip)
+  const camera = (Void.camera = new THREE.PerspectiveCamera(
+    65,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    farClip
+  ))
 
   // scene
-  const scene = Void.scene = new THREE.Scene()
+  const scene = (Void.scene = new THREE.Scene())
   addLights(scene)
 
   // ship
@@ -306,7 +377,12 @@ const init = rootEl => {
     animateCallbacks.push(animate)
 
     if (Void.urlConfigs.hasOwnProperty('gamepad')) {
-      Void.controls = createGamepadControls(Void.ship, rootEl, weapons.shoot, deployDrone(ship))
+      Void.controls = createGamepadControls(
+        Void.ship,
+        rootEl,
+        weapons.shoot,
+        deployDrone(ship)
+      )
     } else {
       Void.controls = controls.setFlyControls({
         camera: Void.camera,
@@ -327,12 +403,12 @@ const init = rootEl => {
   let starflag = true
   if (Void.urlConfigs.hasOwnProperty('stars')) {
     if (Void.urlConfigs.stars === 'false') {
-      starflag=false;
+      starflag = false
     }
   }
-  if(starflag){
-    Void.galaxy=createGalaxy()
-    //addStars()
+  if (starflag) {
+    Void.galaxy = createGalaxy()
+    // addStars()
   }
 
   window.addEventListener('resize', onWindowResize, false)
@@ -342,8 +418,6 @@ const init = rootEl => {
 
   loadSystem()
 }
-
-
 
 const onWindowResize = () => {
   Void.camera.aspect = window.innerWidth / window.innerHeight
@@ -375,21 +449,20 @@ const animate = () => {
     if (Void.urlConfigs.hasOwnProperty('CPU')) {
       Void.soPhysics.accelerateCuda()
       updateSystemCPU()
-    }else{
+    } else {
       Void.soPhysics.GPUAccelerate()
-        let GPUcollisions = true
-        if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
-          GPUcollisions = Void.urlConfigs.GPUcollisions
-        }
-        if(GPUcollisions == true){
-          updateSystemCPU()
-        }else{
-          updateSystemGPU()
-        }
+      let GPUcollisions = true
+      if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
+        GPUcollisions = Void.urlConfigs.GPUcollisions
+      }
+      if (GPUcollisions == true) {
+        updateSystemCPU()
+      } else {
+        updateSystemGPU()
+      }
       //
     }
-    //updateOimoPhysics()
-
+    // updateOimoPhysics()
 
     animateCallbacks.map(x => x(delta, Void.time.value))
   }

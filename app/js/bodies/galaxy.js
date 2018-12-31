@@ -1,7 +1,11 @@
-import {starTypes, createRandomStar,createRandomDistantStar} from '-/bodies/star'
+import {
+  starTypes,
+  createRandomStar,
+  createRandomDistantStar
+} from '-/bodies/star'
 import { Point } from '-/sim/systemBuilder'
 import uuid from 'uuid/v4'
-import {randomUniform} from '-/utils'
+import { randomUniform } from '-/utils'
 class Galaxy {
   constructor () {
     this.stars = []
@@ -14,77 +18,119 @@ class Galaxy {
     this.starDensity = 10
     while (this.theta < this.maxTheta) {
       this.theta += this.dTheta
-      let randMax = this.alpha / (1 + this.theta )
+      let randMax = this.alpha / (1 + this.theta)
       let randMin = 0 - randMax
-      this.starDensity = 10 / (1 + this.theta )
+      this.starDensity = 10 / (1 + this.theta)
       for (let i = 0; i <= this.starDensity; i++) {
-        let xPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.cos(this.theta)
-        let yPos = this.alpha * (Math.pow(this.e, (this.beta * this.theta))) * Math.sin(this.theta)
+        let xPos =
+          this.alpha *
+          Math.pow(this.e, this.beta * this.theta) *
+          Math.cos(this.theta)
+        let yPos =
+          this.alpha *
+          Math.pow(this.e, this.beta * this.theta) *
+          Math.sin(this.theta)
         xPos = xPos + Math.random() * (randMax - randMin) + randMin
         yPos = yPos + Math.random() * (randMax - randMin) + randMin
         let zPos = Math.random() * (randMax - randMin) + randMin
-        //let newStar = new Star(xPos, yPos, zPos, 'star', 'cos')
+        // let newStar = new Star(xPos, yPos, zPos, 'star', 'cos')
         let randColor = randomUniform(0.5, 1) * 0xffffff
-        const material = new THREE.MeshBasicMaterial({color: randColor })
-        let starRadius = 1.9*Math.pow(10,16)
-        let starPosition = new Point([xPos,yPos,zPos])
-        const newStar = createRandomDistantStar({radius:starRadius, position:starPosition})
+        const material = new THREE.MeshBasicMaterial({ color: randColor })
+        let starRadius = 1.9 * Math.pow(10, 16)
+        let starPosition = new Point([ xPos, yPos, zPos ])
+        const newStar = createRandomDistantStar({
+          radius: starRadius,
+          position: starPosition
+        })
         this.stars.push(newStar)
-        starPosition = new Point([-xPos,-yPos,-zPos])
-        const oppositeStar =createRandomDistantStar({radius:starRadius, position:starPosition})
+        starPosition = new Point([ -xPos, -yPos, -zPos ])
+        const oppositeStar = createRandomDistantStar({
+          radius: starRadius,
+          position: starPosition
+        })
         this.stars.push(oppositeStar)
       }
     }
   }
 }
-const createGalaxy = () =>{
-
+const createGalaxy = () => {
   const galaxy = new Galaxy()
-  for(let i=0; i<galaxy.stars.length; i++){
+  for (let i = 0; i < galaxy.stars.length; i++) {
     Void.scene.add(galaxy.stars[i].object)
-    //Void.scene.add(star.)
+    // Void.scene.add(star.)
   }
   return galaxy
 }
 
-const addStars = () =>{
+const addStars = () => {
   const radius = 5 * Math.pow(10, 20)
-  let i=0
-  let r = radius,
-  starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ]
+  let i = 0
+  let r = radius
+
+  let starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ]
   for (i = 0; i < 5000; i++) {
     const vertex = new THREE.Vector3()
-    vertex.x = (Math.random() * (2 - 1))
+    vertex.x = Math.random() * (2 - 1)
     vertex.y = (Math.random() * (2 - 1)) / 3
-    vertex.z = (Math.random() * (2 - 1))
+    vertex.z = Math.random() * (2 - 1)
     vertex.multiplyScalar(r)
 
     starsGeometry[0].vertices.push(vertex)
   }
   for (i = 0; i < 5000; i++) {
     const vertex = new THREE.Vector3()
-    vertex.x = (Math.random() * (2 - 1))
+    vertex.x = Math.random() * (2 - 1)
     vertex.y = (Math.random() * (2 - 1)) / 3
-    vertex.z = (Math.random() * (2 - 1))
+    vertex.z = Math.random() * (2 - 1)
     vertex.multiplyScalar(r)
     starsGeometry[1].vertices.push(vertex)
   }
 
   let stars
   const starsMaterials = [
-    new THREE.PointsMaterial({ color: 0xffffff, size: 10000000000000000, sizeAttenuation: true, fog: false }),
-    new THREE.PointsMaterial({ color: 0xaaaaaa, size: 10000000000000000, sizeAttenuation: true, fog: false }),
-    new THREE.PointsMaterial({ color: 0x555555, size: 10000000000000000, sizeAttenuation: true, fog: false }),
-    new THREE.PointsMaterial({ color: 0xff0000, size: 10000000000000000, sizeAttenuation: true, fog: false }),
-    new THREE.PointsMaterial({ color: 0xffdddd, size: 10000000000000000, sizeAttenuation: true, fog: false }),
-    new THREE.PointsMaterial({ color: 0xddddff, size: 10000000000000000, sizeAttenuation: true, fog: false })
+    new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 10000000000000000,
+      sizeAttenuation: true,
+      fog: false
+    }),
+    new THREE.PointsMaterial({
+      color: 0xaaaaaa,
+      size: 10000000000000000,
+      sizeAttenuation: true,
+      fog: false
+    }),
+    new THREE.PointsMaterial({
+      color: 0x555555,
+      size: 10000000000000000,
+      sizeAttenuation: true,
+      fog: false
+    }),
+    new THREE.PointsMaterial({
+      color: 0xff0000,
+      size: 10000000000000000,
+      sizeAttenuation: true,
+      fog: false
+    }),
+    new THREE.PointsMaterial({
+      color: 0xffdddd,
+      size: 10000000000000000,
+      sizeAttenuation: true,
+      fog: false
+    }),
+    new THREE.PointsMaterial({
+      color: 0xddddff,
+      size: 10000000000000000,
+      sizeAttenuation: true,
+      fog: false
+    })
   ]
   for (i = 10; i < 30; i++) {
     stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
-      // stars.rotation.x = Math.random() * 6;
-      // stars.rotation.y = Math.random() * 6;
-      // stars.rotation.z = Math.random() * 6;
-      //  stars.scale.setScalar( i * 10 );
+    // stars.rotation.x = Math.random() * 6;
+    // stars.rotation.y = Math.random() * 6;
+    // stars.rotation.z = Math.random() * 6;
+    //  stars.scale.setScalar( i * 10 );
     stars.position.x -= radius / 2
     stars.position.y -= radius / 6
     stars.position.z -= radius / 2
@@ -93,7 +139,4 @@ const addStars = () =>{
     Void.scene.add(stars)
   }
 }
-export{
-  addStars,
-  createGalaxy
-}
+export { addStars, createGalaxy }

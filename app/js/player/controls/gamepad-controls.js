@@ -75,9 +75,15 @@ const createGamepadControls = (object, domElement, shoot, createDrone) => {
 
     // adjust thrust
     if (p1.buttons[xbox.Y].pressed) {
-      controls.movementSpeed += Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
+      controls.movementSpeed += Math.max(
+        1,
+        Math.pow(Math.abs(controls.movementSpeed), 0.85)
+      )
     } else if (p1.buttons[xbox.B].pressed) {
-      controls.movementSpeed -= Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
+      controls.movementSpeed -= Math.max(
+        1,
+        Math.pow(Math.abs(controls.movementSpeed), 0.85)
+      )
     }
 
     // configure deadzone and apply yaw + pitch
@@ -110,8 +116,10 @@ const createGamepadControls = (object, domElement, shoot, createDrone) => {
 
     // move the ship
     const moveMult = delta * controls.movementSpeed
-    controls.movementVector.x = -controls.movementState.left + controls.movementState.right
-    controls.movementVector.y = -controls.movementState.down + controls.movementState.up
+    controls.movementVector.x =
+      -controls.movementState.left + controls.movementState.right
+    controls.movementVector.y =
+      -controls.movementState.down + controls.movementState.up
     controls.movementVector.z = -1.0 + controls.movementState.back
     controls.object.translateX(controls.movementVector.x * moveMult)
     controls.object.translateY(controls.movementVector.y * moveMult)
@@ -119,15 +127,33 @@ const createGamepadControls = (object, domElement, shoot, createDrone) => {
 
     // rotate the ship
     const q = new THREE.Quaternion()
-    q.set(controls.rotationVector.x * rotMult, controls.rotationVector.y * rotMult, controls.rotationVector.z * rotMult, 1).normalize()
+    q.set(
+      controls.rotationVector.x * rotMult,
+      controls.rotationVector.y * rotMult,
+      controls.rotationVector.z * rotMult,
+      1
+    ).normalize()
     controls.object.quaternion.multiply(q)
-    controls.object.rotation.setFromQuaternion(controls.object.quaternion, controls.object.rotation.order)
+    controls.object.rotation.setFromQuaternion(
+      controls.object.quaternion,
+      controls.object.rotation.order
+    )
 
     // shoot!
     if (p1.buttons[xbox.X].pressed) {
       const { quaternion, position } = Void.ship
-      const { color, velocity } = shoot({ quaternion, position, weaponType: 'planetCannon' })
-      const payload = { quaternion, position, color, velocity, weaponType: 'planetCannon' }
+      const { color, velocity } = shoot({
+        quaternion,
+        position,
+        weaponType: 'planetCannon'
+      })
+      const payload = {
+        quaternion,
+        position,
+        color,
+        velocity,
+        weaponType: 'planetCannon'
+      }
       net.broadcastUpdate(Void.socket, { type: 'shotFired', payload })
     }
 
@@ -138,11 +164,13 @@ const createGamepadControls = (object, domElement, shoot, createDrone) => {
     }
   }
 
-  domElement.addEventListener('mousewheel', event => onScroll({ camera: Void.camera, controls, event }), false)
+  domElement.addEventListener(
+    'mousewheel',
+    event => onScroll({ camera: Void.camera, controls, event }),
+    false
+  )
 
   return controls
 }
 
-export {
-  createGamepadControls
-}
+export { createGamepadControls }

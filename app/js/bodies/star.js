@@ -32,7 +32,7 @@ const starTypes = {
   M6: [ 255, 187, 123 ]
 }
 
-const getRandomStarType=()=>{
+const getRandomStarType = () => {
   let starColor = 'F8'
 
   const starrand = randomUniform(1, 10000)
@@ -108,37 +108,48 @@ const getRandomStarType=()=>{
   return starColor
 }
 const createRandomStar = ({ radius, position, time = 0 }) => {
-
   const starColor = getRandomStarType()
 
-  return createStar({ radius: radius, position: position, color: starColor, time: Void.time })
+  return createStar({
+    radius: radius,
+    position: position,
+    color: starColor,
+    time: Void.time
+  })
 }
 
-const createRandomDistantStar =({ radius, position, simple=true })=>{
-  let star ={}
+const createRandomDistantStar = ({ radius, position, simple = true }) => {
+  let star = {}
 
   star.type = getRandomStarType()
   star.color = starTypes[star.type]
-  if(simple){
-    const geometry =  new THREE.Geometry()
-    const vertex= new THREE.Vector3()
-    vertex.x=position.x
-    vertex.y=position.y
-    vertex.z=position.z
+  if (simple) {
+    const geometry = new THREE.Geometry()
+    const vertex = new THREE.Vector3()
+    vertex.x = position.x
+    vertex.y = position.y
+    vertex.z = position.z
     geometry.vertices.push(vertex)
-    const material = new THREE.PointsMaterial({ color: rgb2hex(star.color), size: 2, sizeAttenuation: false, fog: false })
-    star.object =   new THREE.Points(geometry,  material )
+    const material = new THREE.PointsMaterial({
+      color: rgb2hex(star.color),
+      size: 2,
+      sizeAttenuation: false,
+      fog: false
+    })
+    star.object = new THREE.Points(geometry, material)
     star.object.matrixAutoUpdate = false
     star.object.updateMatrix()
-  }else{
+  } else {
     const geometry = new THREE.IcosahedronBufferGeometry(radius, 0)
-    const material = new THREE.MeshBasicMaterial({color: rgb2hex(star.color),emissive:rgb2hex(star.color) })
-    star.object =   new THREE.Mesh(geometry,  material )
+    const material = new THREE.MeshBasicMaterial({
+      color: rgb2hex(star.color),
+      emissive: rgb2hex(star.color)
+    })
+    star.object = new THREE.Mesh(geometry, material)
     star.object.position.x = position.x
     star.object.position.y = position.y
     star.object.position.z = position.z
   }
-
 
   return star
 }
@@ -159,7 +170,6 @@ const createStar = ({ radius, position, color, time = 0 }) => {
 
   const pointLight = new THREE.PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
   pointLight.castShadow = true
-
   ;[ photosphere, chromosphere, pointLight ].map(s => {
     s.position.x = position.x
     s.position.y = position.y
@@ -191,7 +201,10 @@ const createChromosphere = (radius, rgb, time) => {
     vertexShader,
     fragmentShader
   })
-  const chromosphere = new THREE.Mesh(chromosphereGeometry, chromosphereMaterial)
+  const chromosphere = new THREE.Mesh(
+    chromosphereGeometry,
+    chromosphereMaterial
+  )
   return chromosphere
 }
 
@@ -208,9 +221,9 @@ const createPhotosphere = (radius, rgb, time) => {
 
 const getUniforms = (radius, rgb, time = 0) => {
   // TODO: fix this UI hack
-  Void.uniforms.sun.color.red.value = rgb[0] / 255.0 * 0.7
-  Void.uniforms.sun.color.green.value = rgb[1] / 255.0 * 0.7
-  Void.uniforms.sun.color.blue.value = rgb[2] / 255.0 * 0.7
+  Void.uniforms.sun.color.red.value = (rgb[0] / 255.0) * 0.7
+  Void.uniforms.sun.color.green.value = (rgb[1] / 255.0) * 0.7
+  Void.uniforms.sun.color.blue.value = (rgb[2] / 255.0) * 0.7
 
   return {
     noiseScale: {
@@ -232,9 +245,4 @@ const getUniforms = (radius, rgb, time = 0) => {
   }
 }
 
-export {
-  createStar,
-  createRandomStar,
-  starTypes,
-  createRandomDistantStar
-}
+export { createStar, createRandomStar, starTypes, createRandomDistantStar }

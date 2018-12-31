@@ -7,17 +7,15 @@ const createUniverse = () => {
   const galaxyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
   const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
 
-  const universeGeometry = new THREE.SphereGeometry(4.4 * Math.pow(10, 26), 32, 32)
+  const universeGeometry = new THREE.SphereGeometry(
+    4.4 * Math.pow(10, 26),
+    32,
+    32
+  )
   const universeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
   const universe = new THREE.Mesh(universeGeometry, universeMaterial)
 
-  return [
-    oort,
-    galaxy,
-    universe
-  ]
+  return [ oort, galaxy, universe ]
 }
 
-export {
-  createUniverse
-}
+export { createUniverse }

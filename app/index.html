@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>Into The Void!</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <head>
+    <title>Into The Void!</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
     <script src="/app/lib/gpu.min.js"></script>
-	</head>
+  </head>
 
-	<body>
-		<div id="info">
-		<a href="https://github.com/ubernaut/spaceSim" target="_blank" rel="noopener">On GitHub</a>
-		</div>
+  <body>
+    <div id="info">
+      <a
+        href="https://github.com/ubernaut/spaceSim"
+        target="_blank"
+        rel="noopener"
+        >On GitHub</a
+      >
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <div id="help" >
-    <h3 onclick="$('#controls').toggle();">(click here to toggle help)</h3>
-    <pre id="controls">
+    <div id="help">
+      <h3 onclick="$('#controls').toggle();">(click here to toggle help)</h3>
+      <pre id="controls">
     <h3>General Info:</h3>
     This is a nbody Gravity simulation using GPU.js and
     THREE.js. The physics is being computed on the GPU
@@ -65,15 +73,15 @@
     </pre>
     </div>
     <div id="root"></div>
-    <script src="app/lib/gpu.js"></script>    
-		<script src="/app/lib/three/three.js"></script>
-		<script src="/app/lib/three/loaders/DDSLoader.js"></script>
-		<script src="/app/lib/three/loaders/MTLLoader.js"></script>
-		<script src="/app/lib/three/loaders/OBJLoader.js"></script>
+    <script src="app/lib/gpu.js"></script>
+    <script src="/app/lib/three/three.js"></script>
+    <script src="/app/lib/three/loaders/DDSLoader.js"></script>
+    <script src="/app/lib/three/loaders/MTLLoader.js"></script>
+    <script src="/app/lib/three/loaders/OBJLoader.js"></script>
     <script src="/app/lib/three/controls/FlyControls.js"></script>
-		<script src="/app/lib/three/controls/DeviceOrientationControls.js"></script>
+    <script src="/app/lib/three/controls/DeviceOrientationControls.js"></script>
     <script src="/app/lib/three/oimo.js"></script>
-		<script src="/app/lib/three/Detector.js"></script>
-		<script src="/app/lib/three/libs/stats.min.js"></script>
+    <script src="/app/lib/three/Detector.js"></script>
+    <script src="/app/lib/three/libs/stats.min.js"></script>
   </body>
 </html>

@@ -6,10 +6,6 @@ const basicProgram = () => {
   const tasks = []
 }
 
-const createAgent = (channel, options) => {
+const createAgent = (channel, options) => {}
 
-}
-
-export {
-  createAgent
-}
+export { createAgent }

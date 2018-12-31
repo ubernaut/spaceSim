@@ -13,7 +13,7 @@ import { getAllConfigVars } from '-/utils'
  * App State
  */
 
-const Void = window.Void = {
+const Void = (window.Void = {
   urlConfigs: getAllConfigVars(),
   server: {
     host: 'http://thedagda.co',
@@ -56,7 +56,7 @@ const Void = window.Void = {
       }
     }
   }
-}
+})
 
 /**
  * Void Services
@@ -81,8 +81,16 @@ Void.log.debug('starting up...')
  */
 const registerEventListeners = () => {
   const canvas = document.querySelector('#root canvas')
-  canvas.addEventListener('mousedown', e => net.broadcastUpdate(Void.socket, Void.ship), false)
-  canvas.addEventListener('mouseup', e => net.broadcastUpdate(Void.socket, Void.ship), false)
+  canvas.addEventListener(
+    'mousedown',
+    e => net.broadcastUpdate(Void.socket, Void.ship),
+    false
+  )
+  canvas.addEventListener(
+    'mouseup',
+    e => net.broadcastUpdate(Void.socket, Void.ship),
+    false
+  )
 
   setInterval(() => {
     const { quaternion, position } = Void.ship
@@ -100,9 +108,9 @@ sim.animate()
 
 createBasicUI(Void.gui.values, color => {
   const split = color.split(',')
-  Void.uniforms.sun.color.red.value = split[0] / 255.0 * 0.75
-  Void.uniforms.sun.color.green.value = split[1] / 255.0 * 0.75
-  Void.uniforms.sun.color.blue.value = split[2] / 255.0 * 0.75
+  Void.uniforms.sun.color.red.value = (split[0] / 255.0) * 0.75
+  Void.uniforms.sun.color.green.value = (split[1] / 255.0) * 0.75
+  Void.uniforms.sun.color.blue.value = (split[2] / 255.0) * 0.75
 })
 
 registerEventListeners()
@@ -111,4 +119,5 @@ registerEventListeners()
 Void.log.debug('opening websocket')
 Void.socket = net.init(Void.server)
 
-window.location = "javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';document.head.appendChild(script);})()"
+window.location =
+  "javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';document.head.appendChild(script);})()"

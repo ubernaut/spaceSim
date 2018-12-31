@@ -26,15 +26,22 @@ const handleEvent = eventData => {
     newPosition.z = position.z
 
     // console.log('shooting', quaternion, position, weaponType)
-    shoot({ quaternion: newQuaternion, position: newPosition, weaponType: 'planetCannon' })
+    shoot({
+      quaternion: newQuaternion,
+      position: newPosition,
+      weaponType: 'planetCannon'
+    })
   }
 }
 
 const broadcastUpdate = (socket, { type, payload }) => {
-  socket.emit('events', msgpack.encode({
-    type,
-    payload
-  }))
+  socket.emit(
+    'events',
+    msgpack.encode({
+      type,
+      payload
+    })
+  )
 }
 
 /**

@@ -26,7 +26,9 @@ const basicPlanetTextures = [
 
 const loadTextures = textureUrls => {
   const loader = new THREE.TextureLoader()
-  return textureUrls.map(url => new Promise(resolve => loader.load(url, resolve)))
+  return textureUrls.map(
+    url => new Promise(resolve => loader.load(url, resolve))
+  )
 }
 
 const loadEarthMesh = () => {
@@ -43,7 +45,9 @@ const loadEarthMesh = () => {
             shininess: 1
           })
           const geometry = new THREE.IcosahedronBufferGeometry(1, 2)
-          const mesh = THREE.SceneUtils.createMultiMaterialObject(geometry, [ material ])
+          const mesh = THREE.SceneUtils.createMultiMaterialObject(geometry, [
+            material
+          ])
           resolve(mesh)
         })
       })
@@ -66,7 +70,11 @@ const loadPlanets = () => {
 
   return Promise.all(loadTextures(basicPlanetTextures))
     .then(textures => textures.map(map => new THREE.MeshPhongMaterial({ map })))
-    .then(materials => materials.map(mat => new THREE.Mesh(geometry.clone(), mat, { castShadow: false })))
+    .then(materials =>
+      materials.map(
+        mat => new THREE.Mesh(geometry.clone(), mat, { castShadow: false })
+      )
+    )
     .then(meshes => [ ...meshes, loadEarthMesh() ])
 }
 
@@ -99,6 +107,4 @@ const createPlanet = ({ radius, position }) => {
   }
 }
 
-export {
-  createPlanet
-}
+export { createPlanet }

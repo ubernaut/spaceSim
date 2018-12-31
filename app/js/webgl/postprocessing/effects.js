@@ -6,6 +6,4 @@ const createComposer = ({ renderer }) => {
   return composer
 }
 
-export {
-  createComposer
-}
+export { createComposer }
