@@ -1,5 +1,21 @@
 {
   "name": "spaceSim",
+  "version": "0.0.0",
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "bluebird": "^3.5.0",
+    "browser-bunyan": "^0.4.0",
+    "msgpack-lite": "^0.1.26",
+    "postprocessing": "^2.3.1",
+    "socket.io": "^2.0.3",
+    "three": "^0.87.1",
+    "uuid": "^3.1.0"
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -14,21 +30,6 @@
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.14",
     "worker-loader": "^2.0.0"
-  },
-  "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "bluebird": "^3.5.0",
-    "browser-bunyan": "^0.4.0",
-    "msgpack-lite": "^0.1.26",
-    "postprocessing": "^2.3.1",
-    "socket.io": "^2.0.3",
-    "three": "^0.87.1",
-    "uuid": "^3.1.0"
-  },
-  "scripts": {
-    "dev": "webpack-dev-server",
-    "build": "NODE_ENV=production webpack --progress --colors  --config webpack.config.prod.js",
-    "clean": "rm -rf dist/*"
   },
   "eslintConfig": {
     "extends": "standard",
@@ -61,9 +62,9 @@
       ]
     }
   },
-  "babel": {
-    "presets": [
-      "env"
-    ]
+  "scripts": {
+    "build": "NODE_ENV=production webpack --progress --colors  --config webpack.config.prod.js",
+    "clean": "rm -rf dist/*",
+    "dev": "webpack-dev-server"
   }
 }
