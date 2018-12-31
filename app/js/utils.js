@@ -1,7 +1,7 @@
 const onProgress = xhr => {
   if (xhr.lengthComputable) {
     const percentComplete = (xhr.loaded / xhr.total) * 100
-    Void.log.debug(`${Math.round(percentComplete, 2)}% downloaded`)
+    console.log(`${Math.round(percentComplete, 2)}% downloaded`)
   }
 }
 
@@ -33,10 +33,7 @@ const s4 = () => {
     .substring(1)
 }
 
-const guid = () => {
-  const chunks = [ s4() + s4(), s4(), s4(), s4(), s4() + s4() + s4() ]
-  return chunks.join('-')
-}
+const guid = () => [ s4() + s4(), s4(), s4(), s4(), s4() + s4() + s4() ].join('-')
 
 const getAllConfigVars = () => {
   var oGetVars = {}

@@ -1,11 +1,14 @@
+import uuid from 'uuid/v4'
+
+import Point from '@void/core/system-builder/Point'
+
 import {
   starTypes,
   createRandomStar,
   createRandomDistantStar
 } from '-/bodies/star'
-import Point from '@void/core/system-builder/Point'
-import uuid from 'uuid/v4'
 import { randomUniform } from '-/utils'
+
 class Galaxy {
   constructor () {
     this.stars = []
@@ -53,16 +56,16 @@ class Galaxy {
     }
   }
 }
-const createGalaxy = () => {
+
+const createGalaxy = scene => {
   const galaxy = new Galaxy()
   for (let i = 0; i < galaxy.stars.length; i++) {
-    Void.scene.add(galaxy.stars[i].object)
-    // Void.scene.add(star.)
+    scene.add(galaxy.stars[i].object)
   }
   return galaxy
 }
 
-const addStars = () => {
+const addStars = scene => {
   const radius = 5 * Math.pow(10, 20)
   let i = 0
   let r = radius
@@ -136,7 +139,7 @@ const addStars = () => {
     stars.position.z -= radius / 2
     stars.matrixAutoUpdate = false
     stars.updateMatrix()
-    Void.scene.add(stars)
+    scene.add(stars)
   }
 }
 export { addStars, createGalaxy }

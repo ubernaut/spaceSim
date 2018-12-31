@@ -43,7 +43,7 @@ const init = async (rootEl, config = defaultConfig) => {
     camera: Void.camera
   })
   Void.world = initOimoPhysics()
-  Void.galaxy = createGalaxy()
+  Void.galaxy = createGalaxy(Void.scene)
 
   createUniverse(Void.scene).map(body => Void.scene.add(body))
 

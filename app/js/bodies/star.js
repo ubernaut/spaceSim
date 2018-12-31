@@ -107,6 +107,7 @@ const getRandomStarType = () => {
   }
   return starColor
 }
+
 const createRandomStar = ({ radius, position, time = 0 }) => {
   const starColor = getRandomStarType()
 
@@ -114,7 +115,7 @@ const createRandomStar = ({ radius, position, time = 0 }) => {
     radius: radius,
     position: position,
     color: starColor,
-    time: Void.time
+    time
   })
 }
 
@@ -155,15 +156,7 @@ const createRandomDistantStar = ({ radius, position, simple = true }) => {
 }
 
 const createStar = ({ radius, position, color, time = 0 }) => {
-  let rgb
-  if (typeof color === 'string') {
-    // TODO: remove this UI hack
-    Void.gui.values.starType = color
-    rgb = starTypes[color]
-  }
-  if (!color || !rgb) {
-    rgb = starTypes.K7
-  }
+  const rgb = starTypes.K7
 
   const photosphere = createPhotosphere(radius, rgb, time)
   const chromosphere = createChromosphere(radius, rgb, time)

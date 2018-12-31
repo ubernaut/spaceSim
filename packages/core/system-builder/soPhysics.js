@@ -101,6 +101,7 @@ class soPhysics {
       }
     )
   }
+
   initTransposeKernel () {
     this.gpu = new GPU()
     this.GPUcomputeAcceleration = this.gpu.createKernel(

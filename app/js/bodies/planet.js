@@ -79,7 +79,6 @@ const loadPlanets = () => {
 }
 
 Promise.all(loadPlanets()).then(meshes => {
-  Void.log.debug('loaded planet meshes')
   planetsMeshes.push(...meshes)
 })
 
