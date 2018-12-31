@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const resolve = target => path.join(__dirname, target)
 
@@ -12,7 +13,8 @@ module.exports = {
 
   output: {
     path: resolve('dist'),
-    filename: '[name].js'
+    filename: '[name].js',
+    globalObject: 'this'
   },
 
   devtool: 'cheap-module-eval-source-map',
@@ -75,6 +77,10 @@ module.exports = {
   },
 
   plugins: [
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'app/index.html'
+    }),
     new webpack.HotModuleReplacementPlugin()
   ]
 }
