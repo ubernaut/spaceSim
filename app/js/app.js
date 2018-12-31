@@ -5,8 +5,6 @@ import bunyan from 'browser-bunyan'
 
 import * as net from '-/net/net'
 import sim from '-/sim'
-import { animate } from '-/sim/scene'
-import { shoot } from '-/player/weapons'
 import { createBasicUI } from '-/ui/ui'
 import { getAllConfigVars } from '-/utils'
 
@@ -106,16 +104,14 @@ const registerEventListeners = () => {
 /**
  * Init
  */
-
-sim(document.getElementById('root'))
-animate()
-
 createBasicUI(Void.gui.values, color => {
   const split = color.split(',')
   Void.uniforms.sun.color.red.value = (split[0] / 255.0) * 0.75
   Void.uniforms.sun.color.green.value = (split[1] / 255.0) * 0.75
   Void.uniforms.sun.color.blue.value = (split[2] / 255.0) * 0.75
 })
+
+sim(document.getElementById('root'))
 
 registerEventListeners()
 

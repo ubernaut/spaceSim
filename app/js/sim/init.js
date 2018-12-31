@@ -7,7 +7,16 @@ import { createGalaxy } from '-/bodies/galaxy'
 import { createShip } from '-/player/ship'
 import { initOimoPhysics } from './physics'
 import { loadSystem } from './system'
-import { addLights, deployDrone, addPostprocessing } from './scene'
+import {
+  animate,
+  addLights,
+  deployDrone,
+  createPostprocessing,
+  createRenderer,
+  createCamera
+} from './scene'
+
+const IAU = 9.4607 * Math.pow(10, 15)
 
 const onWindowResize = () => {
   Void.camera.aspect = window.innerWidth / window.innerHeight
@@ -15,37 +24,36 @@ const onWindowResize = () => {
   Void.renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
-const init = rootEl => {
-  // renderer
-  Void.renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    logarithmicDepthBuffer: true
-    // shadowMapEnabled: true
+const defaultConfig = {
+  camera: {
+    fov: 65,
+    nearClip: 0.1,
+    farClip: 5 * IAU,
+    initialPosition: [ 0, 10, 30 ]
+  }
+}
+
+const init = async (rootEl, config = defaultConfig) => {
+  Void.renderer = createRenderer()
+  Void.scene = new THREE.Scene()
+  Void.camera = createCamera(config.camera)
+  Void.composer = createPostprocessing({
+    renderer: Void.renderer,
+    scene: Void.scene,
+    camera: Void.camera
   })
-  Void.renderer.setPixelRatio(window.devicePixelRatio)
-  Void.renderer.setSize(window.innerWidth, window.innerHeight)
+  Void.world = initOimoPhysics()
+  Void.galaxy = createGalaxy()
 
-  // camera
-  const IAU = 9.4607 * Math.pow(10, 15)
-  const farClip = 5 * IAU
-  const camera = (Void.camera = new THREE.PerspectiveCamera(
-    65,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    farClip
-  ))
+  createUniverse(Void.scene).map(body => Void.scene.add(body))
 
-  // scene
-  const scene = (Void.scene = new THREE.Scene())
-  addLights(scene)
+  addLights(Void.scene)
 
-  // ship
   createShip({ controls }).then(({ ship, animate }) => {
-    // console.log(ship)
     Void.ship = ship
     Void.ship.add(Void.camera)
-    Void.camera.position.set(0, 10, 30)
-    scene.add(ship)
+    Void.camera.position.set(...config.camera.initialPosition)
+    Void.scene.add(ship)
     Void.animateCallbacks.push(animate)
 
     if (Void.urlConfigs.hasOwnProperty('gamepad')) {
@@ -64,31 +72,13 @@ const init = rootEl => {
     }
   })
 
-  // all other matter
-  createUniverse(scene).map(body => scene.add(body))
-
-  // postprocessing
-  addPostprocessing({ renderer: Void.renderer, scene, camera })
-
-  // attach to the dom
   rootEl.appendChild(Void.renderer.domElement)
-  let starflag = true
-  if (Void.urlConfigs.hasOwnProperty('stars')) {
-    if (Void.urlConfigs.stars === 'false') {
-      starflag = false
-    }
-  }
-  if (starflag) {
-    Void.galaxy = createGalaxy()
-    // addStars()
-  }
 
   window.addEventListener('resize', onWindowResize, false)
 
-  // init physics
-  Void.world = initOimoPhysics()
-
   loadSystem()
+
+  animate()
 }
 
 export default init

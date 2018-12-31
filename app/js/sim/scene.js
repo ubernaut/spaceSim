@@ -33,10 +33,9 @@ const deployDrone = ship => createDroneOpts => {
 /**
  * add post processing effects, e.g., bloom filter
  */
-const addPostprocessing = ({ renderer, scene, camera }) => {
-  // postprocessing
-  Void.composer = new EffectComposer(renderer)
-  Void.composer.addPass(new RenderPass(scene, camera))
+const createPostprocessing = ({ renderer, scene, camera }) => {
+  const composer = new EffectComposer(renderer)
+  composer.addPass(new RenderPass(scene, camera))
 
   const bloomPass = new BloomPass({
     resolutionScale: 0.05,
@@ -47,13 +46,15 @@ const addPostprocessing = ({ renderer, scene, camera }) => {
   bloomPass.renderToScreen = true
   bloomPass.combineMaterial.defines.SCREEN_MODE = '1'
   bloomPass.combineMaterial.needsUpdate = true
-  Void.composer.addPass(bloomPass)
+  composer.addPass(bloomPass)
+
+  return composer
 }
 
 /**
  * add the universe object to the scene
  */
-const addUniverse = scene => {
+const createUniverse = scene => {
   const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
   const oortMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 })
   const oort = new THREE.Mesh(oortGeometry, oortMaterial)
@@ -102,12 +103,12 @@ const animate = () => {
       if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
         GPUcollisions = Void.urlConfigs.GPUcollisions
       }
+
       if (GPUcollisions === true) {
         updateSystemCPU()
       } else {
         updateSystemGPU()
       }
-      //
     }
     // updateOimoPhysics()
 
@@ -117,11 +118,34 @@ const animate = () => {
   Void.composer.render(delta)
 }
 
+const createRenderer = () => {
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    logarithmicDepthBuffer: true
+    // shadowMapEnabled: true
+  })
+  renderer.setPixelRatio(window.devicePixelRatio)
+  renderer.setSize(window.innerWidth, window.innerHeight)
+  return renderer
+}
+
+const createCamera = options => {
+  const camera = new THREE.PerspectiveCamera(
+    options.fov,
+    window.innerWidth / window.innerHeight,
+    options.nearClip,
+    options.farClip
+  )
+  return camera
+}
+
 export {
-  animate,
-  deployDrone,
-  addUniverse,
-  squareGrid,
   addLights,
-  addPostprocessing
+  animate,
+  createCamera,
+  createPostprocessing,
+  createRenderer,
+  createUniverse,
+  deployDrone,
+  squareGrid
 }
