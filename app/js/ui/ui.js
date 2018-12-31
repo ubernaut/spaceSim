@@ -5,7 +5,8 @@ const createBasicUI = (guiValues, updateColor) => {
   const gui = new dat.gui.GUI()
 
   const starFolder = gui.addFolder('Star Options')
-  const starType = starFolder.add(guiValues, 'starType')
+  const starType = starFolder
+    .add(guiValues, 'starType')
     .options(starTypes)
     .name('Star Type')
 
@@ -16,6 +17,4 @@ const createBasicUI = (guiValues, updateColor) => {
   starFolder.open()
 }
 
-export {
-  createBasicUI
-}
+export { createBasicUI }

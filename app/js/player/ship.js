@@ -23,14 +23,17 @@ const particleEmitterOptions = {
   spawnRate: 450
 }
 
-const animateShip = (emitter) => (delta, tick) => {
+const animateShip = emitter => (delta, tick) => {
   const options = Object.assign({}, particleOptions, {
     position: {
-      x: (Math.random() * 0.5) - 0.25,
-      y: (Math.random() * 0.5) - 0.25,
+      x: Math.random() * 0.5 - 0.25,
+      y: Math.random() * 0.5 - 0.25,
       z: Math.random() * 0.5
     },
-    size: Math.max(5, Math.min(10.0, 3.0 * Void.controls.movementSpeed * 0.000000001))
+    size: Math.max(
+      5,
+      Math.min(10.0, 3.0 * Void.controls.movementSpeed * 0.000000001)
+    )
   })
   for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
     emitter.spawnParticle(options)
@@ -59,28 +62,31 @@ const createShip = ({ position, scale, rotation }) => {
     mtlLoader.load('ship.mtl', materials => {
       materials.preload()
       objLoader.setMaterials(materials)
-      objLoader.load('ship.obj', ship => {
-        ship.position.set(position.x, position.y, position.z)
-        ship.scale.set(scale.x, scale.y, scale.z)
-        ship.rotation.set(rotation.x, rotation.y, rotation.z)
-        ship.name = 'spaceShip'
+      objLoader.load(
+        'ship.obj',
+        ship => {
+          ship.position.set(position.x, position.y, position.z)
+          ship.scale.set(scale.x, scale.y, scale.z)
+          ship.rotation.set(rotation.x, rotation.y, rotation.z)
+          ship.name = 'spaceShip'
 
-        const emitter = new GPUParticleSystem({
-          maxParticles: 250000
-        })
-        ship.add(emitter)
-        emitter.rotation.set(0, 0, 0)
-        emitter.position.set(0, 0.5, 3)
+          const emitter = new GPUParticleSystem({
+            maxParticles: 250000
+          })
+          ship.add(emitter)
+          emitter.rotation.set(0, 0, 0)
+          emitter.position.set(0, 0.5, 3)
 
-        resolve({
-          ship,
-          animate: animateShip(emitter)
-        })
-      }, onProgress, onError)
+          resolve({
+            ship,
+            animate: animateShip(emitter)
+          })
+        },
+        onProgress,
+        onError
+      )
     })
   })
 }
 
-export {
-  createShip
-}
+export { createShip }

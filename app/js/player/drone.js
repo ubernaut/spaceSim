@@ -20,6 +20,4 @@ const createDrone = ({ quaternion, position }) => {
   }
 }
 
-export {
-  createDrone
-}
+export { createDrone }

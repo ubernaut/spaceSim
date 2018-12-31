@@ -1,51 +1,48 @@
 const path = require('path')
 const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const resolve = target => path.join(__dirname, target)
 
 module.exports = {
+  mode: 'development',
+
   entry: {
     bundle: resolve('app/js/app.js')
   },
 
   output: {
     path: resolve('dist'),
-    filename: '[name].js'
+    filename: '[name].js',
+    globalObject: 'this'
   },
 
   devtool: 'cheap-module-eval-source-map',
 
   resolve: {
     modules: [ 'node_modules' ],
-    extensions: [
-      '*',
-      '.json',
-      '.js'
-    ],
+    extensions: [ '*', '.json', '.js' ],
     alias: {
       '-': resolve('app/js'),
-      'app': resolve('app')
+      app: resolve('app'),
+      '@void': resolve('packages')
     }
   },
 
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.css$/,
-        loader: 'style!css'
+        use: [ 'style-loader', 'css-loader' ]
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: [
-          'babel-loader'
-        ]
+        loaders: [ 'babel-loader' ]
       },
       {
         test: /\.(glsl|md|obj)$/,
-        loaders: [
-          'raw-loader'
-        ]
+        loaders: [ 'raw-loader' ]
       },
       {
         test: /\.worker.js$/,
@@ -73,13 +70,10 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: 'vendor.js',
-      minChunks: module => {
-        return module.context && module.context.indexOf('node_modules') !== -1
-      }
-    })
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'app/index.html'
+    }),
+    new webpack.HotModuleReplacementPlugin()
   ]
 }
