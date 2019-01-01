@@ -1,7 +1,7 @@
 const onProgress = xhr => {
   if (xhr.lengthComputable) {
     const percentComplete = (xhr.loaded / xhr.total) * 100
-    Void.log.debug(`${Math.round(percentComplete, 2)}% downloaded`)
+    console.log(`${Math.round(percentComplete, 2)}% downloaded`)
   }
 }
 
@@ -27,27 +27,13 @@ const getUrlParameter = sParam => {
   }
 }
 
-const guid = () => {
-  function s4 () {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1)
-  }
-  return (
-    s4() +
-    s4() +
-    '-' +
-    s4() +
-    '-' +
-    s4() +
-    '-' +
-    s4() +
-    '-' +
-    s4() +
-    s4() +
-    s4()
-  )
+const s4 = () => {
+  return Math.floor((1 + Math.random()) * 0x10000)
+    .toString(16)
+    .substring(1)
 }
+
+const guid = () => [ s4() + s4(), s4(), s4(), s4(), s4() + s4() + s4() ].join('-')
 
 const getAllConfigVars = () => {
   var oGetVars = {}

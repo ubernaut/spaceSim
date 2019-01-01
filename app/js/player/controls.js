@@ -17,10 +17,10 @@ const adjustThrust = (val, controls) => {
   const newSpeed =
     controls.movementSpeed +
     val * Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
-  Void.log.debug(
-    `adjusting thrust from ${controls.movementSpeed /
-      movementSpeedMultiplier} to ${newSpeed / movementSpeedMultiplier}`
-  )
+  // console.log(
+  //   `adjusting thrust from ${controls.movementSpeed /
+  //     movementSpeedMultiplier} to ${newSpeed / movementSpeedMultiplier}`
+  // )
   controls.movementSpeed = newSpeed
 }
 
