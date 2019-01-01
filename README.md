@@ -1,5 +1,6 @@
 **Dev**
 ```
+sudo apt install build-essential
 npm install
 npm run dev
 ```
