@@ -8,7 +8,7 @@ import { createPlanet } from '-/bodies/planet'
 import { randomUniform } from '-/utils'
 import SystemBuilderWorker from '-/workers/systemBuilder.worker'
 
-const loadSystem = () => {
+const loadSystem = ({ gpuCollisions }) => {
   let bodyCount = 1024
   if (Void.urlConfigs.hasOwnProperty('bodyCount')) {
     if (Number.isInteger(parseInt(Void.urlConfigs.bodyCount))) {
@@ -43,7 +43,14 @@ const loadSystem = () => {
     const metersBodies = convertSystemToMeters(Void.thisSystem)
     Void.thisSystem.bodies = metersBodies
 
-    Void.soPhysics = new soPhysics(Void.thisSystem, 0, deltaT, true, true)
+    Void.soPhysics = new soPhysics(
+      Void.thisSystem,
+      0,
+      deltaT,
+      true,
+      true,
+      gpuCollisions
+    )
 
     for (var i = 0; i < Void.soPhysics.gridSystem.rad.length; i++) {
       Void.soPhysics.gridSystem.rad[

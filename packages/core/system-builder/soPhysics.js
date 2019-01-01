@@ -7,7 +7,8 @@ class soPhysics {
     maxMark = 100000,
     dt = 0.02,
     metric = false,
-    GPGPU = false
+    GPGPU = false,
+    gpuCollisions = false
   ) {
     this.dt = dt
     this.system = aSystem
@@ -21,6 +22,7 @@ class soPhysics {
     this.count = 1
     this.tryCount = 0
     this.G = 2.93558 * Math.pow(10, -4)
+    this.gpuCollisions = gpuCollisions
 
     if (GPGPU) {
       try {
@@ -250,11 +252,7 @@ class soPhysics {
       this.gridSystem.rad
     )
 
-    let GPUcollisions = true
-    if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
-      GPUcollisions = Void.urlConfigs.GPUcollisions
-    }
-    if (GPUcollisions == true) {
+    if (this.gpuCollisions) {
       var GPUcollisionList = this.GPUcomputeCollisions(
         this.gridSystem.pos,
         this.gridSystem.mass,

@@ -30,6 +30,9 @@ const defaultConfig = {
     nearClip: 0.1,
     farClip: 5 * IAU,
     initialPosition: [ 0, 10, 30 ]
+  },
+  system: {
+    gpuCollisions: false
   }
 }
 
@@ -76,7 +79,13 @@ const init = async (rootEl, config = defaultConfig) => {
 
   window.addEventListener('resize', onWindowResize, false)
 
-  loadSystem()
+  if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
+    config.gpuCollisions = Void.urlConfigs.GPUcollisions
+  }
+
+  loadSystem({
+    gpuCollisions: config.gpuCollisions
+  })
 
   animate()
 }
