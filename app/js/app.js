@@ -68,10 +68,22 @@ const animateCallbacks = []
 const getAnimateCallbacks = () => animateCallbacks
 const addAnimateCallback = cb => animateCallbacks.push(cb)
 
-const { scene, camera } = createViewer('root', {
-  getAnimateCallbacks,
-  addAnimateCallback
-})
+const { scene, camera } = createViewer(
+  'root',
+  {
+    getAnimateCallbacks,
+    addAnimateCallback
+  },
+  {
+    system: {
+      bodyCount: 512,
+      bodyDistance: 1,
+      bodySpeed: 0.05,
+      deltaT: 0.005,
+      gpuCollisions: false
+    }
+  }
+)
 
 createShip({ controls }).then(({ ship, animate }) => {
   Void.ship = ship

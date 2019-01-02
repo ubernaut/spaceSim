@@ -34,7 +34,8 @@ const defaultConfig = {
   oimo: false
 }
 
-const init = (rootEl, animateCallbackHelpers, config = defaultConfig) => {
+const init = (rootEl, animateCallbackHelpers, config) => {
+  config = Object.assign({}, defaultConfig, config)
   const renderer = createRenderer()
   const scene = new THREE.Scene()
   const camera = createCamera(config.camera)
@@ -54,6 +55,10 @@ const init = (rootEl, animateCallbackHelpers, config = defaultConfig) => {
 
   loadSystem({
     scene,
+    bodyCount: config.system.bodyCount,
+    bodyDistance: config.system.bodyDistance,
+    bodySpeed: config.system.bodySpeed,
+    deltaT: config.system.deltaT,
     gpuCollisions: config.system.gpuCollisions,
     addAnimateCallback: animateCallbackHelpers.addAnimateCallback
   }).then(physics => {

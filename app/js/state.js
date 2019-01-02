@@ -48,7 +48,7 @@ const state = new Baobab(
       starType: 'O5'
     },
     urlParameters: {
-      bodyCount: 512,
+      bodyCount: 1,
       stars: true
     }
   },
