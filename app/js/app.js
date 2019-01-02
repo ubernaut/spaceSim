@@ -35,7 +35,6 @@ const Void = (window.Void = {
       starType: 'O5'
     }
   },
-
   uniforms: {
     sun: {
       color: {
