@@ -5,8 +5,12 @@ import '../styles/app.css'
 import { createViewer } from '@void/core/viewer'
 
 import * as net from '-/net/net'
+import * as controls from '-/player/controls'
+import * as weapons from '-/player/weapons'
+import { createShip, deployDrone } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
 import { getAllConfigVars } from '-/utils'
+import { createGamepadControls } from '-/player/controls/gamepad-controls'
 import logger from './logger'
 
 /**
@@ -21,7 +25,6 @@ const Void = (window.Void = {
   },
   clock: new THREE.Clock(),
   time: { value: 100000000 },
-  socket: null,
   scene: null,
   world: null,
   controls: null,
@@ -54,25 +57,6 @@ const Void = (window.Void = {
 /**
  * Event Listeners
  */
-const registerEventListeners = () => {
-  const canvas = document.querySelector('#root canvas')
-  canvas.addEventListener(
-    'mousedown',
-    e => net.broadcastUpdate(Void.socket, Void.ship),
-    false
-  )
-  canvas.addEventListener(
-    'mouseup',
-    e => net.broadcastUpdate(Void.socket, Void.ship),
-    false
-  )
-
-  setInterval(() => {
-    const { quaternion, position } = Void.ship
-    const payload = { quaternion, position }
-    net.broadcastUpdate(Void.socket, { type: 'playerMove', payload })
-  }, 150)
-}
 
 /**
  * Init
@@ -84,13 +68,55 @@ createBasicUI(Void.gui.values, color => {
   Void.uniforms.sun.color.blue.value = (split[2] / 255.0) * 0.75
 })
 
-createViewer('root')
+const { scene } = createViewer('root')
 
-registerEventListeners()
+createShip({ controls }).then(({ ship, animate }) => {
+  Void.ship = ship
+  Void.ship.add(Void.camera)
+  Void.camera.position.set(...[ 0, 10, 30 ])
+  scene.add(ship)
+  Void.animateCallbacks.push(animate)
+
+  if (Void.urlConfigs.hasOwnProperty('gamepad')) {
+    Void.controls = createGamepadControls(
+      ship,
+      document.getElementById('root'),
+      weapons.shoot,
+      deployDrone(ship)
+    )
+  } else {
+    Void.controls = controls.setFlyControls({
+      ship,
+      camera: Void.camera,
+      el: document.getElementById('root')
+    })
+  }
+})
 
 // Websocket connection
-logger.debug('opening websocket')
-Void.socket = net.init(Void.server)
+const registerEventListeners = socket => {
+  const canvas = document.querySelector('#root canvas')
+  canvas.addEventListener(
+    'mousedown',
+    e => net.broadcastUpdate(socket, Void.ship),
+    false
+  )
+  canvas.addEventListener(
+    'mouseup',
+    e => net.broadcastUpdate(socket, Void.ship),
+    false
+  )
 
+  setInterval(() => {
+    const { quaternion, position } = Void.ship
+    const payload = { quaternion, position }
+    net.broadcastUpdate(socket, { type: 'playerMove', payload })
+  }, 150)
+}
+
+logger.debug('opening websocket')
+net.init().then(socket => registerEventListeners(socket))
+
+// Add FPS stats widget
 window.location =
   "javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';document.head.appendChild(script);})()"

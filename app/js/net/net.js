@@ -122,6 +122,12 @@ const loadNewPlayer = (playerId, playerData) => {
   mtlLoader.load('ship.mtl', onShipMaterialsLoaded, onProgress, onError)
 }
 
-const init = () => createSocket(socket => socket.on('event', handleEvent))
+const init = () =>
+  new Promise((resolve, reject) => {
+    createSocket(socket => {
+      socket.on('event', handleEvent)
+      resolve(socket)
+    })
+  })
 
 export { init, handleEvent, broadcastUpdate }

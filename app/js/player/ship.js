@@ -10,6 +10,15 @@ const shipPolarGrid = ship => {
   return helper
 }
 
+/**
+ * deploy a small drone object next to the player
+ */
+const deployDrone = ship => createDroneOpts => {
+  const drone = createDrone(createDroneOpts)
+  ship.add(drone.mesh)
+  drone.mesh.position.set(5, 5, 5)
+}
+
 const particleOptions = {
   position: new THREE.Vector3(0, 0, 0),
   positionRandomness: 0.3,
@@ -92,4 +101,4 @@ const createShip = ({ position, scale, rotation }) => {
   })
 }
 
-export { createShip }
+export { createShip, deployDrone }

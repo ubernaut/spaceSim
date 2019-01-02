@@ -154,7 +154,7 @@ const createGamepadControls = (object, domElement, shoot, createDrone) => {
         velocity,
         weaponType: 'planetCannon'
       }
-      net.broadcastUpdate(Void.socket, { type: 'shotFired', payload })
+      net.broadcastUpdate(socket, { type: 'shotFired', payload })
     }
 
     // deploy drone

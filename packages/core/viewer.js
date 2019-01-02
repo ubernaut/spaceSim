@@ -7,7 +7,7 @@ const createViewer = (rootId, options = defaultOpts) => {
   if (!root) {
     console.error('invalid root element')
   }
-  init(root)
+  return init(root)
 }
 
 export { createViewer }

@@ -22,15 +22,6 @@ const squareGrid = () => {
 }
 
 /**
- * deploy a small drone object next to the player
- */
-const deployDrone = ship => createDroneOpts => {
-  const drone = createDrone(createDroneOpts)
-  ship.add(drone.mesh)
-  drone.mesh.position.set(5, 5, 5)
-}
-
-/**
  * add post processing effects, e.g., bloom filter
  */
 const createPostprocessing = ({ renderer, scene, camera }) => {
@@ -146,6 +137,5 @@ export {
   createPostprocessing,
   createRenderer,
   createUniverse,
-  deployDrone,
   squareGrid
 }
