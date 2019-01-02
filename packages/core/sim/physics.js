@@ -1,8 +1,8 @@
-const updateOimoPhysics = () => {
-  if (Void.world == null) {
+const updateOimoPhysics = world => {
+  if (world == null) {
     return
   }
-  Void.world.step()
+  world.step()
 }
 
 const initOimoPhysics = () => {

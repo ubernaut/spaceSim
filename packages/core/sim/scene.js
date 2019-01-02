@@ -2,7 +2,6 @@ import { EffectComposer, BloomPass, RenderPass } from 'postprocessing'
 
 import * as weapons from '-/player/weapons'
 import { updateSystemCPU, updateSystemGPU } from './system'
-import { createDrone } from '-/player/drone'
 
 /**
  * add default lights to a scene
@@ -19,15 +18,6 @@ const squareGrid = () => {
   const size = 100000000
   const divisions = 1000
   const gridHelper1 = new THREE.GridHelper(size, divisions, 0xffffff, 0xfffff)
-}
-
-/**
- * deploy a small drone object next to the player
- */
-const deployDrone = ship => createDroneOpts => {
-  const drone = createDrone(createDroneOpts)
-  ship.add(drone.mesh)
-  drone.mesh.position.set(5, 5, 5)
 }
 
 /**
@@ -58,12 +48,10 @@ const createUniverse = scene => {
   const oortGeometry = new THREE.SphereGeometry(7.5 * Math.pow(10, 15), 32, 32)
   const oortMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 })
   const oort = new THREE.Mesh(oortGeometry, oortMaterial)
-  // scene.add(oort)
 
   const galaxyGeometry = new THREE.SphereGeometry(5 * Math.pow(10, 20), 32, 32)
   const galaxyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
   const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial)
-  // scene.add(galaxy)
 
   const universeGeometry = new THREE.SphereGeometry(
     4.4 * Math.pow(10, 26),
@@ -72,7 +60,6 @@ const createUniverse = scene => {
   )
   const universeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
   const universe = new THREE.Mesh(universeGeometry, universeMaterial)
-  // scene.add(universe)
 
   return [ oort, galaxy, universe ]
 }
@@ -80,42 +67,40 @@ const createUniverse = scene => {
 /**
  * animate/update the objects in the scene
  */
-const animate = () => {
-  requestAnimationFrame(animate)
+const animate = ({
+  scene,
+  clock,
+  composer,
+  useCuda = false,
+  useGpuCollisions = true
+}) => {
+  requestAnimationFrame(() =>
+    animate({ scene, clock, composer, useCuda, useGpuCollisions })
+  )
 
-  const delta = Void.clock.getDelta()
-
-  if (Void.controls) {
-    Void.controls.update(delta)
+  if (!Void.soPhysics) {
+    return
   }
 
-  Void.time.value = Void.clock.getElapsedTime()
-
-  weapons.animate(delta, Void.time.value)
-
-  if (Void.soPhysics && Void.systemLoaded) {
-    if (Void.urlConfigs.hasOwnProperty('CPU')) {
-      Void.soPhysics.accelerateCuda()
-      updateSystemCPU()
+  if (useCuda) {
+    Void.soPhysics.accelerateCuda()
+    updateSystemCPU()
+  } else {
+    Void.soPhysics.GPUAccelerate()
+    if (useGpuCollisions) {
+      updateSystemGPU(scene, Void.soPhysics)
     } else {
-      Void.soPhysics.GPUAccelerate()
-      let GPUcollisions = true
-      if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
-        GPUcollisions = Void.urlConfigs.GPUcollisions
-      }
-
-      if (GPUcollisions === true) {
-        updateSystemCPU()
-      } else {
-        updateSystemGPU()
-      }
+      updateSystemCPU(scene, Void.soPhysics)
     }
-    // updateOimoPhysics()
-
-    Void.animateCallbacks.map(x => x(delta, Void.time.value))
   }
 
-  Void.composer.render(delta)
+  // updateOimoPhysics()
+
+  const delta = clock.getDelta()
+
+  Void.animateCallbacks.map(x => x(delta, clock.getElapsedTime()))
+
+  composer.render(delta)
 }
 
 const createRenderer = () => {
@@ -146,6 +131,5 @@ export {
   createPostprocessing,
   createRenderer,
   createUniverse,
-  deployDrone,
   squareGrid
 }

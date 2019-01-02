@@ -1,6 +1,6 @@
-import io from 'socket.io-client'
 import msgpack from 'msgpack-lite'
 
+import createSocket from '-/socket'
 import { onProgress, onError } from '-/utils'
 import { shoot } from '-/player/weapons'
 
@@ -122,13 +122,12 @@ const loadNewPlayer = (playerId, playerData) => {
   mtlLoader.load('ship.mtl', onShipMaterialsLoaded, onProgress, onError)
 }
 
-const init = server => {
-  const socket = io(`${server.host}:${server.port}`)
-  socket.on('connect', () => {
-    Void.log.debug('websocket connected')
-    socket.on('events', handleEvent)
+const init = () =>
+  new Promise((resolve, reject) => {
+    createSocket(socket => {
+      socket.on('event', handleEvent)
+      resolve(socket)
+    })
   })
-  return socket
-}
 
 export { init, handleEvent, broadcastUpdate }

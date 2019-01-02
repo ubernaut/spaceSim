@@ -1,16 +1,10 @@
-import * as controls from '-/player/controls'
-import * as weapons from '-/player/weapons'
-import { createGamepadControls } from '-/player/controls/gamepad-controls'
-
 import { createUniverse } from '-/bodies/universe'
 import { createGalaxy } from '-/bodies/galaxy'
-import { createShip } from '-/player/ship'
 import { initOimoPhysics } from './physics'
 import { loadSystem } from './system'
 import {
   animate,
   addLights,
-  deployDrone,
   createPostprocessing,
   createRenderer,
   createCamera
@@ -28,66 +22,69 @@ const defaultConfig = {
   camera: {
     fov: 65,
     nearClip: 0.1,
-    farClip: 5 * IAU,
-    initialPosition: [ 0, 10, 30 ]
+    farClip: 5 * IAU
   },
   system: {
+    bodyCount: 1024,
+    bodyDistance: 1,
+    bodySpeed: 0.05,
+    deltaT: 0.005,
     gpuCollisions: false
   }
 }
+// let bodyCount = 1024
+// if (Void.urlConfigs.hasOwnProperty('bodyCount')) {
+//   if (Number.isInteger(parseInt(Void.urlConfigs.bodyCount))) {
+//     bodyCount = Void.urlConfigs.bodyCount
+//   }
+// }
+// let bodyDistance = 1
+// if (Void.urlConfigs.hasOwnProperty('bodyDistance')) {
+//   if (Number.isInteger(parseInt(Void.urlConfigs.bodyDistance))) {
+//     bodyDistance = Void.urlConfigs.bodyDistance
+//   }
+// }
+// let bodySpeed = 0.05
+// if (Void.urlConfigs.hasOwnProperty('bodySpeed')) {
+//   if (Number.isInteger(parseInt(Void.urlConfigs.bodySpeed))) {
+//     bodySpeed = Void.urlConfigs.bodySpeed
+//   }
+// }
+// let deltaT = 0.005
+// if (Void.urlConfigs.hasOwnProperty('deltaT')) {
+//   if (Number.isInteger(parseInt(Void.urlConfigs.deltaT))) {
+//     deltaT = Void.urlConfigs.deltaT
+//   }
+// }
 
-const init = async (rootEl, config = defaultConfig) => {
-  Void.renderer = createRenderer()
-  Void.scene = new THREE.Scene()
-  Void.camera = createCamera(config.camera)
-  Void.composer = createPostprocessing({
-    renderer: Void.renderer,
-    scene: Void.scene,
-    camera: Void.camera
-  })
+const init = (rootEl, config = defaultConfig) => {
+  const renderer = (Void.renderer = createRenderer())
+  const scene = (Void.scene = new THREE.Scene())
+  const camera = (Void.camera = createCamera(config.camera))
+  const composer = (Void.composer = createPostprocessing({
+    renderer,
+    scene,
+    camera
+  }))
   Void.world = initOimoPhysics()
-  Void.galaxy = createGalaxy(Void.scene)
+  Void.galaxy = createGalaxy(scene)
 
-  createUniverse(Void.scene).map(body => Void.scene.add(body))
+  createUniverse(scene).map(body => scene.add(body))
+  loadSystem({
+    gpuCollisions: config.system.gpuCollisions
+  })
 
-  addLights(Void.scene)
-
-  createShip({ controls }).then(({ ship, animate }) => {
-    Void.ship = ship
-    Void.ship.add(Void.camera)
-    Void.camera.position.set(...config.camera.initialPosition)
-    Void.scene.add(ship)
-    Void.animateCallbacks.push(animate)
-
-    if (Void.urlConfigs.hasOwnProperty('gamepad')) {
-      Void.controls = createGamepadControls(
-        Void.ship,
-        rootEl,
-        weapons.shoot,
-        deployDrone(ship)
-      )
-    } else {
-      Void.controls = controls.setFlyControls({
-        camera: Void.camera,
-        ship: Void.ship,
-        el: rootEl
-      })
-    }
+  addLights(scene)
+  animate({
+    scene,
+    composer,
+    clock: new THREE.Clock()
   })
 
   rootEl.appendChild(Void.renderer.domElement)
-
   window.addEventListener('resize', onWindowResize, false)
 
-  if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
-    config.gpuCollisions = Void.urlConfigs.GPUcollisions
-  }
-
-  loadSystem({
-    gpuCollisions: config.gpuCollisions
-  })
-
-  animate()
+  return { scene: Void.scene }
 }
 
 export default init
