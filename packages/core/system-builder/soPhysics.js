@@ -260,13 +260,10 @@ class soPhysics {
         this.gridSystem.rad
       )
       for (var i = 0; i < GPUcollisionList.length; i++) {
-        if (i == 3997) {
-          var gothim = ''
-        }
-        if (GPUcollisionList[i] != -1) {
+        if (GPUcollisionList[i] !== -1) {
           if (
-            Void.soPhysics.gridSystem.names[i] != 'DELETED' &&
-            Void.soPhysics.gridSystem.names[GPUcollisionList[i]] != 'DELETED'
+            this.gridSystem.names[i] !== 'DELETED' &&
+            this.gridSystem.names[GPUcollisionList[i]] !== 'DELETED'
           ) {
             this.collisionDetected(
               this.gridSystem.player,
@@ -281,7 +278,7 @@ class soPhysics {
             )
           }
         }
-        if (Void.biggestBody != 0) {
+        if (Void.biggestBody !== 0) {
           this.detectCollision(0, Void.biggestBody)
         }
       }

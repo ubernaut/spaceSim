@@ -30,34 +30,31 @@ const defaultConfig = {
 }
 
 const init = (rootEl, config = defaultConfig) => {
-  Void.renderer = createRenderer()
-  Void.scene = new THREE.Scene()
-  Void.camera = createCamera(config.camera)
-  Void.composer = createPostprocessing({
-    renderer: Void.renderer,
-    scene: Void.scene,
-    camera: Void.camera
-  })
+  const renderer = (Void.renderer = createRenderer())
+  const scene = (Void.scene = new THREE.Scene())
+  const camera = (Void.camera = createCamera(config.camera))
+  const composer = (Void.composer = createPostprocessing({
+    renderer,
+    scene,
+    camera
+  }))
   Void.world = initOimoPhysics()
-  Void.galaxy = createGalaxy(Void.scene)
+  Void.galaxy = createGalaxy(scene)
 
-  createUniverse(Void.scene).map(body => Void.scene.add(body))
+  createUniverse(scene).map(body => scene.add(body))
+  loadSystem({
+    gpuCollisions: config.system.gpuCollisions
+  })
 
-  addLights(Void.scene)
+  addLights(scene)
+  animate({
+    scene,
+    composer,
+    clock: new THREE.Clock()
+  })
 
   rootEl.appendChild(Void.renderer.domElement)
-
   window.addEventListener('resize', onWindowResize, false)
-
-  if (Void.urlConfigs.hasOwnProperty('GPUcollisions')) {
-    config.gpuCollisions = Void.urlConfigs.GPUcollisions
-  }
-
-  loadSystem({
-    gpuCollisions: config.gpuCollisions
-  })
-
-  animate()
 
   return { scene: Void.scene }
 }

@@ -23,7 +23,6 @@ const Void = (window.Void = {
   player: {
     ship: null
   },
-  clock: new THREE.Clock(),
   time: { value: 100000000 },
   scene: null,
   world: null,
@@ -91,6 +90,9 @@ createShip({ controls }).then(({ ship, animate }) => {
       el: document.getElementById('root')
     })
   }
+
+  Void.animateCallbacks.push(weapons.animate)
+  Void.animateCallbacks.push(delta => Void.controls.update(delta))
 })
 
 // Websocket connection
