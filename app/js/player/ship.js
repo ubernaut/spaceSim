@@ -1,5 +1,8 @@
 import { GPUParticleSystem } from 'app/js/webgl/gpu-particle-system'
 import { onProgress, onError } from 'app/js/utils'
+import state from '-/state'
+
+const assetPath = state.get([ 'config', 'threejs', 'assetPath' ])
 
 const shipPolarGrid = ship => {
   const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
@@ -55,8 +58,8 @@ const createShip = ({ position, scale, rotation }) => {
 
   const mtlLoader = new THREE.MTLLoader()
   const objLoader = new THREE.OBJLoader()
-  mtlLoader.setPath(Void.config.threejs.assetPath)
-  objLoader.setPath(Void.config.threejs.assetPath)
+  mtlLoader.setPath(assetPath)
+  objLoader.setPath(assetPath)
 
   return new Promise(resolve => {
     mtlLoader.load('ship.mtl', materials => {

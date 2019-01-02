@@ -15,16 +15,6 @@ import logger from './logger'
 
 const Void = (window.Void = {
   urlConfigs: getAllConfigVars(),
-  server: {
-    // host: 'http://thedagda.co',
-    host: 'http://localhost',
-    port: '1137'
-  },
-  config: {
-    threejs: {
-      assetPath: 'app/assets/models/'
-    }
-  },
   players: [],
   player: {
     ship: null
