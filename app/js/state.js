@@ -10,9 +10,8 @@ const state = new Baobab(
   {
     config: {
       server: {
-        host: 'http://thedagda.co',
-        // host: 'http://localhost',
-        port: '1137'
+        host: 'https://void-server-0.herokuapp.com/',
+        port: '80'
       },
       threejs: {
         assetPath: 'app/assets/models/'
