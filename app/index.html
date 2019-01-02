@@ -20,7 +20,11 @@
     </div>
 
     <div id="help">
-      <h3 onclick="$('#controls').toggle();">(click here to toggle help)</h3>
+      <h3
+        onclick="document.getElementById('controls').toggleAttribute('hidden')"
+      >
+        (click here to toggle help)
+      </h3>
       <pre id="controls">
         <h3>General Info:</h3>
         This is a nbody Gravity simulation using GPU.js and
