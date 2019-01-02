@@ -16,7 +16,11 @@ const Schema = struct({
     }
   },
   scene: 'object',
-  controls: 'object'
+  controls: 'object',
+  urlParameters: {
+    bodyCount: 'number',
+    stars: 'boolean'
+  }
 })
 
 const state = new Baobab(
@@ -42,6 +46,10 @@ const state = new Baobab(
     },
     controls: {
       starType: 'O5'
+    },
+    urlParameters: {
+      bodyCount: 512,
+      stars: true
     }
   },
 

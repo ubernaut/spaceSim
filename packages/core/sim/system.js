@@ -39,7 +39,7 @@ const createStar = ({ radius, position }) => {
   return star
 }
 
-const mkBody = (scene, body) => {
+const mkBody = (scene, body, addAnimateCallback) => {
   body.radius = computeRadiusStellarToMetric(body.mass)
 
   if (body.name === 'star') {
@@ -48,7 +48,7 @@ const mkBody = (scene, body) => {
     const star = createStar({ radius: body.radius, position: body.position })
     body.object = star.chromosphere
     scene.add(star.chromosphere)
-    Void.animateCallbacks.push(star.animate)
+    addAnimateCallback(star.animate)
   } else {
     const planet = createPlanet({
       radius: body.radius,
@@ -71,37 +71,50 @@ const loadSystem = ({
   deltaT = 0.005,
   useCuda = false,
   gpuCollisions,
-  concurrency = 12
+  concurrency = 12,
+  addAnimateCallback
 }) => {
   const systemWorker = new SystemBuilderWorker()
 
   systemWorker.postMessage([ bodyCount, bodyDistance, bodySpeed ])
-  systemWorker.onmessage = e => {
-    system = e.data
+  return new Promise((resolve, reject) => {
+    systemWorker.onmessage = e => {
+      system = e.data
 
-    const metersBodies = convertSystemToMeters(system)
-    system.bodies = metersBodies
+      const metersBodies = convertSystemToMeters(system)
+      system.bodies = metersBodies
 
-    const physics = new soPhysics(system, 0, deltaT, true, true, gpuCollisions)
-
-    physics.gridSystem.rad.map((_, i) => {
-      physics.gridSystem.rad[i] = computeRadiusStellarToMetric(
-        physics.gridSystem.mass[i]
+      const physics = new soPhysics(
+        system,
+        0,
+        deltaT,
+        true,
+        true,
+        gpuCollisions
       )
-    })
 
-    if (useCuda) {
-      physics.initGPUStuff()
+      physics.gridSystem.rad.map((_, i) => {
+        physics.gridSystem.rad[i] = computeRadiusStellarToMetric(
+          physics.gridSystem.mass[i]
+        )
+      })
+
+      if (useCuda) {
+        physics.initGPUStuff()
+      }
+
+      Promise.map(
+        system.bodies,
+        body =>
+          Promise.resolve(mkBody(scene, body, addAnimateCallback)).delay(
+            Math.random() * 2
+          ),
+        { concurrency }
+      )
+
+      resolve(physics)
     }
-
-    Promise.map(
-      system.bodies,
-      body => Promise.resolve(mkBody(scene, body)).delay(Math.random() * 2),
-      { concurrency }
-    )
-
-    Void.soPhysics = physics
-  }
+  })
 }
 
 const updateSystemCPU = (scene, physics) => {
@@ -141,7 +154,6 @@ const updateSystemCPU = (scene, physics) => {
           body.object.position.y = physics.gridSystem.pos[i][1]
           body.object.position.z = physics.gridSystem.pos[i][2]
         } else {
-          // console.log(body.object.scale.x)
           body.radius = physics.gridSystem.rad[i]
           system.bodies[0].radius = body.radius
           system.bodies[0].object.scale.set(
@@ -150,7 +162,6 @@ const updateSystemCPU = (scene, physics) => {
             body.radius
           )
           body.object.scale.set(body.radius, body.radius, body.radius)
-          // console.log(body.object.scale.x)
         }
       } else {
         body.object.position.x = physics.gridSystem.pos[i][0]
