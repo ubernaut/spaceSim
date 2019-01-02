@@ -27,8 +27,6 @@ const Void = (window.Void = {
   scene: null,
   world: null,
   controls: null,
-  renderer: null,
-  composer: null,
   animateCallbacks: [],
   gui: {
     values: {
@@ -66,14 +64,33 @@ createBasicUI(Void.gui.values, color => {
   Void.uniforms.sun.color.blue.value = (split[2] / 255.0) * 0.75
 })
 
-const { scene } = createViewer('root')
+const animateCallbacks = []
+const getAnimateCallbacks = () => animateCallbacks
+const addAnimateCallback = cb => animateCallbacks.push(cb)
+
+const { scene, camera } = createViewer(
+  'root',
+  {
+    getAnimateCallbacks,
+    addAnimateCallback
+  },
+  {
+    system: {
+      bodyCount: 512,
+      bodyDistance: 1,
+      bodySpeed: 0.05,
+      deltaT: 0.005,
+      gpuCollisions: false
+    }
+  }
+)
 
 createShip({ controls }).then(({ ship, animate }) => {
   Void.ship = ship
-  Void.ship.add(Void.camera)
-  Void.camera.position.set(...[ 0, 10, 30 ])
+  ship.add(camera)
+  camera.position.set(...[ 0, 10, 30 ])
   scene.add(ship)
-  Void.animateCallbacks.push(animate)
+  animateCallbacks.push(animate)
 
   if (Void.urlConfigs.hasOwnProperty('gamepad')) {
     Void.controls = createGamepadControls(
@@ -85,13 +102,13 @@ createShip({ controls }).then(({ ship, animate }) => {
   } else {
     Void.controls = controls.setFlyControls({
       ship,
-      camera: Void.camera,
+      camera,
       el: document.getElementById('root')
     })
   }
 
-  Void.animateCallbacks.push(weapons.animate)
-  Void.animateCallbacks.push(delta => Void.controls.update(delta))
+  animateCallbacks.push(weapons.animate)
+  animateCallbacks.push(delta => Void.controls.update(delta))
 })
 
 // Websocket connection

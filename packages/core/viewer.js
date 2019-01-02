@@ -1,13 +1,11 @@
 import init from './sim'
 
-const defaultOpts = {}
-
-const createViewer = (rootId, options = defaultOpts) => {
+const createViewer = (rootId, animateCallbackHelpers, options) => {
   const root = document.getElementById(rootId)
   if (!root) {
     console.error('invalid root element')
   }
-  return init(root)
+  return init(root, animateCallbackHelpers, options)
 }
 
 export { createViewer }

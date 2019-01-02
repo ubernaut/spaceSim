@@ -69,28 +69,38 @@ const createUniverse = scene => {
  */
 const animate = ({
   scene,
+  physics,
   clock,
   composer,
   useCuda = false,
-  useGpuCollisions = true
+  useGpuCollisions = true,
+  getAnimateCallbacks
 }) => {
   requestAnimationFrame(() =>
-    animate({ scene, clock, composer, useCuda, useGpuCollisions })
+    animate({
+      scene,
+      physics,
+      clock,
+      composer,
+      useCuda,
+      useGpuCollisions,
+      getAnimateCallbacks
+    })
   )
 
-  if (!Void.soPhysics) {
+  if (!scene || !physics) {
     return
   }
 
   if (useCuda) {
-    Void.soPhysics.accelerateCuda()
+    physics.accelerateCuda()
     updateSystemCPU()
   } else {
-    Void.soPhysics.GPUAccelerate()
+    physics.GPUAccelerate()
     if (useGpuCollisions) {
-      updateSystemGPU(scene, Void.soPhysics)
+      updateSystemGPU(scene, physics)
     } else {
-      updateSystemCPU(scene, Void.soPhysics)
+      updateSystemCPU(scene, physics)
     }
   }
 
@@ -98,7 +108,7 @@ const animate = ({
 
   const delta = clock.getDelta()
 
-  Void.animateCallbacks.map(x => x(delta, clock.getElapsedTime()))
+  getAnimateCallbacks().map(x => x(delta, clock.getElapsedTime()))
 
   composer.render(delta)
 }

@@ -12,10 +12,10 @@ import {
 
 const IAU = 9.4607 * Math.pow(10, 15)
 
-const onWindowResize = () => {
-  Void.camera.aspect = window.innerWidth / window.innerHeight
-  Void.camera.updateProjectionMatrix()
-  Void.renderer.setSize(window.innerWidth, window.innerHeight)
+const onWindowResize = ({ renderer, camera }) => () => {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
 const defaultConfig = {
@@ -30,61 +30,51 @@ const defaultConfig = {
     bodySpeed: 0.05,
     deltaT: 0.005,
     gpuCollisions: false
-  }
+  },
+  oimo: false
 }
-// let bodyCount = 1024
-// if (Void.urlConfigs.hasOwnProperty('bodyCount')) {
-//   if (Number.isInteger(parseInt(Void.urlConfigs.bodyCount))) {
-//     bodyCount = Void.urlConfigs.bodyCount
-//   }
-// }
-// let bodyDistance = 1
-// if (Void.urlConfigs.hasOwnProperty('bodyDistance')) {
-//   if (Number.isInteger(parseInt(Void.urlConfigs.bodyDistance))) {
-//     bodyDistance = Void.urlConfigs.bodyDistance
-//   }
-// }
-// let bodySpeed = 0.05
-// if (Void.urlConfigs.hasOwnProperty('bodySpeed')) {
-//   if (Number.isInteger(parseInt(Void.urlConfigs.bodySpeed))) {
-//     bodySpeed = Void.urlConfigs.bodySpeed
-//   }
-// }
-// let deltaT = 0.005
-// if (Void.urlConfigs.hasOwnProperty('deltaT')) {
-//   if (Number.isInteger(parseInt(Void.urlConfigs.deltaT))) {
-//     deltaT = Void.urlConfigs.deltaT
-//   }
-// }
 
-const init = (rootEl, config = defaultConfig) => {
-  const renderer = (Void.renderer = createRenderer())
-  const scene = (Void.scene = new THREE.Scene())
-  const camera = (Void.camera = createCamera(config.camera))
-  const composer = (Void.composer = createPostprocessing({
+const init = (rootEl, animateCallbackHelpers, config) => {
+  config = Object.assign({}, defaultConfig, config)
+  const renderer = createRenderer()
+  const scene = new THREE.Scene()
+  const camera = createCamera(config.camera)
+  const composer = createPostprocessing({
     renderer,
     scene,
     camera
-  }))
-  Void.world = initOimoPhysics()
-  Void.galaxy = createGalaxy(scene)
-
-  createUniverse(scene).map(body => scene.add(body))
-  loadSystem({
-    gpuCollisions: config.system.gpuCollisions
   })
+
+  if (config.oimo) {
+    initOimoPhysics()
+  }
 
   addLights(scene)
-  animate({
+  createGalaxy(scene)
+  createUniverse(scene).map(body => scene.add(body))
+
+  loadSystem({
     scene,
-    composer,
-    clock: new THREE.Clock()
+    bodyCount: config.system.bodyCount,
+    bodyDistance: config.system.bodyDistance,
+    bodySpeed: config.system.bodySpeed,
+    deltaT: config.system.deltaT,
+    gpuCollisions: config.system.gpuCollisions,
+    addAnimateCallback: animateCallbackHelpers.addAnimateCallback
+  }).then(physics => {
+    animate({
+      scene,
+      physics,
+      composer,
+      clock: new THREE.Clock(),
+      getAnimateCallbacks: animateCallbackHelpers.getAnimateCallbacks
+    })
   })
 
-  rootEl.appendChild(Void.renderer.domElement)
-  window.addEventListener('resize', onWindowResize, false)
+  rootEl.appendChild(renderer.domElement)
+  window.addEventListener('resize', onWindowResize({ renderer, camera }), false)
 
-  return { scene: Void.scene }
+  return { scene, camera }
 }
 
 export default init

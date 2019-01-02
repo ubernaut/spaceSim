@@ -3,7 +3,7 @@ import { evaluate } from './utils'
 
 class soPhysics {
   constructor (
-    aSystem,
+    system,
     maxMark = 100000,
     dt = 0.02,
     metric = false,
@@ -11,10 +11,10 @@ class soPhysics {
     gpuCollisions = false
   ) {
     this.dt = dt
-    this.system = aSystem
+    this.system = system
     this.metric = metric
     this.collisions = []
-    this.gridSystem = new GridSystem(aSystem.bodies)
+    this.gridSystem = new GridSystem(system.bodies)
     this.maxMark = maxMark
     this.fitness = evaluate(this.system.bodies)
     this.sumFit = this.fitness
@@ -23,6 +23,7 @@ class soPhysics {
     this.tryCount = 0
     this.G = 2.93558 * Math.pow(10, -4)
     this.gpuCollisions = gpuCollisions
+    this.biggestBody = 0
 
     if (GPGPU) {
       try {
@@ -278,8 +279,8 @@ class soPhysics {
             )
           }
         }
-        if (Void.biggestBody !== 0) {
-          this.detectCollision(0, Void.biggestBody)
+        if (this.biggestBody !== 0) {
+          this.detectCollision(0, this.biggestBody)
         }
       }
     }
@@ -305,23 +306,6 @@ class soPhysics {
     if (names[jth] != 'player' && names[ith] != 'player') {
       this.combineBodies(player, names, mass, pos, vel, acc, rad, ith, jth)
     }
-  }
-  computeRadius (bodyMass) {
-    bodyMass *= 2 * Math.pow(10, 30) // convert to kg
-    const rad = (0.018 * Math.pow(bodyMass, 0.35)) / 149600000000
-    // const rad =(-2270951618.457 + 39745256.058*Math.log(bodyMass))/ 149600000000
-    return rad
-    // return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
-    // return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
-  }
-
-  computeRadiusStellarToMetric (bodyMass) {
-    bodyMass *= 2 * Math.pow(10, 30) // convert to kg
-    const rad = 0.018 * Math.pow(bodyMass, 0.35)
-    // const rad = (-2270951618.457 + 39745256.058*Math.log(bodyMass))
-    return rad
-    // return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
-    // return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
   }
 
   detectCollision (ith, jth) {
