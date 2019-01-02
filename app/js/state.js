@@ -2,7 +2,7 @@ import Baobab from 'baobab'
 
 const schema = {
   validate: newState => {
-    return null
+    return { error: null }
   }
 }
 
@@ -16,13 +16,17 @@ const state = new Baobab(
       },
       threejs: {
         assetPath: 'app/assets/models/'
+      },
+      logging: {
+        name: 'void',
+        level: 'debug'
       }
     },
 
     scene: {
       player: {
         ship: null
-      }
+      },
       players: []
     },
 
@@ -32,7 +36,7 @@ const state = new Baobab(
   },
   {
     validate: (previousState, newState, affectedPaths) => {
-      if (NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'production') {
         return
       }
       const { error } = schema.validate(newState)

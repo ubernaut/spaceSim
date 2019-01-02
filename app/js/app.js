@@ -1,5 +1,5 @@
 import 'babel-polyfill'
-import bunyan from 'browser-bunyan'
+
 import '../styles/app.css'
 
 import { createViewer } from '@void/core/viewer'
@@ -7,6 +7,7 @@ import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
 import { createBasicUI } from '-/ui/ui'
 import { getAllConfigVars } from '-/utils'
+import logger from './logger'
 
 /**
  * App State
@@ -15,8 +16,8 @@ import { getAllConfigVars } from '-/utils'
 const Void = (window.Void = {
   urlConfigs: getAllConfigVars(),
   server: {
-    host: 'http://thedagda.co',
-    // host: 'http://localhost',
+    // host: 'http://thedagda.co',
+    host: 'http://localhost',
     port: '1137'
   },
   config: {
@@ -61,24 +62,6 @@ const Void = (window.Void = {
 })
 
 /**
- * Void Services
- */
-
-// Logging service
-Void.log = bunyan.createLogger({
-  name: 'myLogger',
-  streams: [
-    {
-      level: 'debug',
-      stream: new bunyan.ConsoleFormattedStream()
-    }
-  ],
-  serializers: bunyan.stdSerializers,
-  src: true
-})
-Void.log.debug('starting up...')
-
-/**
  * Event Listeners
  */
 const registerEventListeners = () => {
@@ -116,7 +99,7 @@ createViewer('root')
 registerEventListeners()
 
 // Websocket connection
-Void.log.debug('opening websocket')
+logger.debug('opening websocket')
 Void.socket = net.init(Void.server)
 
 window.location =
