@@ -1,7 +1,10 @@
 import Promise from 'bluebird'
 
 import soPhysics from '@void/core/system-builder/soPhysics'
-import { convertSystemToMeters } from '@void/core/system-builder/utils'
+import {
+  convertSystemToMeters,
+  computeRadiusStellarToMetric
+} from '@void/core/system-builder/utils'
 
 import { createRandomStar } from '-/bodies/star'
 import { createPlanet } from '-/bodies/planet'
@@ -29,22 +32,22 @@ const createStar = ({ radius, position }) => {
   const star = createRandomStar({
     radius: 1,
     position,
-    time: Void.time
+    time: { value: 0 }
   })
   star.chromosphere.scale.set(radius, radius, radius)
   star.chromosphere.add(star.pointLight)
   return star
 }
 
-const mkBody = body => {
-  body.radius = Void.soPhysics.computeRadiusStellarToMetric(body.mass)
+const mkBody = (scene, body) => {
+  body.radius = computeRadiusStellarToMetric(body.mass)
 
   if (body.name === 'star') {
-    createScaleGrid().map(grid => Void.scene.add(grid))
+    createScaleGrid().map(grid => scene.add(grid))
 
     const star = createStar({ radius: body.radius, position: body.position })
     body.object = star.chromosphere
-    Void.scene.add(star.chromosphere)
+    scene.add(star.chromosphere)
     Void.animateCallbacks.push(star.animate)
   } else {
     const planet = createPlanet({
@@ -53,7 +56,7 @@ const mkBody = body => {
     })
     if (planet) {
       body.object = planet
-      Void.scene.add(planet)
+      scene.add(planet)
     }
   }
 }
@@ -61,6 +64,7 @@ const mkBody = body => {
 let system = null
 
 const loadSystem = ({
+  scene,
   bodyCount = 256,
   bodyDistance = 1,
   bodySpeed = 0.05,
@@ -81,7 +85,7 @@ const loadSystem = ({
     const physics = new soPhysics(system, 0, deltaT, true, true, gpuCollisions)
 
     physics.gridSystem.rad.map((_, i) => {
-      physics.gridSystem.rad[i] = physics.computeRadiusStellarToMetric(
+      physics.gridSystem.rad[i] = computeRadiusStellarToMetric(
         physics.gridSystem.mass[i]
       )
     })
@@ -92,7 +96,7 @@ const loadSystem = ({
 
     Promise.map(
       system.bodies,
-      body => Promise.resolve(mkBody(body)).delay(Math.random() * 2),
+      body => Promise.resolve(mkBody(scene, body)).delay(Math.random() * 2),
       { concurrency }
     )
 
@@ -100,28 +104,27 @@ const loadSystem = ({
   }
 }
 
-const updateSystemCPU = (scene, soPhysics) => {
+const updateSystemCPU = (scene, physics) => {
   let i = 0
   var biggestBody = ''
   for (const body of system.bodies) {
-    body.velocity = soPhysics.gridSystem.vel[i]
-    body.mass = soPhysics.gridSystem.mass[i]
-    body.position.x = soPhysics.gridSystem.pos[i][0]
-    body.position.y = soPhysics.gridSystem.pos[i][1]
-    body.position.z = soPhysics.gridSystem.pos[i][2]
-    body.radius = soPhysics.gridSystem.rad[i]
-    body.name = soPhysics.gridSystem.names[i]
-    if (soPhysics.gridSystem.names[i] === 'DELETED') {
+    body.velocity = physics.gridSystem.vel[i]
+    body.mass = physics.gridSystem.mass[i]
+    body.position.x = physics.gridSystem.pos[i][0]
+    body.position.y = physics.gridSystem.pos[i][1]
+    body.position.z = physics.gridSystem.pos[i][2]
+    body.radius = physics.gridSystem.rad[i]
+    body.name = physics.gridSystem.names[i]
+    if (physics.gridSystem.names[i] === 'DELETED') {
       scene.remove(body.object)
-      // console.log('removed body')
       body.object = ''
     } else if (body.object) {
-      let collidedIndex = soPhysics.collisions.indexOf(body.name)
+      let collidedIndex = physics.collisions.indexOf(body.name)
       if (collidedIndex !== -1) {
-        soPhysics.collisions.splice(collidedIndex, 1)
+        physics.collisions.splice(collidedIndex, 1)
         if (body.name !== 'star') {
           scene.remove(body.object)
-          body.radius = soPhysics.gridSystem.rad[i]
+          body.radius = physics.gridSystem.rad[i]
           const bodyGeometry = new THREE.IcosahedronBufferGeometry(1, 2)
           let bodyMaterial = new THREE.MeshPhongMaterial({
             color: randomUniform(0.5, 1) * 0xffffff
@@ -134,12 +137,12 @@ const updateSystemCPU = (scene, soPhysics) => {
           body.object = planet
           scene.add(planet)
 
-          body.object.position.x = soPhysics.gridSystem.pos[i][0]
-          body.object.position.y = soPhysics.gridSystem.pos[i][1]
-          body.object.position.z = soPhysics.gridSystem.pos[i][2]
+          body.object.position.x = physics.gridSystem.pos[i][0]
+          body.object.position.y = physics.gridSystem.pos[i][1]
+          body.object.position.z = physics.gridSystem.pos[i][2]
         } else {
           // console.log(body.object.scale.x)
-          body.radius = soPhysics.gridSystem.rad[i]
+          body.radius = physics.gridSystem.rad[i]
           system.bodies[0].radius = body.radius
           system.bodies[0].object.scale.set(
             body.radius,
@@ -150,39 +153,41 @@ const updateSystemCPU = (scene, soPhysics) => {
           // console.log(body.object.scale.x)
         }
       } else {
-        body.object.position.x = soPhysics.gridSystem.pos[i][0]
-        body.object.position.y = soPhysics.gridSystem.pos[i][1]
-        body.object.position.z = soPhysics.gridSystem.pos[i][2]
+        body.object.position.x = physics.gridSystem.pos[i][0]
+        body.object.position.y = physics.gridSystem.pos[i][1]
+        body.object.position.z = physics.gridSystem.pos[i][2]
       }
     }
-    i++
-    if (biggestBody == '') {
+
+    i += 1
+
+    if (biggestBody === '') {
       biggestBody = body
     } else {
       if (body.radius > biggestBody.radius) {
         biggestBody = body
         console.log(biggestBody)
         console.log(i)
-        Void.biggestBody = i
+        physics.biggestBody = i
       }
     }
   }
 }
 
-const updateSystemGPU = (scene, soPhysics) => {
+const updateSystemGPU = (scene, physics) => {
   let i = 0
 
   for (const body of system.bodies) {
-    // if (Void.soPhysics.gridSystem.names[i] === 'DELETED') {
-    //   Void.scene.remove(body.object)
+    // if (physics.gridSystem.names[i] === 'DELETED') {
+    //   scene.remove(body.object)
     //   // console.log('removed body')
     //   body.object = ''
     // }
     // else
     if (body.object) {
-      body.object.position.x = soPhysics.gridSystem.pos[i][0]
-      body.object.position.y = soPhysics.gridSystem.pos[i][1]
-      body.object.position.z = soPhysics.gridSystem.pos[i][2]
+      body.object.position.x = physics.gridSystem.pos[i][0]
+      body.object.position.y = physics.gridSystem.pos[i][1]
+      body.object.position.z = physics.gridSystem.pos[i][2]
     }
     i++
   }

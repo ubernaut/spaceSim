@@ -70,7 +70,8 @@ const init = (rootEl, config = defaultConfig) => {
   Void.galaxy = createGalaxy(scene)
 
   createUniverse(scene).map(body => scene.add(body))
-  loadSystem({
+  const physics = loadSystem({
+    scene,
     gpuCollisions: config.system.gpuCollisions
   })
 

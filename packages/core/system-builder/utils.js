@@ -52,4 +52,27 @@ const convertSystemToMeters = system => {
   })
 }
 
-export { evaluate, convertSystemToMeters }
+const computeRadius = bodyMass => {
+  bodyMass *= 2 * Math.pow(10, 30) // convert to kg
+  const rad = (0.018 * Math.pow(bodyMass, 0.35)) / 149600000000
+  // const rad =(-2270951618.457 + 39745256.058*Math.log(bodyMass))/ 149600000000
+  return rad
+  // return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
+  // return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
+}
+
+const computeRadiusStellarToMetric = bodyMass => {
+  bodyMass *= 2 * Math.pow(10, 30) // convert to kg
+  const rad = 0.018 * Math.pow(bodyMass, 0.35)
+  // const rad = (-2270951618.457 + 39745256.058*Math.log(bodyMass))
+  return rad
+  // return (-426947259.19 + 7736028.341*Math.log(bodyMass*2*Math.pow(10,30)))/ 149600000000
+  // return Math.pow(((3*bodyMass)/(4*3.14)), (1/3))/17
+}
+
+export {
+  evaluate,
+  convertSystemToMeters,
+  computeRadiusStellarToMetric,
+  computeRadius
+}
