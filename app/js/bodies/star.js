@@ -2,6 +2,8 @@ import fragmentShader from 'app/shaders/star.fs.glsl'
 import vertexShader from 'app/shaders/star.vs.glsl'
 import { randomUniform } from '-/utils'
 
+import uniforms from '-/uniforms'
+
 const starTypes = {
   O5: [ 157, 180, 255 ],
 
@@ -213,10 +215,9 @@ const createPhotosphere = (radius, rgb, time) => {
 }
 
 const getUniforms = (radius, rgb, time = 0) => {
-  // TODO: fix this UI hack
-  Void.uniforms.sun.color.red.value = (rgb[0] / 255.0) * 0.7
-  Void.uniforms.sun.color.green.value = (rgb[1] / 255.0) * 0.7
-  Void.uniforms.sun.color.blue.value = (rgb[2] / 255.0) * 0.7
+  uniforms.sun.color.red.value = (rgb[0] / 255.0) * 0.7
+  uniforms.sun.color.green.value = (rgb[1] / 255.0) * 0.7
+  uniforms.sun.color.blue.value = (rgb[2] / 255.0) * 0.7
 
   return {
     noiseScale: {
@@ -231,9 +232,9 @@ const getUniforms = (radius, rgb, time = 0) => {
     noiseStrength: {
       value: 1
     },
-    baseColorRed: Void.uniforms.sun.color.red,
-    baseColorGreen: Void.uniforms.sun.color.green,
-    baseColorBlue: Void.uniforms.sun.color.blue,
+    baseColorRed: uniforms.sun.color.red,
+    baseColorGreen: uniforms.sun.color.green,
+    baseColorBlue: uniforms.sun.color.blue,
     time
   }
 }

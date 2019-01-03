@@ -15,8 +15,12 @@ const Schema = struct({
       level: 'string'
     }
   },
-  scene: 'object',
-  controls: 'object',
+  scene: {
+    player: {
+      ship: 'object?',
+      movementSpeed: 'number'
+    }
+  },
   urlParameters: {
     bodyCount: 'number',
     stars: 'boolean'
@@ -45,12 +49,8 @@ const state = new Baobab(
     },
     scene: {
       player: {
-        ship: null
-      },
-      players: []
-    },
-    controls: {
-      starType: 'O5'
+        movementSpeed: 0
+      }
     },
     urlParameters: {
       bodyCount: 1,
@@ -77,7 +77,6 @@ const state = new Baobab(
       }
     }
   },
-
   {
     validate: (previousState, newState, affectedPaths) => {
       if (process.env.NODE_ENV === 'production') {

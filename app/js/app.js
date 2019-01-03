@@ -24,48 +24,37 @@ const Void = (window.Void = {
   time: { value: 100000000 },
   scene: null,
   world: null,
-  controls: null,
-  uniforms: {
-    sun: {
-      color: {
-        red: {
-          value: 255
-        },
-        green: {
-          value: 255
-        },
-        blue: {
-          value: 255
-        }
-      }
-    }
-  }
+  controls: null
 })
 
 /**
- * Init
+ * Create a dat GUI elements with a callback
  */
-createBasicUI(color => {
-  const split = color.split(',')
-  Void.uniforms.sun.color.red.value = (split[0] / 255.0) * 0.75
-  Void.uniforms.sun.color.green.value = (split[1] / 255.0) * 0.75
-  Void.uniforms.sun.color.blue.value = (split[2] / 255.0) * 0.75
-})
+createBasicUI()
 
 const animateCallbacks = []
 const getAnimateCallbacks = () => animateCallbacks
 const addAnimateCallback = cb => animateCallbacks.push(cb)
 
-const registerControls = ({ scene, ship, socket, camera, physics }) => {
+let voidControls = null
+
+const registerControls = ({
+  scene,
+  controls,
+  ship,
+  socket,
+  camera,
+  physics
+}) => {
   const useGamepad = false
   if (useGamepad) {
-    Void.controls = createGamepadControls(
+    voidControls = createGamepadControls(
       ship,
       document.getElementById('root'),
       deployDrone(ship)
     )
   } else {
-    Void.controls = controls.setFlyControls({
+    voidControls = controls.setFlyControls({
       ship,
       camera,
       el: document.getElementById('root'),
@@ -114,7 +103,7 @@ createViewer(
   }
 ).then(({ scene, camera, physics }) => {
   logger.debug('init: creating player ship...')
-  createShip({ controls }).then(({ ship, animate }) => {
+  createShip().then(({ ship, animate }) => {
     Void.ship = ship
     ship.add(camera)
     camera.position.set(...[ 0, 10, 30 ])
@@ -125,11 +114,11 @@ createViewer(
       logger.debug('init: registering event listeners...')
       registerEventListeners({ socket, ship })
       logger.debug('init: registering controls...')
-      registerControls({ scene, ship, socket, camera, physics })
+      registerControls({ scene, controls, ship, socket, camera, physics })
       logger.debug('init: registering system animations...')
       animateCallbacks.push(animate)
       animateCallbacks.push(weapons.animate(scene))
-      animateCallbacks.push(delta => Void.controls.update(delta))
+      animateCallbacks.push(delta => voidControls.update(delta))
     })
   })
 })

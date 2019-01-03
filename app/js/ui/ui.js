@@ -1,10 +1,11 @@
 import dat from 'app/lib/dat.gui.js'
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
+import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
 
-const createBasicUI = updateColor => {
+const createBasicUI = () => {
   if (!guiState.enabled) {
     return
   }
@@ -13,7 +14,7 @@ const createBasicUI = updateColor => {
 
   const starOptions = guiState.options.star
   if (starOptions.enabled) {
-    initStarOptions(gui, updateColor, starOptions)
+    initStarOptions(gui, starOptions)
   }
 
   const shipOptions = guiState.options.ship
@@ -31,12 +32,11 @@ const initShipOptions = (gui, options) => {
     .add(ship, 'type')
     .options([])
     .name('Type')
-    // .onChange(value => updateColor(value))
     .listen()
   shipFolder.open()
 }
 
-const initStarOptions = (gui, updateColor, options) => {
+const initStarOptions = (gui, options) => {
   const starFolder = gui.addFolder(options.label)
   const star = {
     type: options.options.type,
@@ -46,7 +46,12 @@ const initStarOptions = (gui, updateColor, options) => {
     .add(star, 'type')
     .options(starTypes)
     .name('Type')
-    .onChange(value => updateColor(value))
+    .onChange(value => {
+      const [ r, g, b ] = value.split(',').map(parseFloat)
+      uniforms.sun.color.red.value = (r / 255) * 0.75
+      uniforms.sun.color.green.value = (g / 255) * 0.75
+      uniforms.sun.color.blue.value = (b / 255) * 0.75
+    })
     .listen()
   starFolder
     .add(star, 'size', 0, 200, 5)

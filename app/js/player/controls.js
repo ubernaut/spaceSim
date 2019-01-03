@@ -1,4 +1,5 @@
 import FlyControls from './controls/flyControls'
+import state from '-/state'
 
 const movementSpeedMultiplier = 50 // 25000000
 
@@ -14,13 +15,10 @@ const onScroll = ({ camera, controls, event }) => {
 }
 
 const adjustThrust = (val, controls) => {
+  const movementSpeed = state.get([ 'scene', 'player', 'movementSpeed' ])
   const newSpeed =
-    controls.movementSpeed +
-    val * Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
-  // console.log(
-  //   `adjusting thrust from ${controls.movementSpeed /
-  //     movementSpeedMultiplier} to ${newSpeed / movementSpeedMultiplier}`
-  // )
+    movementSpeed + val * Math.max(1, Math.pow(Math.abs(movementSpeed), 0.85))
+  state.set([ 'scene', 'player', 'movementSpeed' ], newSpeed)
   controls.movementSpeed = newSpeed
 }
 
@@ -31,7 +29,6 @@ const setFlyControls = ({ ship, camera, el }) => {
   controls.rollSpeed = 0.35
   controls.autoForward = true
   controls.dragToLook = true
-  console.log('set')
 
   el.addEventListener(
     'mousewheel',
@@ -40,10 +37,9 @@ const setFlyControls = ({ ship, camera, el }) => {
   )
   el.addEventListener('keydown', event => {
     if (event.key === 'w') {
-      console.log('at')
       adjustThrust(1, controls)
     } else if (event.key === 's') {
-      adjustThrust(-1, controls)
+      adjustThrust(-2, controls)
     }
   })
 

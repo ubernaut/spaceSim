@@ -3,6 +3,8 @@ import msgpack from 'msgpack-lite'
 import createSocket from '-/socket'
 import { onProgress, onError } from '-/utils'
 import { shoot } from '-/player/weapons'
+import state from '-/state'
+import logger from '-/logger'
 
 const handleEvent = eventData => {
   const decoded = msgpack.decode(new Uint8Array(eventData))
@@ -60,40 +62,62 @@ const setShipProps = (ship, propsData) => {
 /**
  * Load a new player or update an existing one based on a socket message
  */
-const loadOrUpdatePlayer = (playerId, playerData) => {
-  const player = Void.players.find(p => p.playerId === playerId)
+const loadOrUpdatePlayer = (players, playerId, playerData) => {
+  const player = players.find(p => p.playerId === playerId)
   if (player) {
     setShipProps(player.ship, playerData)
   } else {
-    Void.log.debug('loading player')
     loadNewPlayer(playerId, playerData)
   }
 }
 
+const assetPath = state.get([ 'config', 'threejs', 'assetPath' ])
+
 const mtlLoader = new THREE.MTLLoader()
 const objLoader = new THREE.OBJLoader()
-mtlLoader.setPath('app/assets/models/')
-objLoader.setPath('app/assets/models/')
+mtlLoader.setPath(assetPath)
+objLoader.setPath(assetPath)
 
-// const createHudElement = () => {
-//   const hudElementX = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000)
-//   hudElementX.geometry.rotateY(Math.PI / 2)
-//
-//   const hudElementY = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000)
-//   hudElementY.geometry.rotateX(Math.PI / 2)
-//
-//   const hudElementZ = new THREE.PolarGridHelper(2000, 4, 1, 36, 0xff0000, 0xff0000)
-//   hudElementZ.geometry.rotateZ(Math.PI / 2)
-//
-//   return {
-//     x: hudElementX,
-//     y: hudElementY,
-//     z: hudElementZ
-//   }
-// }
+const createHudElement = () => {
+  const hudElementX = new THREE.PolarGridHelper(
+    2000,
+    4,
+    1,
+    36,
+    0xff0000,
+    0xff0000
+  )
+  hudElementX.geometry.rotateY(Math.PI / 2)
+
+  const hudElementY = new THREE.PolarGridHelper(
+    2000,
+    4,
+    1,
+    36,
+    0xff0000,
+    0xff0000
+  )
+  hudElementY.geometry.rotateX(Math.PI / 2)
+
+  const hudElementZ = new THREE.PolarGridHelper(
+    2000,
+    4,
+    1,
+    36,
+    0xff0000,
+    0xff0000
+  )
+  hudElementZ.geometry.rotateZ(Math.PI / 2)
+
+  return {
+    x: hudElementX,
+    y: hudElementY,
+    z: hudElementZ
+  }
+}
 
 const loadNewPlayer = (playerId, playerData) => {
-  Void.log.debug('loading new player...')
+  logger.debug('loading new player...')
 
   const onShipObjLoaded = object => {
     // meta
@@ -102,11 +126,6 @@ const loadNewPlayer = (playerId, playerData) => {
     setShipProps(object, playerData)
     object.scale.set(20, 20, 20)
     object.rotation.set(0, 0, 0)
-    // hud element
-    // const hudElement = createHudElement()
-    // object.add(hudElement.x)
-    // object.add(hudElement.y)
-    // object.add(hudElement.z)
 
     playerData.ship = object
     Void.scene.add(object)
