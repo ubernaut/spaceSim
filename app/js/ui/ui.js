@@ -5,10 +5,14 @@ import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
 
+/**
+ * Create a basic set of configurable options in a dat.gui element
+ */
 const createBasicUI = () => {
   if (!guiState.enabled) {
     return
   }
+  createFpsWidget()
 
   const gui = new dat.gui.GUI()
 
@@ -23,6 +27,9 @@ const createBasicUI = () => {
   }
 }
 
+/**
+ * Ship options
+ */
 const initShipOptions = (gui, options) => {
   const shipFolder = gui.addFolder(options.label)
   const ship = {
@@ -36,6 +43,9 @@ const initShipOptions = (gui, options) => {
   shipFolder.open()
 }
 
+/**
+ * Star options
+ */
 const initStarOptions = (gui, options) => {
   const starFolder = gui.addFolder(options.label)
   const star = {
@@ -60,4 +70,12 @@ const initStarOptions = (gui, options) => {
   starFolder.open()
 }
 
-export { createBasicUI }
+/**
+ * Adds a simple FPS widget to the document
+ */
+const createFpsWidget = () => {
+  window.location =
+    "javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';document.head.appendChild(script);})()"
+}
+
+export { createBasicUI, createFpsWidget }

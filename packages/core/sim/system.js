@@ -36,6 +36,7 @@ const createStar = ({ radius, position }) => {
   })
   star.chromosphere.scale.set(radius, radius, radius)
   star.chromosphere.add(star.pointLight)
+  star.corona.scale.set(radius, radius, radius)
   return star
 }
 
@@ -48,6 +49,9 @@ const mkBody = (scene, body, addAnimateCallback) => {
     const star = createStar({ radius: body.radius, position: body.position })
     body.object = star.chromosphere
     scene.add(star.chromosphere)
+    if (star.corona) {
+      scene.add(star.corona)
+    }
     addAnimateCallback(star.animate)
   } else {
     const planet = createPlanet({

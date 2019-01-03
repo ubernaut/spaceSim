@@ -20,7 +20,7 @@ const onWindowResize = ({ renderer, camera }) => () => {
 
 const defaultConfig = {
   camera: {
-    fov: 65,
+    fov: 70,
     nearClip: 0.1,
     farClip: 5 * IAU
   },

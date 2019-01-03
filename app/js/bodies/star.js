@@ -162,10 +162,11 @@ const createStar = ({ radius, position, color, time = 0 }) => {
 
   const photosphere = createPhotosphere(radius, rgb, time)
   const chromosphere = createChromosphere(radius, rgb, time)
+  const corona = createCorona(radius, rgb, time)
 
   const pointLight = new THREE.PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
   pointLight.castShadow = true
-  ;[ photosphere, chromosphere, pointLight ].map(s => {
+  ;[ photosphere, chromosphere, corona, pointLight ].map(s => {
     s.position.x = position.x
     s.position.y = position.y
     s.position.z = position.z
@@ -180,6 +181,7 @@ const createStar = ({ radius, position, color, time = 0 }) => {
   return {
     photosphere,
     chromosphere,
+    corona,
     pointLight,
     animate
   }
@@ -189,29 +191,49 @@ const rgb2hex = rgb => {
   return parseInt('0x' + rgb.map(x => parseInt(x).toString(16)).join(''), 16)
 }
 
+const createCorona = (radius, rgb, time) => {
+  const sprite = new THREE.TextureLoader().load('app/assets/images/corona.png')
+  const geometry = new THREE.BufferGeometry()
+  geometry.addAttribute(
+    'position',
+    new THREE.Float32BufferAttribute([ 0, 0, 0 ], 3)
+  )
+  const material = new THREE.PointsMaterial({
+    size: radius * 1250000000,
+    sizeAttenuation: true,
+    map: sprite,
+    alphaTest: 0.05,
+    transparent: true,
+    blending: THREE.AdditiveBlending
+  })
+  // const uniforms = getUniforms(radius, rgb, time)
+  material.color.setRGB(0.9, 0.7, 0.7)
+
+  const mesh = new THREE.Points(geometry, material)
+  mesh.frustumCulled = false
+
+  return mesh
+}
+
 const createChromosphere = (radius, rgb, time) => {
-  const chromosphereGeometry = new THREE.SphereGeometry(radius, 64, 64)
-  const chromosphereMaterial = new THREE.ShaderMaterial({
+  const geometry = new THREE.SphereGeometry(radius, 64, 64)
+  const material = new THREE.ShaderMaterial({
     uniforms: getUniforms(radius, rgb, time),
     vertexShader,
-    fragmentShader
+    fragmentShader,
+    blending: THREE.AdditiveBlending
   })
-  const chromosphere = new THREE.Mesh(
-    chromosphereGeometry,
-    chromosphereMaterial
-  )
-  return chromosphere
+  return new THREE.Mesh(geometry, material)
 }
 
 const createPhotosphere = (radius, rgb, time) => {
-  const photosphereGeometry = new THREE.SphereGeometry(radius * 0.99, 16, 16)
-  const photosphereMaterial = new THREE.ShaderMaterial({
+  const geometry = new THREE.SphereGeometry(radius * 0.99, 16, 16)
+  const material = new THREE.ShaderMaterial({
     uniforms: getUniforms(radius, rgb, time),
     vertexShader,
     fragmentShader
   })
-  const photosphere = new THREE.Mesh(photosphereGeometry, photosphereMaterial)
-  return photosphere
+  return new THREE.Mesh(geometry, material)
 }
 
 const getUniforms = (radius, rgb, time = 0) => {
