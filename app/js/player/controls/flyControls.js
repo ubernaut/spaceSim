@@ -2,7 +2,7 @@
  * @author James Baicoianu / http://www.baicoianu.com/
  */
 
-export default function (object, domElement) {
+export default function FlyControls (object, domElement) {
   this.object = object
 
   this.domElement = domElement !== undefined ? domElement : document
@@ -307,4 +307,34 @@ export default function (object, domElement) {
 
   this.updateMovementVector()
   this.updateRotationVector()
+}
+
+export const createFlyControls = ({
+  ship,
+  camera,
+  el,
+  adjustThrust,
+  onScroll
+}) => {
+  const controls = new FlyControls(ship, el)
+  controls.movementSpeed = 0
+  controls.domElement = el
+  controls.rollSpeed = 0.35
+  controls.autoForward = true
+  controls.dragToLook = true
+
+  el.addEventListener(
+    'mousewheel',
+    event => onScroll({ camera, controls, event }),
+    false
+  )
+  el.addEventListener('keydown', event => {
+    if (event.key === 'w') {
+      adjustThrust(2, controls)
+    } else if (event.key === 's') {
+      adjustThrust(-2, controls)
+    }
+  })
+
+  return controls
 }

@@ -1,5 +1,8 @@
 import GridSystem from './GridSystem'
-import { evaluate } from './utils'
+import { evaluate, computeRadius } from './utils'
+
+const G = 2.93558 * Math.pow(10, -4)
+const epsilon = 0.01
 
 class soPhysics {
   constructor (
@@ -21,7 +24,6 @@ class soPhysics {
     this.t = 0
     this.count = 1
     this.tryCount = 0
-    this.G = 2.93558 * Math.pow(10, -4)
     this.gpuCollisions = gpuCollisions
     this.biggestBody = 0
 
@@ -72,9 +74,10 @@ class soPhysics {
       },
       {
         output: [ this.gridSystem.pos.length, 3 ],
-        constants: { size: this.gridSystem.pos.length, G: this.G }
+        constants: { size: this.gridSystem.pos.length, G }
       }
     )
+
     this.GPUcomputeCollisions = this.gpu.createKernel(
       function (pos, mass, acc, rad) {
         var result = -1
@@ -142,7 +145,7 @@ class soPhysics {
       },
       {
         output: [ 3, this.gridSystem.pos.length ],
-        constants: { size: this.gridSystem.pos.length, G: this.G }
+        constants: { size: this.gridSystem.pos.length, G }
       }
     )
     // this.transposeX=this.gpu.createKernel(function(acc){
@@ -208,7 +211,7 @@ class soPhysics {
       },
       {
         output: [ this.gridSystem.pos.length, 3, this.gridSystem.pos.length ],
-        constants: { size: this.gridSystem.pos.length, G: this.G }
+        constants: { size: this.gridSystem.pos.length, G }
       }
     )
     const GPUcomputeAcceleration = this.GPUcomputeAcceleration
@@ -224,7 +227,7 @@ class soPhysics {
       },
       {
         output: [ this.gridSystem.pos.length, 3 ],
-        constants: { size: this.gridSystem.pos.length, G: this.G }
+        constants: { size: this.gridSystem.pos.length, G }
       }
     )
     const sum = this.sum
@@ -236,14 +239,14 @@ class soPhysics {
       },
       {
         output: [ this.gridSystem.pos.length, 3 ],
-        constants: { size: this.gridSystem.pos.length, G: this.G }
+        constants: { size: this.gridSystem.pos.length, G }
       }
     )
 
     var shit = this.GPUcombineAcceleration
   }
 
-  GPUAccelerate () {
+  GPUAccelerate (useGpuCollisions) {
     this.convertToStellar()
 
     var result = this.GPUcomputeAcceleration(
@@ -253,7 +256,7 @@ class soPhysics {
       this.gridSystem.rad
     )
 
-    if (this.gpuCollisions) {
+    if (useGpuCollisions) {
       var GPUcollisionList = this.GPUcomputeCollisions(
         this.gridSystem.pos,
         this.gridSystem.mass,
@@ -379,9 +382,9 @@ class soPhysics {
     mass[jth] = mass[ith] + mass[jth]
 
     // if(jth!=0){
-    rad[jth] = this.computeRadius(mass[jth]) // ((Math.sqrt(mass[jth]+ 0.000001)) / 50)}
+    rad[jth] = computeRadius(mass[jth]) // ((Math.sqrt(mass[jth]+ 0.000001)) / 50)}
     // }
-    if (names[ith] != 'star') {
+    if (names[ith] !== 'star') {
       names[ith] = 'DELETED'
       mass[ith] = 0
       rad[ith] = 0
@@ -396,7 +399,7 @@ class soPhysics {
     vel[ith][1] = 0
     vel[ith][2] = 0
 
-    if (names[jth] == 'star') {
+    if (names[jth] === 'star') {
       pos[jth][0] = 0
       pos[jth][1] = 0
       pos[jth][2] = 0
@@ -407,7 +410,7 @@ class soPhysics {
       acc[jth][1] = 0
       acc[jth][2] = 0
     }
-    if (names[ith] == 'star') {
+    if (names[ith] === 'star') {
       pos[ith][0] = 0
       pos[ith][1] = 0
       pos[ith][2] = 0
@@ -423,9 +426,7 @@ class soPhysics {
 
     this.collisions.push(names[jth])
     this.gridSystem.collisions.push(jth)
-
     this.gridSystem.getPlayerIndex()
-    // }
   }
 
   evaluateStep () {
@@ -439,6 +440,7 @@ class soPhysics {
     }
     this.count += 1
   }
+
   evaluate () {
     this.t = 0
     this.count = 1
@@ -479,6 +481,7 @@ class soPhysics {
       this.collisionDetected(player, names, mass, pos, vel, acc, rad, ith, jth)
     }
   }
+
   convertToMetric () {
     this.metric = true
     for (let i = 0; i < this.gridSystem.count; i++) {
@@ -497,6 +500,7 @@ class soPhysics {
       this.gridSystem.acc[i][2] *= 149600000000
     }
   }
+
   convertToStellar () {
     this.metric = false
     for (let i = 0; i < this.gridSystem.count; i++) {

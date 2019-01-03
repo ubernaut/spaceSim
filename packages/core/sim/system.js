@@ -36,6 +36,7 @@ const createStar = ({ radius, position }) => {
   })
   star.chromosphere.scale.set(radius, radius, radius)
   star.chromosphere.add(star.pointLight)
+  star.corona.scale.set(radius, radius, radius)
   return star
 }
 
@@ -48,6 +49,9 @@ const mkBody = (scene, body, addAnimateCallback) => {
     const star = createStar({ radius: body.radius, position: body.position })
     body.object = star.chromosphere
     scene.add(star.chromosphere)
+    if (star.corona) {
+      scene.add(star.corona)
+    }
     addAnimateCallback(star.animate)
   } else {
     const planet = createPlanet({
@@ -65,18 +69,18 @@ let system = null
 
 const loadSystem = ({
   scene,
-  bodyCount = 256,
+  bodyCount = 0,
   bodyDistance = 1,
   bodySpeed = 0.05,
   deltaT = 0.005,
   useCuda = false,
   gpuCollisions,
-  concurrency = 12,
+  concurrency = 24,
   addAnimateCallback
 }) => {
   const systemWorker = new SystemBuilderWorker()
 
-  systemWorker.postMessage([ bodyCount, bodyDistance, bodySpeed ])
+  systemWorker.postMessage([ Math.round(bodyCount / 4), bodyDistance, bodySpeed ])
   return new Promise((resolve, reject) => {
     systemWorker.onmessage = e => {
       system = e.data

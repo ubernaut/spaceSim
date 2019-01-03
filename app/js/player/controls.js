@@ -1,6 +1,7 @@
-import FlyControls from './controls/flyControls'
-
-const movementSpeedMultiplier = 50 // 25000000
+import { createFlyControls } from './controls/flyControls'
+import { createGamepadControls } from './controls/gamepad-controls'
+import { deployDrone } from '-/player/ship'
+import state from '-/state'
 
 const onScroll = ({ camera, controls, event }) => {
   const deltaY = event.wheelDeltaY
@@ -14,38 +15,39 @@ const onScroll = ({ camera, controls, event }) => {
 }
 
 const adjustThrust = (val, controls) => {
+  const movementSpeed = state.get([ 'scene', 'player', 'movementSpeed' ])
   const newSpeed =
-    controls.movementSpeed +
-    val * Math.max(1, Math.pow(Math.abs(controls.movementSpeed), 0.85))
-  // console.log(
-  //   `adjusting thrust from ${controls.movementSpeed /
-  //     movementSpeedMultiplier} to ${newSpeed / movementSpeedMultiplier}`
-  // )
+    movementSpeed + val * Math.max(1, Math.pow(Math.abs(movementSpeed), 0.85))
+  state.set([ 'scene', 'player', 'movementSpeed' ], newSpeed)
   controls.movementSpeed = newSpeed
 }
 
-const setFlyControls = ({ ship, camera, el }) => {
-  const controls = new FlyControls(ship, el)
-  controls.movementSpeed = 0
-  controls.domElement = el
-  controls.rollSpeed = 0.35
-  controls.autoForward = true
-  controls.dragToLook = true
-
-  el.addEventListener(
-    'mousewheel',
-    event => onScroll({ camera, controls, event }),
-    false
-  )
-  el.addEventListener('keydown', event => {
-    if (event.key === 'w') {
-      adjustThrust(1, controls)
-    } else if (event.key === 's') {
-      adjustThrust(-1, controls)
-    }
+/**
+ * Create the controls used to explore the scene
+ */
+const createControls = ({
+  scene,
+  ship,
+  socket,
+  camera,
+  useGamepad = false
+}) => {
+  if (useGamepad) {
+    return createGamepadControls(
+      ship,
+      document.getElementById('root'),
+      deployDrone(ship)
+    )
+  }
+  return createFlyControls({
+    ship,
+    camera,
+    el: document.getElementById('root'),
+    scene,
+    socket,
+    onScroll,
+    adjustThrust
   })
-
-  return controls
 }
 
-export { onScroll, setFlyControls }
+export { createControls }

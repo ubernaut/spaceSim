@@ -1,12 +1,6 @@
-import uuid from 'uuid/v4'
-
 import Point from '@void/core/system-builder/Point'
 
-import {
-  starTypes,
-  createRandomStar,
-  createRandomDistantStar
-} from '-/bodies/star'
+import { createRandomDistantStar } from '-/bodies/star'
 import { randomUniform } from '-/utils'
 
 class Galaxy {

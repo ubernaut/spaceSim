@@ -1,24 +1,18 @@
 import 'babel-polyfill'
-
 import '../styles/app.css'
 
 import { createViewer } from '@void/core/viewer'
-
 import * as net from '-/net/net'
-import * as controls from '-/player/controls'
 import * as weapons from '-/player/weapons'
-import { createShip, deployDrone } from '-/player/ship'
+import { createShip } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
-import { getAllConfigVars } from '-/utils'
-import { createGamepadControls } from '-/player/controls/gamepad-controls'
+import { createControls } from '-/player/controls'
 import logger from './logger'
 
 /**
- * App State
+ * Global App State
  */
-
-const Void = (window.Void = {
-  urlConfigs: getAllConfigVars(),
+const Void = {
   players: [],
   player: {
     ship: null
@@ -27,114 +21,80 @@ const Void = (window.Void = {
   scene: null,
   world: null,
   controls: null,
-  animateCallbacks: [],
-  gui: {
-    values: {
-      starType: 'O5'
-    }
-  },
-  uniforms: {
-    sun: {
-      color: {
-        red: {
-          value: 255
-        },
-        green: {
-          value: 255
-        },
-        blue: {
-          value: 255
-        }
-      }
-    }
+  animateCallbacks: []
+}
+
+const getAnimateCallbacks = () => Void.animateCallbacks
+const addAnimateCallback = cb => Void.animateCallbacks.push(cb)
+
+const defaultViewerOptions = {
+  system: {
+    bodyCount: 2048,
+    bodyDistance: 1,
+    bodySpeed: 0.05,
+    deltaT: 0.005,
+    gpuCollisions: false
   }
-})
+}
 
-/**
- * Event Listeners
- */
+const main = async () => {
+  logger.debug('init: creating viewer...')
+  const { scene, camera } = await createViewer(
+    'root',
+    {
+      getAnimateCallbacks,
+      addAnimateCallback
+    },
+    defaultViewerOptions
+  )
 
-/**
- * Init
- */
-createBasicUI(Void.gui.values, color => {
-  const split = color.split(',')
-  Void.uniforms.sun.color.red.value = (split[0] / 255.0) * 0.75
-  Void.uniforms.sun.color.green.value = (split[1] / 255.0) * 0.75
-  Void.uniforms.sun.color.blue.value = (split[2] / 255.0) * 0.75
-})
-
-const animateCallbacks = []
-const getAnimateCallbacks = () => animateCallbacks
-const addAnimateCallback = cb => animateCallbacks.push(cb)
-
-const { scene, camera } = createViewer(
-  'root',
-  {
-    getAnimateCallbacks,
-    addAnimateCallback
-  },
-  {
-    system: {
-      bodyCount: 512,
-      bodyDistance: 1,
-      bodySpeed: 0.05,
-      deltaT: 0.005,
-      gpuCollisions: false
-    }
-  }
-)
-
-createShip({ controls }).then(({ ship, animate }) => {
+  logger.debug('init: creating player ship...')
+  const { ship, animate } = await createShip()
   Void.ship = ship
+
+  logger.debug('init: adding ship and camera to scene...')
   ship.add(camera)
   camera.position.set(...[ 0, 10, 30 ])
   scene.add(ship)
-  animateCallbacks.push(animate)
 
-  if (Void.urlConfigs.hasOwnProperty('gamepad')) {
-    Void.controls = createGamepadControls(
-      ship,
-      document.getElementById('root'),
-      weapons.shoot,
-      deployDrone(ship)
-    )
-  } else {
-    Void.controls = controls.setFlyControls({
-      ship,
-      camera,
-      el: document.getElementById('root')
-    })
-  }
+  logger.debug('init: opening websocket...')
+  const socket = await net.init()
 
-  animateCallbacks.push(weapons.animate)
-  animateCallbacks.push(delta => Void.controls.update(delta))
-})
+  logger.debug('init: registering controls...')
+  const controls = createControls({ scene, ship, socket, camera })
+  Void.controls = controls
 
-// Websocket connection
-const registerEventListeners = socket => {
+  logger.debug('init: registering system animations...')
+  addAnimateCallback(animate)
+  addAnimateCallback(weapons.animate(scene))
+  addAnimateCallback(delta => controls.update(delta))
+
+  logger.debug('init: registering event listeners...')
+  registerEventListeners({ socket, ship })
+
+  logger.debug('init: creating dat.gui elements...')
+  createBasicUI()
+}
+main()
+
+/**
+ * Add global event listeners, e.g., network updates
+ */
+const registerEventListeners = ({ socket, ship }) => {
   const canvas = document.querySelector('#root canvas')
   canvas.addEventListener(
     'mousedown',
-    e => net.broadcastUpdate(socket, Void.ship),
+    e => net.broadcastUpdate(socket, ship),
     false
   )
   canvas.addEventListener(
     'mouseup',
-    e => net.broadcastUpdate(socket, Void.ship),
+    e => net.broadcastUpdate(socket, ship),
     false
   )
-
   setInterval(() => {
-    const { quaternion, position } = Void.ship
+    const { quaternion, position } = ship
     const payload = { quaternion, position }
     net.broadcastUpdate(socket, { type: 'playerMove', payload })
   }, 150)
 }
-
-logger.debug('opening websocket')
-net.init().then(socket => registerEventListeners(socket))
-
-// Add FPS stats widget
-window.location =
-  "javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';document.head.appendChild(script);})()"

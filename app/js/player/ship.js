@@ -36,16 +36,14 @@ const particleEmitterOptions = {
 }
 
 const animateShip = emitter => (delta, tick) => {
+  const movementSpeed = state.get([ 'scene', 'player', 'movementSpeed' ])
   const options = Object.assign({}, particleOptions, {
     position: {
       x: Math.random() * 0.5 - 0.25,
       y: Math.random() * 0.5 - 0.25,
       z: Math.random() * 0.5
     },
-    size: Math.max(
-      5,
-      Math.min(10.0, 3.0 * Void.controls.movementSpeed * 0.000000001)
-    )
+    size: Math.max(5, Math.min(10.0, 3.0 * movementSpeed * 0.000000001))
   })
   for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
     emitter.spawnParticle(options)
@@ -60,7 +58,7 @@ const defaults = {
   rotation: new THREE.Vector3(1, -0.25, -0.25)
 }
 
-const createShip = ({ position, scale, rotation }) => {
+const createShip = ({ position, scale, rotation } = defaults) => {
   position = position || defaults.position
   scale = scale || defaults.scale
   rotation = rotation || defaults.rotation

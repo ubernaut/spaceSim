@@ -15,11 +15,19 @@ const Schema = struct({
       level: 'string'
     }
   },
-  scene: 'object',
-  controls: 'object',
+  scene: {
+    player: {
+      ship: 'object?',
+      movementSpeed: 'number'
+    }
+  },
   urlParameters: {
     bodyCount: 'number',
     stars: 'boolean'
+  },
+  gui: {
+    enabled: 'boolean',
+    options: 'object'
   }
 })
 
@@ -27,8 +35,10 @@ const state = new Baobab(
   {
     config: {
       server: {
-        host: 'https://void-server-0.herokuapp.com/',
-        port: 80
+        // host: 'http://thedagda.co/',
+        // host: 'https://void-server-0.herokuapp.com/',
+        host: 'localhost',
+        port: 1137
       },
       threejs: {
         assetPath: 'app/assets/models/'
@@ -40,19 +50,34 @@ const state = new Baobab(
     },
     scene: {
       player: {
-        ship: null
-      },
-      players: []
-    },
-    controls: {
-      starType: 'O5'
+        movementSpeed: 0
+      }
     },
     urlParameters: {
       bodyCount: 1,
       stars: true
+    },
+    gui: {
+      enabled: true,
+      options: {
+        star: {
+          label: 'Star Options',
+          enabled: true,
+          options: {
+            type: '05',
+            size: 100
+          }
+        },
+        ship: {
+          label: 'Ship Options',
+          enabled: true,
+          options: {
+            type: 'aship'
+          }
+        }
+      }
     }
   },
-
   {
     validate: (previousState, newState, affectedPaths) => {
       if (process.env.NODE_ENV === 'production') {
