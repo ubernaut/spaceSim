@@ -69,18 +69,18 @@ let system = null
 
 const loadSystem = ({
   scene,
-  bodyCount = 256,
+  bodyCount = 0,
   bodyDistance = 1,
   bodySpeed = 0.05,
   deltaT = 0.005,
   useCuda = false,
   gpuCollisions,
-  concurrency = 12,
+  concurrency = 24,
   addAnimateCallback
 }) => {
   const systemWorker = new SystemBuilderWorker()
 
-  systemWorker.postMessage([ bodyCount, bodyDistance, bodySpeed ])
+  systemWorker.postMessage([ Math.round(bodyCount / 4), bodyDistance, bodySpeed ])
   return new Promise((resolve, reject) => {
     systemWorker.onmessage = e => {
       system = e.data

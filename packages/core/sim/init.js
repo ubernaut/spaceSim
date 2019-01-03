@@ -25,7 +25,7 @@ const defaultConfig = {
     farClip: 5 * IAU
   },
   system: {
-    bodyCount: 1024,
+    bodyCount: 512,
     bodyDistance: 1,
     bodySpeed: 0.05,
     deltaT: 0.005,
@@ -34,7 +34,7 @@ const defaultConfig = {
   oimo: false
 }
 
-const init = (rootEl, animateCallbackHelpers, config) => {
+const init = async (rootEl, animateCallbackHelpers, config) => {
   config = Object.assign({}, defaultConfig, config)
   const renderer = createRenderer()
   const scene = new THREE.Scene()
@@ -53,34 +53,28 @@ const init = (rootEl, animateCallbackHelpers, config) => {
   createGalaxy(scene)
   createUniverse(scene).map(body => scene.add(body))
 
-  return new Promise((resolve, reject) => {
-    loadSystem({
-      scene,
-      bodyCount: config.system.bodyCount,
-      bodyDistance: config.system.bodyDistance,
-      bodySpeed: config.system.bodySpeed,
-      deltaT: config.system.deltaT,
-      gpuCollisions: config.system.gpuCollisions,
-      addAnimateCallback: animateCallbackHelpers.addAnimateCallback
-    }).then(physics => {
-      animate({
-        scene,
-        physics,
-        composer,
-        clock: new THREE.Clock(),
-        getAnimateCallbacks: animateCallbackHelpers.getAnimateCallbacks
-      })
-
-      rootEl.appendChild(renderer.domElement)
-      window.addEventListener(
-        'resize',
-        onWindowResize({ renderer, camera }),
-        false
-      )
-
-      resolve({ scene, camera, physics })
-    })
+  const physics = await loadSystem({
+    scene,
+    bodyCount: config.system.bodyCount,
+    bodyDistance: config.system.bodyDistance,
+    bodySpeed: config.system.bodySpeed,
+    deltaT: config.system.deltaT,
+    gpuCollisions: config.system.gpuCollisions,
+    addAnimateCallback: animateCallbackHelpers.addAnimateCallback
   })
+
+  animate({
+    scene,
+    physics,
+    composer,
+    clock: new THREE.Clock(),
+    getAnimateCallbacks: animateCallbackHelpers.getAnimateCallbacks
+  })
+
+  rootEl.appendChild(renderer.domElement)
+  window.addEventListener('resize', onWindowResize({ renderer, camera }), false)
+
+  return { scene, camera, physics }
 }
 
 export default init

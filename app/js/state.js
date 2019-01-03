@@ -35,6 +35,7 @@ const state = new Baobab(
   {
     config: {
       server: {
+        // host: 'http://thedagda.co/',
         // host: 'https://void-server-0.herokuapp.com/',
         host: 'localhost',
         port: 1137

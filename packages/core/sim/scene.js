@@ -73,7 +73,7 @@ const animate = ({
   clock,
   composer,
   useCuda = false,
-  useGpuCollisions = true,
+  useGpuCollisions = false,
   getAnimateCallbacks
 }) => {
   requestAnimationFrame(() =>
@@ -96,7 +96,7 @@ const animate = ({
     physics.accelerateCuda()
     updateSystemCPU()
   } else {
-    physics.GPUAccelerate()
+    physics.GPUAccelerate(useGpuCollisions)
     if (useGpuCollisions) {
       updateSystemGPU(scene, physics)
     } else {
@@ -117,7 +117,6 @@ const createRenderer = () => {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     logarithmicDepthBuffer: true
-    // shadowMapEnabled: true
   })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)

@@ -29,7 +29,7 @@ const addAnimateCallback = cb => Void.animateCallbacks.push(cb)
 
 const defaultViewerOptions = {
   system: {
-    bodyCount: 256,
+    bodyCount: 2048,
     bodyDistance: 1,
     bodySpeed: 0.05,
     deltaT: 0.005,
