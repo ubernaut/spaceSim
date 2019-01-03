@@ -34,11 +34,11 @@ const shoot = ({ quaternion, position, weaponType, color }) => {
   return { color }
 }
 
-const animate = (delta, time) => {
+const animate = scene => (delta, time) => {
   bullets = bullets
     .map(b => {
       if (b.flightTime <= 0) {
-        Void.scene.remove(b.mesh)
+        scene.remove(b.mesh)
       } else {
         b.mesh.translateZ(-10 * b.velocity * delta)
         b.flightTime -= delta * 1000

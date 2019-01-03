@@ -31,6 +31,7 @@ const setFlyControls = ({ ship, camera, el }) => {
   controls.rollSpeed = 0.35
   controls.autoForward = true
   controls.dragToLook = true
+  console.log('set')
 
   el.addEventListener(
     'mousewheel',
@@ -39,6 +40,7 @@ const setFlyControls = ({ ship, camera, el }) => {
   )
   el.addEventListener('keydown', event => {
     if (event.key === 'w') {
+      console.log('at')
       adjustThrust(1, controls)
     } else if (event.key === 's') {
       adjustThrust(-1, controls)

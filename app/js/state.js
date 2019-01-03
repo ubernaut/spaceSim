@@ -20,6 +20,10 @@ const Schema = struct({
   urlParameters: {
     bodyCount: 'number',
     stars: 'boolean'
+  },
+  gui: {
+    enabled: 'boolean',
+    options: 'object'
   }
 })
 
@@ -27,8 +31,9 @@ const state = new Baobab(
   {
     config: {
       server: {
-        host: 'https://void-server-0.herokuapp.com/',
-        port: 80
+        // host: 'https://void-server-0.herokuapp.com/',
+        host: 'localhost',
+        port: 1137
       },
       threejs: {
         assetPath: 'app/assets/models/'
@@ -50,6 +55,26 @@ const state = new Baobab(
     urlParameters: {
       bodyCount: 1,
       stars: true
+    },
+    gui: {
+      enabled: true,
+      options: {
+        star: {
+          label: 'Star Options',
+          enabled: true,
+          options: {
+            type: '05',
+            size: 100
+          }
+        },
+        ship: {
+          label: 'Ship Options',
+          enabled: true,
+          options: {
+            type: 'aship'
+          }
+        }
+      }
     }
   },
 

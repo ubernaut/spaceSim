@@ -53,28 +53,34 @@ const init = (rootEl, animateCallbackHelpers, config) => {
   createGalaxy(scene)
   createUniverse(scene).map(body => scene.add(body))
 
-  loadSystem({
-    scene,
-    bodyCount: config.system.bodyCount,
-    bodyDistance: config.system.bodyDistance,
-    bodySpeed: config.system.bodySpeed,
-    deltaT: config.system.deltaT,
-    gpuCollisions: config.system.gpuCollisions,
-    addAnimateCallback: animateCallbackHelpers.addAnimateCallback
-  }).then(physics => {
-    animate({
+  return new Promise((resolve, reject) => {
+    loadSystem({
       scene,
-      physics,
-      composer,
-      clock: new THREE.Clock(),
-      getAnimateCallbacks: animateCallbackHelpers.getAnimateCallbacks
+      bodyCount: config.system.bodyCount,
+      bodyDistance: config.system.bodyDistance,
+      bodySpeed: config.system.bodySpeed,
+      deltaT: config.system.deltaT,
+      gpuCollisions: config.system.gpuCollisions,
+      addAnimateCallback: animateCallbackHelpers.addAnimateCallback
+    }).then(physics => {
+      animate({
+        scene,
+        physics,
+        composer,
+        clock: new THREE.Clock(),
+        getAnimateCallbacks: animateCallbackHelpers.getAnimateCallbacks
+      })
+
+      rootEl.appendChild(renderer.domElement)
+      window.addEventListener(
+        'resize',
+        onWindowResize({ renderer, camera }),
+        false
+      )
+
+      resolve({ scene, camera, physics })
     })
   })
-
-  rootEl.appendChild(renderer.domElement)
-  window.addEventListener('resize', onWindowResize({ renderer, camera }), false)
-
-  return { scene, camera }
 }
 
 export default init
