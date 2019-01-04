@@ -20,7 +20,6 @@ const Void = {
   time: { value: 100000000 },
   scene: null,
   world: null,
-  controls: null,
   animateCallbacks: []
 }
 
@@ -49,28 +48,25 @@ const main = async () => {
   )
 
   logger.debug('init: creating player ship...')
-  const { ship, animate } = await createShip()
-  Void.ship = ship
+  const { ship, animate: animateShip } = await createShip()
 
   logger.debug('init: adding ship and camera to scene...')
   ship.add(camera)
   camera.position.set(...[ 0, 10, 30 ])
   scene.add(ship)
 
+  logger.debug('init: registering controls...')
+  const controls = createControls({ type: 'fly', ship, camera })
+
+  logger.debug('init: registering system animations...')
+  addAnimateCallback(animateShip)
+  addAnimateCallback(delta => controls.update(delta))
+
   logger.debug('init: opening websocket...')
   const socket = await net.init()
 
-  logger.debug('init: registering controls...')
-  const controls = createControls({ scene, ship, socket, camera })
-  Void.controls = controls
-
-  logger.debug('init: registering system animations...')
-  addAnimateCallback(animate)
-  addAnimateCallback(weapons.animate(scene))
-  addAnimateCallback(delta => controls.update(delta))
-
   logger.debug('init: registering event listeners...')
-  registerEventListeners({ socket, ship })
+  registerEventListeners({ ship, socket })
 
   logger.debug('init: creating dat.gui elements...')
   createBasicUI()
@@ -80,7 +76,7 @@ main()
 /**
  * Add global event listeners, e.g., network updates
  */
-const registerEventListeners = ({ socket, ship }) => {
+const registerEventListeners = ({ ship, socket }) => {
   const canvas = document.querySelector('#root canvas')
   canvas.addEventListener(
     'mousedown',

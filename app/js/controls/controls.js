@@ -24,8 +24,6 @@ export const createFlyControls = ({ ship, camera, el }) => {
   }
 
   const controls = new FlyControls(ship, el)
-  controls.movementSpeed = 0
-  controls.domElement = el
   controls.rollSpeed = 0.35
   controls.autoForward = true
   controls.dragToLook = true
@@ -49,19 +47,15 @@ export const createFlyControls = ({ ship, camera, el }) => {
 /**
  * Create the controls used to explore the scene
  */
-const createControls = ({ type = 'fly', scene, ship, socket, camera }) => {
+const createControls = ({ type = 'fly', ship, camera, el }) => {
+  el = el || document.getElementById('root')
   if (type === 'gamepad') {
-    return createGamepadControls(
-      ship,
-      document.getElementById('root'),
-      deployDrone(ship)
-    )
+    return createGamepadControls(ship, el, deployDrone(ship))
   }
   return createFlyControls({
     ship,
     camera,
-    el: document.getElementById('root'),
-    scene
+    el
   })
 }
 
