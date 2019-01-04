@@ -11,6 +11,7 @@
     "baobab": "^2.5.2",
     "bluebird": "^3.5.0",
     "browser-bunyan": "^0.4.0",
+    "gpu.js": "^1.10.4",
     "msgpack-lite": "^0.1.26",
     "postprocessing": "^2.3.1",
     "socket.io": "^2.0.3",
