@@ -69,7 +69,7 @@ const createUniverse = scene => {
  */
 const animate = ({
   scene,
-  physics,
+  systemWorker,
   clock,
   composer,
   useCuda = false,
@@ -79,7 +79,7 @@ const animate = ({
   requestAnimationFrame(() =>
     animate({
       scene,
-      physics,
+      systemWorker,
       clock,
       composer,
       useCuda,
@@ -88,21 +88,22 @@ const animate = ({
     })
   )
 
+  let physics = systemWorker.physics
   if (!scene || !physics) {
     return
   }
 
-  if (useCuda) {
-    physics.accelerateCuda()
-    updateSystemCPU()
+  // if (useCuda) {
+  //   physics.accelerateCuda()
+  //   updateSystemCPU()
+  // } else {
+  physics.GPUAccelerate(useGpuCollisions)
+  if (useGpuCollisions) {
+    updateSystemGPU(scene, physics)
   } else {
-    physics.GPUAccelerate(useGpuCollisions)
-    if (useGpuCollisions) {
-      updateSystemGPU(scene, physics)
-    } else {
-      updateSystemCPU(scene, physics)
-    }
+    updateSystemCPU(scene, physics)
   }
+  // }
 
   // updateOimoPhysics()
 

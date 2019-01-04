@@ -53,7 +53,7 @@ const init = async (rootEl, animateCallbackHelpers, config) => {
   createGalaxy(scene)
   createUniverse(scene).map(body => scene.add(body))
 
-  const physics = await loadSystem({
+  let systemWorker = await loadSystem({
     scene,
     bodyCount: config.system.bodyCount,
     bodyDistance: config.system.bodyDistance,
@@ -62,10 +62,10 @@ const init = async (rootEl, animateCallbackHelpers, config) => {
     gpuCollisions: config.system.gpuCollisions,
     addAnimateCallback: animateCallbackHelpers.addAnimateCallback
   })
-
+  console.log(systemWorker)
   animate({
     scene,
-    physics,
+    systemWorker,
     composer,
     clock: new THREE.Clock(),
     getAnimateCallbacks: animateCallbackHelpers.getAnimateCallbacks
@@ -74,7 +74,7 @@ const init = async (rootEl, animateCallbackHelpers, config) => {
   rootEl.appendChild(renderer.domElement)
   window.addEventListener('resize', onWindowResize({ renderer, camera }), false)
 
-  return { scene, camera, physics }
+  return { scene, camera, systemWorker }
 }
 
 export default init

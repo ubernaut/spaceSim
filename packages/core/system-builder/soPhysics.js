@@ -12,7 +12,7 @@ class soPhysics {
     dt = 0.02,
     metric = false,
     GPGPU = false,
-    gpuCollisions = false
+    gpuCollisions = true
   ) {
     this.dt = dt
     this.system = system
