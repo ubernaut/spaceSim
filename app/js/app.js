@@ -6,7 +6,7 @@ import * as net from '-/net/net'
 import * as weapons from '-/player/weapons'
 import { createShip } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
-import { createControls } from '-/player/controls'
+import { createControls } from '-/controls/controls'
 import logger from './logger'
 
 /**
