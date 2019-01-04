@@ -1,5 +1,6 @@
 import GridSystem from './GridSystem'
 import { evaluate, computeRadius } from './utils'
+import GPU from 'gpu.js'
 
 const G = 2.93558 * Math.pow(10, -4)
 const epsilon = 0.01

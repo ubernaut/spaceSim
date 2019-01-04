@@ -29,11 +29,11 @@ const addAnimateCallback = cb => Void.animateCallbacks.push(cb)
 
 const defaultViewerOptions = {
   system: {
-    bodyCount: 2048,
-    bodyDistance: 1,
+    bodyCount: 256,
+    bodyDistance: 0.2,
     bodySpeed: 0.05,
     deltaT: 0.005,
-    gpuCollisions: false
+    gpuCollisions: true
   }
 }
 
