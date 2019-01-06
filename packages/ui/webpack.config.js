@@ -10,13 +10,13 @@ module.exports = {
   context: path.resolve(__dirname),
 
   entry: {
-    bundle: resolve('app/js/app.js')
+    app: [ resolve('src/app.js') ]
   },
 
   output: {
-    path: resolve('dist'),
     filename: '[name].js',
-    globalObject: 'this'
+    path: path.resolve(__dirname, `./dist`),
+    publicPath: '/'
   },
 
   devtool: 'cheap-module-eval-source-map',
@@ -25,57 +25,45 @@ module.exports = {
     modules: [ 'node_modules' ],
     extensions: [ '*', '.json', '.js' ],
     alias: {
-      '-': resolve('app/js'),
-      app: resolve('app'),
-      '@void': resolve('packages'),
-      syncinput: resolve('app/lib/syncinput')
+      components: resolve('lib/components')
     }
   },
 
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [ 'style-loader', 'css-loader' ],
-        exclude: /node_modules/
-      },
-      {
         test: /\.(js|jsx)$/,
+        include: [ resolve('lib'), resolve('src') ],
         loaders: [ 'babel-loader' ]
       },
       {
-        test: /\.(glsl|md|obj)$/,
-        loaders: [ 'raw-loader' ]
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
       },
       {
-        test: /\.worker.js$/,
-        loader: 'worker-loader?inline'
-      },
-      {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        loaders: [
-          'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
-          'image-webpack-loader?bypassOnDebug'
-        ]
+        test: /\.scss$/,
+        use: [ 'style-loader', 'css-loader', 'sass-loader' ]
       }
     ]
   },
 
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development')
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: 'app/index.html'
+      template: 'src/index.html'
     }),
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
   ],
 
   devServer: {
-    contentBase: __dirname,
     publicPath: '/',
     compress: true,
-    port: 9000,
+    port: 9001,
     hot: true,
     historyApiFallback: false
   }

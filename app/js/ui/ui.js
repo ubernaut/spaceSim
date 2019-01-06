@@ -1,9 +1,32 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Speedometer from '@void/ui/lib/components/Speedometer'
+import { hot } from 'react-hot-loader/root'
+import { root, branch } from 'baobab-react/higher-order'
+
 import dat from 'app/lib/dat.gui.js'
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
 import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
+
+const UI = branch(
+  {
+    speed: ['scene', 'player', 'movementSpeed']
+  },
+  ({ speed }) => {
+    // createFpsWidget()
+    return (
+      <div className="speedometer">
+        <Speedometer speed={speed} />
+      </div>
+    )
+  }
+)
+
+const RootedUI = root(state, UI)
+const HotRootedUI = hot(RootedUI)
 
 /**
  * Create a basic set of configurable options in a dat.gui element
@@ -12,7 +35,8 @@ const createBasicUI = () => {
   if (!guiState.enabled) {
     return
   }
-  createFpsWidget()
+
+  ReactDOM.render(<HotRootedUI />, document.getElementById('ui'))
 
   const gui = new dat.gui.GUI()
 
@@ -57,7 +81,7 @@ const initStarOptions = (gui, options) => {
     .options(starTypes)
     .name('Type')
     .onChange(value => {
-      const [ r, g, b ] = value.split(',').map(parseFloat)
+      const [r, g, b] = value.split(',').map(parseFloat)
       uniforms.sun.color.red.value = (r / 255) * 0.75
       uniforms.sun.color.green.value = (g / 255) * 0.75
       uniforms.sun.color.blue.value = (b / 255) * 0.75

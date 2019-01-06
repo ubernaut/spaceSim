@@ -43,3 +43,20 @@ body {
 a {
   color: rgb(200, 200, 255);
 }
+
+#ui {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+#ui .speedometer {
+  width: 150px;
+  height: 60px;
+  position: absolute;
+  bottom: 25px;
+  left: calc(50% - 50px);
+}
