@@ -24,13 +24,27 @@ const speedoStyle = props => ({
 })
 
 const Speedometer = ({ speed }) => {
+  speed = parseFloat(speed)
+
+  let displaySpeed = speed
+  let units = 'm/s'
+  if (displaySpeed > 1000) {
+    displaySpeed /= 1000
+    units = 'km/s'
+  }
+
+  const c = 299792458
+  const percentC = speed / c
+
   return (
     <HudElement className="speedometer">
       <div style={speedoStyle()}>
         <label style={{ marginBottom: '.25em', fontWeight: 'bold' }}>
           Speed
         </label>
-        <span>{parseFloat(speed).toFixed(2)} m/s</span>
+        <span>
+          {displaySpeed.toFixed(2)} {units} ({percentC.toFixed(4)}c)
+        </span>
       </div>
     </HudElement>
   )

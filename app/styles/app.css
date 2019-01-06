@@ -54,9 +54,9 @@ a {
 }
 
 #ui .speedometer {
-  width: 150px;
+  width: 200px;
   height: 60px;
   position: absolute;
   bottom: 25px;
-  left: calc(50% - 50px);
+  left: calc(50% - 100px);
 }
