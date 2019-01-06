@@ -11,13 +11,14 @@ const style = props => ({
   width: '100%',
   height: '100%',
   overflowY: 'auto',
-  paddingLeft: '1em'
+  padding: '1em'
 })
 
 const Selection = ({ data }) => {
   return !data || data === '' ? null : (
     <HudElement className="speedometer">
       <div style={style()}>
+        <label style={{ fontWeight: 'bold' }}>Selected Object</label>
         <pre>{data}</pre>
       </div>
     </HudElement>
