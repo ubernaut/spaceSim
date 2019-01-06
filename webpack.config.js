@@ -25,7 +25,8 @@ module.exports = {
     alias: {
       '-': resolve('app/js'),
       app: resolve('app'),
-      '@void': resolve('packages')
+      '@void': resolve('packages'),
+      syncinput: resolve('app/lib/syncinput')
     }
   },
 

@@ -62,14 +62,14 @@ const main = async () => {
   addAnimateCallback(animateShip)
   addAnimateCallback(delta => controls.update(delta))
 
+  logger.debug('init: creating dat.gui elements...')
+  createBasicUI()
+
   logger.debug('init: opening websocket...')
   const socket = await net.init()
 
   logger.debug('init: registering event listeners...')
   registerEventListeners({ ship, socket })
-
-  logger.debug('init: creating dat.gui elements...')
-  createBasicUI()
 }
 main()
 

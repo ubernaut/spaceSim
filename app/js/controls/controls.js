@@ -1,7 +1,6 @@
 import FlyControls from './fly-controls'
 import { createGamepadControls } from './gamepad-controls'
 import { deployDrone } from '-/player/ship'
-import state from '-/state'
 
 export const createFlyControls = ({ ship, camera, el }) => {
   const onScroll = ({ camera, controls, event }) => {
@@ -15,31 +14,13 @@ export const createFlyControls = ({ ship, camera, el }) => {
     }
   }
 
-  const adjustThrust = (val, controls) => {
-    const movementSpeed = state.get([ 'scene', 'player', 'movementSpeed' ])
-    const newSpeed =
-      movementSpeed + val * Math.max(1, Math.pow(Math.abs(movementSpeed), 0.85))
-    state.set([ 'scene', 'player', 'movementSpeed' ], newSpeed)
-    controls.movementSpeed = newSpeed
-  }
-
   const controls = new FlyControls(ship, el)
-  controls.rollSpeed = 0.35
-  controls.autoForward = true
-  controls.dragToLook = true
 
   el.addEventListener(
     'mousewheel',
     event => onScroll({ camera, controls, event }),
     false
   )
-  el.addEventListener('keydown', event => {
-    if (event.key === 'w') {
-      adjustThrust(2, controls)
-    } else if (event.key === 's') {
-      adjustThrust(-2, controls)
-    }
-  })
 
   return controls
 }
