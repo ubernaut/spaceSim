@@ -55,6 +55,15 @@ a {
   bottom: 0;
   z-index: 99;
   min-width: 1100px;
+  pointer-events: none;
+}
+
+#ui .reticle {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: calc(50% - 75px);
+  left: calc(50% - 75px);
 }
 
 #ui .fps-stats {
