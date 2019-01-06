@@ -26,6 +26,7 @@ export default class KeyboardControls {
     this.domElement = domElement
     this.scene = scene
     this.camera = camera
+    this.testingIntersections = false
     this.selection = null
     this.keyboard = new Keyboard()
     this.mouse = new Mouse()
@@ -57,10 +58,10 @@ export default class KeyboardControls {
       setSelected({
         name: this.selection.object.name,
         radius: this.selection.object.radius,
-        position: {
-          ...this.selection.object.position
-        }
+        position: this.selection.object.position
       })
+    } else {
+      setSelected(null)
     }
 
     Object.keys(this.keymap.moveState).map(key => {
@@ -69,7 +70,11 @@ export default class KeyboardControls {
       }
     })
 
-    if (this.mouse.buttonPressed(Mouse.LEFT)) {
+    if (
+      this.mouse.buttonPressed(Mouse.LEFT) &&
+      this.testingIntersections === false
+    ) {
+      this.testingIntersections = true
       const mouse = new THREE.Vector2()
       mouse.x = (this.mouse.position.x / window.innerWidth) * 2 - 1
       mouse.y = -(this.mouse.position.y / window.innerHeight) * 2 + 1
@@ -94,6 +99,8 @@ export default class KeyboardControls {
         this.lastSelected = new Date().valueOf()
       }
     }
+    this.testingIntersections = false
+
     if (this.mouse.buttonPressed(Mouse.RIGHT)) {
       this.mousemove(this.mouse.position.x, this.mouse.position.y)
     }
