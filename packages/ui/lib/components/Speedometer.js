@@ -1,7 +1,7 @@
 import React from 'react'
 import HudElement from './HudElement'
 
-const style = props => ({
+const style = ({ speed }) => ({
   fontSize: '1em',
   display: 'flex',
   alignItems: 'center',
@@ -9,7 +9,8 @@ const style = props => ({
   justifyContent: 'center',
   fontSize: '1em',
   width: '100%',
-  height: '100%'
+  height: '100%',
+  color: speed > 0 ? 'inherit' : '#ee4444cc'
 })
 
 const Speedometer = ({ speed }) => {
@@ -27,7 +28,7 @@ const Speedometer = ({ speed }) => {
 
   return (
     <HudElement className="speedometer">
-      <div style={style()}>
+      <div style={style({ speed })}>
         <label style={{ marginBottom: '.25em', fontWeight: 'bold' }}>
           Speed
         </label>
