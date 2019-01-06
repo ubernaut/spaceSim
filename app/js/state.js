@@ -19,7 +19,8 @@ const Schema = struct({
     player: {
       ship: 'object?',
       movementSpeed: 'number'
-    }
+    },
+    bodyCount: 'number'
   },
   urlParameters: {
     bodyCount: 'number',
@@ -51,7 +52,8 @@ const state = new Baobab(
     scene: {
       player: {
         movementSpeed: 0
-      }
+      },
+      bodyCount: 0
     },
     urlParameters: {
       bodyCount: 1,

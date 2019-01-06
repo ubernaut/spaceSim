@@ -60,3 +60,11 @@ a {
   bottom: 25px;
   left: calc(50% - 100px);
 }
+
+#ui .body-counter {
+  width: 200px;
+  height: 60px;
+  position: absolute;
+  bottom: 25px;
+  left: calc(50% - 350px);
+}

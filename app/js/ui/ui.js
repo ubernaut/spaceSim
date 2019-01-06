@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Speedometer from '@void/ui/lib/components/Speedometer'
+import BodyCounter from '@void/ui/lib/components/BodyCounter'
 import { hot } from 'react-hot-loader/root'
 import { root, branch } from 'baobab-react/higher-order'
 
@@ -13,13 +14,19 @@ const guiState = state.get('gui')
 
 const UI = branch(
   {
-    speed: ['scene', 'player', 'movementSpeed']
+    speed: ['scene', 'player', 'movementSpeed'],
+    bodyCount: ['scene', 'bodyCount']
   },
-  ({ speed }) => {
+  ({ speed, bodyCount }) => {
     // createFpsWidget()
     return (
-      <div className="speedometer">
-        <Speedometer speed={speed} />
+      <div>
+        <div className="body-counter">
+          <BodyCounter bodies={bodyCount} />
+        </div>
+        <div className="speedometer">
+          <Speedometer speed={speed} />
+        </div>
       </div>
     )
   }
@@ -38,17 +45,17 @@ const createBasicUI = () => {
 
   ReactDOM.render(<HotRootedUI />, document.getElementById('ui'))
 
-  const gui = new dat.gui.GUI()
-
-  const starOptions = guiState.options.star
-  if (starOptions.enabled) {
-    initStarOptions(gui, starOptions)
-  }
-
-  const shipOptions = guiState.options.ship
-  if (shipOptions.enabled) {
-    initShipOptions(gui, shipOptions)
-  }
+  // const gui = new dat.gui.GUI()
+  //
+  // const starOptions = guiState.options.star
+  // if (starOptions.enabled) {
+  //   initStarOptions(gui, starOptions)
+  // }
+  //
+  // const shipOptions = guiState.options.ship
+  // if (shipOptions.enabled) {
+  //   initShipOptions(gui, shipOptions)
+  // }
 }
 
 /**

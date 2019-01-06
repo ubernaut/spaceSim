@@ -8,6 +8,7 @@ import { createShip } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
 import logger from './logger'
+import state from '-/state'
 
 /**
  * Global App State
@@ -38,7 +39,7 @@ const defaultViewerOptions = {
 
 const main = async () => {
   logger.debug('init: creating viewer...')
-  const { scene, camera } = await createViewer(
+  const { scene, camera, physics } = await createViewer(
     'root',
     {
       getAnimateCallbacks,
@@ -46,6 +47,8 @@ const main = async () => {
     },
     defaultViewerOptions
   )
+
+  state.set([ 'scene', 'bodyCount' ], physics.system.bodies.length)
 
   logger.debug('init: creating player ship...')
   const { ship, animate: animateShip } = await createShip()
