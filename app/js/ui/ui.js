@@ -5,6 +5,7 @@ import BodyCounter from '@void/ui/lib/components/BodyCounter'
 import Messages from '@void/ui/lib/components/Messages'
 import Reticle from '@void/ui/lib/components/Reticle'
 import Help from '@void/ui/lib/components/Help'
+import Selection from '@void/ui/lib/components/Selection'
 import { hot } from 'react-hot-loader/root'
 import { root, branch } from 'baobab-react/higher-order'
 
@@ -19,12 +20,16 @@ const UI = branch(
   {
     speed: ['scene', 'player', 'movementSpeed'],
     bodyCount: ['scene', 'bodyCount'],
-    messages: ['scene', 'messages']
+    messages: ['scene', 'messages'],
+    selected: ['scene', 'selected']
   },
-  ({ speed, bodyCount, messages }) => {
+  ({ speed, bodyCount, messages, selected }) => {
     // createFpsWidget()
     return (
       <div>
+        <div className="selection">
+          <Selection data={selected} />
+        </div>
         <div className="help">
           <Help />
         </div>

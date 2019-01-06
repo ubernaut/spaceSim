@@ -2,7 +2,7 @@ import FlyControls from './fly-controls'
 import { createGamepadControls } from './gamepad-controls'
 import { deployDrone } from '-/player/ship'
 
-export const createFlyControls = ({ ship, camera, el }) => {
+export const createFlyControls = ({ ship, camera, el, scene }) => {
   const onScroll = ({ camera, controls, event }) => {
     const deltaY = event.wheelDeltaY
     if (deltaY < 0) {
@@ -14,7 +14,7 @@ export const createFlyControls = ({ ship, camera, el }) => {
     }
   }
 
-  const controls = new FlyControls(ship, el)
+  const controls = new FlyControls(ship, el, scene, camera)
 
   el.addEventListener(
     'mousewheel',
@@ -28,7 +28,7 @@ export const createFlyControls = ({ ship, camera, el }) => {
 /**
  * Create the controls used to explore the scene
  */
-const createControls = ({ type = 'fly', ship, camera, el }) => {
+const createControls = ({ type = 'fly', ship, camera, el, scene }) => {
   el = el || document.getElementById('root')
   if (type === 'gamepad') {
     return createGamepadControls(ship, el, deployDrone(ship))
@@ -36,7 +36,8 @@ const createControls = ({ type = 'fly', ship, camera, el }) => {
   return createFlyControls({
     ship,
     camera,
-    el
+    el,
+    scene
   })
 }
 

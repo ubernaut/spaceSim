@@ -100,6 +100,7 @@ const createPlanet = ({ radius, position }) => {
       planet.scale.set(radius, radius, radius)
       planet.position.set(position.x, position.y, position.z)
       planet.rotation.set(115, 0, 0)
+      planet.name = 'planet'
     }
 
     return planet

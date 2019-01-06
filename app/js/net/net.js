@@ -78,44 +78,6 @@ const objLoader = new THREE.OBJLoader()
 mtlLoader.setPath(assetPath)
 objLoader.setPath(assetPath)
 
-const createHudElement = () => {
-  const hudElementX = new THREE.PolarGridHelper(
-    2000,
-    4,
-    1,
-    36,
-    0xff0000,
-    0xff0000
-  )
-  hudElementX.geometry.rotateY(Math.PI / 2)
-
-  const hudElementY = new THREE.PolarGridHelper(
-    2000,
-    4,
-    1,
-    36,
-    0xff0000,
-    0xff0000
-  )
-  hudElementY.geometry.rotateX(Math.PI / 2)
-
-  const hudElementZ = new THREE.PolarGridHelper(
-    2000,
-    4,
-    1,
-    36,
-    0xff0000,
-    0xff0000
-  )
-  hudElementZ.geometry.rotateZ(Math.PI / 2)
-
-  return {
-    x: hudElementX,
-    y: hudElementY,
-    z: hudElementZ
-  }
-}
-
 const loadNewPlayer = (playerId, playerData) => {
   logger.debug('loading new player...')
 

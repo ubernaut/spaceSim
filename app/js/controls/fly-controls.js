@@ -1,6 +1,7 @@
 import Keyboard from 'syncinput/Keyboard'
 import Mouse from 'syncinput/Mouse'
 import state from '-/state'
+import { setSelected } from '-/state'
 
 const defaultMap = {
   moveState: {
@@ -20,9 +21,12 @@ const defaultMap = {
 }
 
 export default class KeyboardControls {
-  constructor (object, domElement) {
+  constructor (object, domElement, scene, camera) {
     this.object = object
     this.domElement = domElement
+    this.scene = scene
+    this.camera = camera
+    this.selection = null
     this.keyboard = new Keyboard()
     this.mouse = new Mouse()
     this.keymap = Object.assign({}, defaultMap)
@@ -49,6 +53,16 @@ export default class KeyboardControls {
     this.keyboard.update()
     this.mouse.update()
 
+    if (this.selection) {
+      setSelected({
+        name: this.selection.object.name,
+        radius: this.selection.object.radius,
+        position: {
+          ...this.selection.object.position
+        }
+      })
+    }
+
     Object.keys(this.keymap.moveState).map(key => {
       if (this.keyboard.keyPressed(key)) {
         this.moveState[this.keymap.moveState[key]] = 1
@@ -56,6 +70,31 @@ export default class KeyboardControls {
     })
 
     if (this.mouse.buttonPressed(Mouse.LEFT)) {
+      const mouse = new THREE.Vector2()
+      mouse.x = (this.mouse.position.x / window.innerWidth) * 2 - 1
+      mouse.y = -(this.mouse.position.y / window.innerHeight) * 2 + 1
+
+      const raycaster = new THREE.Raycaster()
+      raycaster.setFromCamera(mouse, this.camera)
+
+      this.scene.children.map(x => x.updateMatrixWorld())
+      const intersects = raycaster
+        .intersectObjects(this.scene.children)
+        .sort((a, b) => a.distance > b.distance)
+        .filter(x => x.index > 2 || x.object.name !== 'PolarGridHelper')
+
+      if (
+        (!intersects || intersects.length === 0) &&
+        new Date().valueOf() - this.lastSelected > 1000
+      ) {
+        setSelected(null)
+        this.selection = null
+      } else {
+        this.selection = intersects[0]
+        this.lastSelected = new Date().valueOf()
+      }
+    }
+    if (this.mouse.buttonPressed(Mouse.RIGHT)) {
       this.mousemove(this.mouse.position.x, this.mouse.position.y)
     }
 

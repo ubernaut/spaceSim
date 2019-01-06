@@ -58,7 +58,7 @@ const main = async () => {
   scene.add(ship)
 
   logger.debug(addMessage('init: registering controls...'))
-  const controls = createControls({ type: 'fly', ship, camera })
+  const controls = createControls({ type: 'fly', ship, camera, scene })
 
   logger.debug(addMessage('init: registering system animations...'))
   addAnimateCallback(animateShip)
