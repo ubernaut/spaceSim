@@ -58,16 +58,12 @@ a {
 
 #ui .selection {
   width: 400px;
-  height: 250px;
+  min-height: 250px;
   position: absolute;
   bottom: 25px;
   right: 25px;
   font-size: 0.9em;
   line-height: 1.5em;
-}
-#ui .selection pre {
-  overflow: hidden;
-  overflow-y: auto;
 }
 
 #ui .reticle {

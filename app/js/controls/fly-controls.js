@@ -2,7 +2,7 @@ import Keyboard from 'syncinput/Keyboard'
 import Mouse from 'syncinput/Mouse'
 import state from '-/state'
 import { setSelected } from '-/state'
-import { calcObjectDistance } from './utils'
+import { calcObjectDistance, calcDistances } from './utils'
 
 const defaultMap = {
   moveState: {
@@ -58,17 +58,9 @@ export default class KeyboardControls {
     if (this.selection) {
       setSelected({
         name: this.selection.object.name,
-        distance_km:
-          calcObjectDistance(this.selection.object, this.object) / 1000,
-        distance_ly:
-          calcObjectDistance(this.selection.object, this.object) /
-          1000 /
-          9.46e12,
-        distance_ls:
-          (calcObjectDistance(this.selection.object, this.object) /
-            1000 /
-            9.46e12) *
-          31557600,
+        distances: calcDistances(
+          calcObjectDistance(this.selection.object, this.object)
+        ),
         position: this.selection.object.position
       })
     } else {
