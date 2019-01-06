@@ -58,10 +58,18 @@ export default class KeyboardControls {
     if (this.selection) {
       setSelected({
         name: this.selection.object.name,
-        distances: calcDistances(
+        id: this.selection.object.id,
+        uuid: this.selection.object.uuid,
+        type: this.selection.object.type,
+        distance: calcDistances(
           calcObjectDistance(this.selection.object, this.object)
         ),
-        position: this.selection.object.position
+        position: {
+          x: parseFloat(this.selection.object.position.x).toFixed(2),
+          y: parseFloat(this.selection.object.position.y).toFixed(2),
+          z: parseFloat(this.selection.object.position.z).toFixed(2)
+        },
+        userData: this.selection.object.userData
       })
     } else {
       setSelected(null)
@@ -89,7 +97,7 @@ export default class KeyboardControls {
       const intersects = raycaster
         .intersectObjects(this.scene.children)
         .sort((a, b) => a.distance > b.distance)
-        .filter(x => x.index > 2 || x.object.name !== 'PolarGridHelper')
+        .filter(x => x.object.name !== 'PolarGridHelper')
 
       if (
         (!intersects || intersects.length === 0) &&
@@ -98,6 +106,7 @@ export default class KeyboardControls {
         setSelected(null)
         this.selection = null
       } else {
+        console.log(intersects[0])
         this.selection = intersects[0]
         this.lastSelected = new Date().valueOf()
       }

@@ -8,10 +8,10 @@ export const calcObjectDistance = (obj1, obj2) => {
 
 export const calcDistances = dist_m => {
   return {
-    ly: dist_m / 9460730472580800,
-    km: dist_m / 1000,
-    mi: dist_m / 1609.344,
-    au: dist_m / 149597900000,
-    pc: dist_m / 30856780000000000
+    ly: (dist_m / 9460730472580800).toExponential(4),
+    km: (dist_m / 1000).toExponential(4),
+    mi: (dist_m / 1609.344).toExponential(4),
+    au: (dist_m / 149597870700).toExponential(4),
+    pc: (dist_m / 3.08567758149137e16).toExponential(4)
   }
 }
