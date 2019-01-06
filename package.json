@@ -3,32 +3,52 @@
   "version": "0.0.0",
   "babel": {
     "presets": [
-      "env"
+      [
+        "@babel/preset-env",
+        {
+          "shippedProposals": true,
+          "targets": {
+            "browsers": [
+              ">50%"
+            ]
+          }
+        }
+      ],
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "react-hot-loader/babel"
     ]
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
     "baobab": "^2.5.2",
+    "baobab-react": "^3.0.0",
     "bluebird": "^3.5.0",
     "browser-bunyan": "^0.4.0",
     "gpu.js": "^1.10.4",
     "msgpack-lite": "^0.1.26",
     "postprocessing": "^2.3.1",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "recompose": "^0.30.0",
     "socket.io": "^2.0.3",
     "superstruct": "^0.6.0",
     "three": "^0.87.1",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.0",
+    "@babel/core": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.0-beta.6",
     "css-loader": "^2.1.0",
     "file-loader": "^3.0.1",
     "graceful-fs": "^4.1.11",
     "html-webpack-plugin": "^3.2.0",
     "image-webpack-loader": "^4.6.0",
     "raw-loader": "^1.0.0",
+    "react-hot-loader": "^4.6.3",
     "standard": "^12.0.1",
     "style-loader": "^0.23.1",
     "webpack": "^4.28.3",
@@ -37,7 +57,10 @@
     "worker-loader": "^2.0.0"
   },
   "eslintConfig": {
-    "extends": "standard",
+    "extends": [
+      "standard",
+      "plugin:react/recommended"
+    ],
     "globals": {
       "THREE": false,
       "OIMO": false,
@@ -63,12 +86,23 @@
         {
           "allowNamedFunctions": false
         }
-      ]
+      ],
+      "react/jsx-curly-spacing": [
+        2,
+        "always"
+      ],
+      "jsx-quotes": [
+        "error",
+        "prefer-single"
+      ],
+      "react/prop-types": 0,
+      "react/display-name": 0
     }
   },
   "scripts": {
     "build": "NODE_ENV=production webpack --progress --colors  --config webpack.config.prod.js",
     "clean": "rm -rf dist/*",
-    "dev": "webpack-dev-server"
+    "dev": "webpack-dev-server",
+    "start": "webpack-dev-server"
   }
 }

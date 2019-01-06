@@ -1,5 +1,6 @@
 import Keyboard from 'syncinput/Keyboard'
 import Mouse from 'syncinput/Mouse'
+import state from '-/state'
 
 const defaultMap = {
   moveState: {
@@ -41,6 +42,7 @@ export default class KeyboardControls {
     )
     const newSpeed = this.movementSpeed + dir * step
     this.movementSpeed = newSpeed
+    state.set([ 'scene', 'player', 'movementSpeed' ], newSpeed)
   }
 
   update (delta) {

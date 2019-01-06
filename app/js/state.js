@@ -19,7 +19,9 @@ const Schema = struct({
     player: {
       ship: 'object?',
       movementSpeed: 'number'
-    }
+    },
+    bodyCount: 'number',
+    messages: [ 'string' ]
   },
   urlParameters: {
     bodyCount: 'number',
@@ -51,7 +53,9 @@ const state = new Baobab(
     scene: {
       player: {
         movementSpeed: 0
-      }
+      },
+      bodyCount: 0,
+      messages: []
     },
     urlParameters: {
       bodyCount: 1,
@@ -91,5 +95,10 @@ const state = new Baobab(
     }
   }
 )
+
+export const addMessage = msg => {
+  state.set([ 'scene', 'messages' ], [ ...state.get([ 'scene', 'messages' ]), msg ])
+  return msg
+}
 
 export default state

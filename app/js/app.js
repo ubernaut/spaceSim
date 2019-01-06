@@ -1,4 +1,4 @@
-import 'babel-polyfill'
+import '@babel/polyfill'
 import '../styles/app.css'
 
 import { createViewer } from '@void/core/viewer'
@@ -8,6 +8,8 @@ import { createShip } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
 import logger from './logger'
+import { addMessage } from '-/state'
+import state from '-/state'
 
 /**
  * Global App State
@@ -28,7 +30,7 @@ const addAnimateCallback = cb => Void.animateCallbacks.push(cb)
 
 const defaultViewerOptions = {
   system: {
-    bodyCount: 256,
+    bodyCount: 512,
     bodyDistance: 0.2,
     bodySpeed: 0.05,
     deltaT: 0.005,
@@ -38,7 +40,7 @@ const defaultViewerOptions = {
 
 const main = async () => {
   logger.debug('init: creating viewer...')
-  const { scene, camera } = await createViewer(
+  const { scene, camera, physics } = await createViewer(
     'root',
     {
       getAnimateCallbacks,
@@ -47,28 +49,31 @@ const main = async () => {
     defaultViewerOptions
   )
 
-  logger.debug('init: creating player ship...')
+  logger.debug(addMessage('init: creating player ship...'))
   const { ship, animate: animateShip } = await createShip()
 
-  logger.debug('init: adding ship and camera to scene...')
+  logger.debug(addMessage('init: adding ship and camera to scene...'))
   ship.add(camera)
   camera.position.set(...[ 0, 10, 30 ])
   scene.add(ship)
 
-  logger.debug('init: registering controls...')
+  logger.debug(addMessage('init: registering controls...'))
   const controls = createControls({ type: 'fly', ship, camera })
 
-  logger.debug('init: registering system animations...')
+  logger.debug(addMessage('init: registering system animations...'))
   addAnimateCallback(animateShip)
   addAnimateCallback(delta => controls.update(delta))
+  addAnimateCallback(() => {
+    state.set([ 'scene', 'bodyCount' ], physics.system.bodies.length)
+  })
 
-  logger.debug('init: creating dat.gui elements...')
+  logger.debug(addMessage('init: creating dat.gui elements...'))
   createBasicUI()
 
-  logger.debug('init: opening websocket...')
+  logger.debug(addMessage('init: opening websocket...'))
   const socket = await net.init()
 
-  logger.debug('init: registering event listeners...')
+  logger.debug(addMessage('init: registering event listeners...'))
   registerEventListeners({ ship, socket })
 }
 main()
