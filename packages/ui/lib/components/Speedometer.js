@@ -18,7 +18,7 @@ const Speedometer = ({ speed }) => {
 
   let displaySpeed = speed
   let units = 'm/s'
-  if (displaySpeed > 1000) {
+  if (Math.abs(displaySpeed) > 1000) {
     displaySpeed /= 1000
     units = 'km/s'
   }
