@@ -30,6 +30,7 @@
     "postprocessing": "^2.3.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "recompose": "^0.30.0",
     "socket.io": "^2.0.3",
     "superstruct": "^0.6.0",
     "three": "^0.87.1",

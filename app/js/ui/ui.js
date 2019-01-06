@@ -4,6 +4,7 @@ import Speedometer from '@void/ui/lib/components/Speedometer'
 import BodyCounter from '@void/ui/lib/components/BodyCounter'
 import Messages from '@void/ui/lib/components/Messages'
 import Reticle from '@void/ui/lib/components/Reticle'
+import Help from '@void/ui/lib/components/Help'
 import { hot } from 'react-hot-loader/root'
 import { root, branch } from 'baobab-react/higher-order'
 
@@ -24,6 +25,9 @@ const UI = branch(
     // createFpsWidget()
     return (
       <div>
+        <div className="help">
+          <Help />
+        </div>
         <div className="reticle">
           <Reticle />
         </div>
