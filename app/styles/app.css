@@ -6,6 +6,9 @@ body {
   overflow: hidden;
 }
 
+#root {
+}
+
 #info {
   color: #fff;
   position: absolute;
@@ -20,7 +23,7 @@ body {
   color: #ffffff;
   background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
-  top: 50px;
+  top: 0px;
   left: 0px;
   max-width: 600px;
   text-align: left;
@@ -51,6 +54,17 @@ a {
   top: 0;
   bottom: 0;
   z-index: 99;
+  min-width: 1100px;
+}
+
+#ui .fps-stats {
+  width: 200px;
+  height: 60px;
+  display: block;
+  position: absolute !important;
+  top: auto !important;
+  bottom: 25px !important;
+  left: 25px !important;
 }
 
 #ui .speedometer {
@@ -65,6 +79,16 @@ a {
   width: 200px;
   height: 60px;
   position: absolute;
+  top: 25px;
+  right: 25px;
+}
+
+#ui .scene-messages {
+  width: 400px;
+  height: 200px;
+  position: absolute;
   bottom: 25px;
-  left: calc(50% - 350px);
+  right: 25px;
+  font-size: 0.9em;
+  line-height: 1.5em;
 }

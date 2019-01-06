@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Speedometer from '@void/ui/lib/components/Speedometer'
 import BodyCounter from '@void/ui/lib/components/BodyCounter'
+import Messages from '@void/ui/lib/components/Messages'
 import { hot } from 'react-hot-loader/root'
 import { root, branch } from 'baobab-react/higher-order'
 
@@ -15,12 +16,16 @@ const guiState = state.get('gui')
 const UI = branch(
   {
     speed: ['scene', 'player', 'movementSpeed'],
-    bodyCount: ['scene', 'bodyCount']
+    bodyCount: ['scene', 'bodyCount'],
+    messages: ['scene', 'messages']
   },
-  ({ speed, bodyCount }) => {
+  ({ speed, bodyCount, messages }) => {
     // createFpsWidget()
     return (
       <div>
+        <div className="scene-messages">
+          <Messages messages={messages} />
+        </div>
         <div className="body-counter">
           <BodyCounter bodies={bodyCount} />
         </div>
@@ -42,7 +47,7 @@ const createBasicUI = () => {
   if (!guiState.enabled) {
     return
   }
-
+  createFpsWidget()
   ReactDOM.render(<HotRootedUI />, document.getElementById('ui'))
 
   // const gui = new dat.gui.GUI()
@@ -106,7 +111,7 @@ const initStarOptions = (gui, options) => {
  */
 const createFpsWidget = () => {
   window.location =
-    "javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';document.head.appendChild(script);})()"
+    "javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();const element = stats.dom; element.className='fps-stats'; document.querySelector('#ui').appendChild(element);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';document.head.appendChild(script);})()"
 }
 
 export { createBasicUI, createFpsWidget }

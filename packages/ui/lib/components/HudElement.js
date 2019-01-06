@@ -1,6 +1,6 @@
 import React from 'react'
 
-const hudStyle = props => ({
+const style = props => ({
   background: '#33333377',
   border: '1px solid #44ee4477',
   color: '#44ff44cc',
@@ -9,7 +9,7 @@ const hudStyle = props => ({
 })
 
 const HudElement = ({ children }) => {
-  return <div style={hudStyle()}>{children}</div>
+  return <div style={style()}>{children}</div>
 }
 
 export default HudElement

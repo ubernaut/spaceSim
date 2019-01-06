@@ -1,7 +1,7 @@
 import React from 'react'
 import HudElement from './HudElement'
 
-const speedoStyle = props => ({
+const style = props => ({
   fontSize: '1em',
   display: 'flex',
   alignItems: 'center',
@@ -15,7 +15,7 @@ const speedoStyle = props => ({
 const BodyCounter = ({ bodies }) => {
   return (
     <HudElement className="speedometer">
-      <div style={speedoStyle()}>
+      <div style={style()}>
         <label style={{ marginBottom: '.25em', fontWeight: 'bold' }}>
           Bodies
         </label>
