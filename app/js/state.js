@@ -21,7 +21,8 @@ const Schema = struct({
       movementSpeed: 'number'
     },
     bodyCount: 'number',
-    messages: [ 'string' ]
+    messages: [ 'string' ],
+    selected: 'string?'
   },
   urlParameters: {
     bodyCount: 'number',
@@ -55,7 +56,8 @@ const state = new Baobab(
         movementSpeed: 0
       },
       bodyCount: 0,
-      messages: []
+      messages: [],
+      selected: ''
     },
     urlParameters: {
       bodyCount: 1,
@@ -99,6 +101,10 @@ const state = new Baobab(
 export const addMessage = msg => {
   state.set([ 'scene', 'messages' ], [ ...state.get([ 'scene', 'messages' ]), msg ])
   return msg
+}
+
+export const setSelected = data => {
+  state.set([ 'scene', 'selected' ], data ? JSON.stringify(data, null, 2) : '')
 }
 
 export default state

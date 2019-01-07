@@ -23,6 +23,7 @@ const createScaleGrid = () => {
     new THREE.PolarGridHelper(4497000000000, 1, 1, 128, 0x000000, 0x0000ff),
     new THREE.PolarGridHelper(5913000000000, 1, 1, 128, 0x000000, 0xffffff)
   ].map(grid => {
+    grid.name = 'PolarGridHelper'
     grid.rotation.x = Math.PI / 2
     return grid
   })

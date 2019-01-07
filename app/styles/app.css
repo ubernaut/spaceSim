@@ -7,6 +7,7 @@ body {
 }
 
 #root {
+  cursor: crosshair;
 }
 
 #info {
@@ -55,6 +56,16 @@ a {
   top: 25px;
 }
 
+#ui .selection {
+  width: 400px;
+  min-height: 250px;
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  font-size: 0.9em;
+  line-height: 1.5em;
+}
+
 #ui .reticle {
   width: 150px;
   height: 150px;
@@ -64,13 +75,12 @@ a {
 }
 
 #ui .fps-stats {
-  width: 200px;
   height: 60px;
   display: block;
   position: absolute !important;
-  top: auto !important;
-  bottom: 25px !important;
-  left: 25px !important;
+  left: auto !important;
+  top: 25px !important;
+  right: 25px !important;
 }
 
 #ui .speedometer {
@@ -86,7 +96,7 @@ a {
   height: 60px;
   position: absolute;
   top: 25px;
-  right: 25px;
+  right: 125px;
 }
 
 #ui .scene-messages {
@@ -94,7 +104,7 @@ a {
   height: 200px;
   position: absolute;
   bottom: 25px;
-  right: 25px;
+  left: 25px;
   font-size: 0.9em;
   line-height: 1.5em;
 }

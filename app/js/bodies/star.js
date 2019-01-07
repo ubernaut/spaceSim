@@ -211,6 +211,7 @@ const createCorona = (radius, rgb, time) => {
 
   const mesh = new THREE.Points(geometry, material)
   mesh.frustumCulled = false
+  mesh.name = 'Corona'
 
   return mesh
 }
@@ -223,7 +224,9 @@ const createChromosphere = (radius, rgb, time) => {
     fragmentShader,
     blending: THREE.AdditiveBlending
   })
-  return new THREE.Mesh(geometry, material)
+  const mesh = new THREE.Mesh(geometry, material)
+  mesh.name = 'Chromosphere'
+  return mesh
 }
 
 const createPhotosphere = (radius, rgb, time) => {
@@ -233,7 +236,9 @@ const createPhotosphere = (radius, rgb, time) => {
     vertexShader,
     fragmentShader
   })
-  return new THREE.Mesh(geometry, material)
+  const mesh = new THREE.Mesh(geometry, material)
+  mesh.name = 'Photosphere'
+  return mesh
 }
 
 const getUniforms = (radius, rgb, time = 0) => {

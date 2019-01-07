@@ -1,6 +1,8 @@
 import Keyboard from 'syncinput/Keyboard'
 import Mouse from 'syncinput/Mouse'
 import state from '-/state'
+import { setSelected } from '-/state'
+import { calcObjectDistance, calcDistances } from './utils'
 
 const defaultMap = {
   moveState: {
@@ -20,9 +22,13 @@ const defaultMap = {
 }
 
 export default class KeyboardControls {
-  constructor (object, domElement) {
+  constructor (object, domElement, scene, camera) {
     this.object = object
     this.domElement = domElement
+    this.scene = scene
+    this.camera = camera
+    this.testingIntersections = false
+    this.selection = null
     this.keyboard = new Keyboard()
     this.mouse = new Mouse()
     this.keymap = Object.assign({}, defaultMap)
@@ -49,13 +55,65 @@ export default class KeyboardControls {
     this.keyboard.update()
     this.mouse.update()
 
+    if (this.selection) {
+      setSelected({
+        name: this.selection.object.name,
+        id: this.selection.object.id,
+        uuid: this.selection.object.uuid,
+        type: this.selection.object.type,
+        distance: calcDistances(
+          calcObjectDistance(this.selection.object, this.object)
+        ),
+        position: {
+          x: parseFloat(this.selection.object.position.x).toFixed(2),
+          y: parseFloat(this.selection.object.position.y).toFixed(2),
+          z: parseFloat(this.selection.object.position.z).toFixed(2)
+        },
+        userData: this.selection.object.userData
+      })
+    } else {
+      setSelected(null)
+    }
+
     Object.keys(this.keymap.moveState).map(key => {
       if (this.keyboard.keyPressed(key)) {
         this.moveState[this.keymap.moveState[key]] = 1
       }
     })
 
-    if (this.mouse.buttonPressed(Mouse.LEFT)) {
+    if (
+      this.mouse.buttonPressed(Mouse.LEFT) &&
+      this.testingIntersections === false
+    ) {
+      this.testingIntersections = true
+      const mouse = new THREE.Vector2()
+      mouse.x = (this.mouse.position.x / window.innerWidth) * 2 - 1
+      mouse.y = -(this.mouse.position.y / window.innerHeight) * 2 + 1
+
+      const raycaster = new THREE.Raycaster()
+      raycaster.setFromCamera(mouse, this.camera)
+
+      this.scene.children.map(x => x.updateMatrixWorld())
+      const intersects = raycaster
+        .intersectObjects(this.scene.children)
+        .sort((a, b) => a.distance > b.distance)
+        .filter(x => x.object.name !== 'PolarGridHelper')
+
+      if (
+        (!intersects || intersects.length === 0) &&
+        new Date().valueOf() - this.lastSelected > 1000
+      ) {
+        setSelected(null)
+        this.selection = null
+      } else {
+        console.log(intersects[0])
+        this.selection = intersects[0]
+        this.lastSelected = new Date().valueOf()
+      }
+    }
+    this.testingIntersections = false
+
+    if (this.mouse.buttonPressed(Mouse.RIGHT)) {
       this.mousemove(this.mouse.position.x, this.mouse.position.y)
     }
 
