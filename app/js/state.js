@@ -17,9 +17,11 @@ const Schema = struct({
   },
   scene: {
     player: {
+      id: 'string',
       ship: 'object?',
       movementSpeed: 'number'
     },
+    players: [ 'object' ],
     bodyCount: 'number',
     messages: [ 'string' ],
     selected: 'string?'
@@ -53,8 +55,10 @@ const state = new Baobab(
     },
     scene: {
       player: {
+        id: '',
         movementSpeed: 0
       },
+      players: [],
       bodyCount: 0,
       messages: [],
       selected: ''

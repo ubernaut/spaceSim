@@ -45,9 +45,7 @@ const loadEarthMesh = () => {
             shininess: 1
           })
           const geometry = new THREE.IcosahedronBufferGeometry(1, 2)
-          const mesh = THREE.SceneUtils.createMultiMaterialObject(geometry, [
-            material
-          ])
+          const mesh = new THREE.Mesh(geometry, material, { castShadow: false })
           resolve(mesh)
         })
       })

@@ -93,11 +93,23 @@ export default class KeyboardControls {
       const raycaster = new THREE.Raycaster()
       raycaster.setFromCamera(mouse, this.camera)
 
-      this.scene.children.map(x => x.updateMatrixWorld())
-      const intersects = raycaster
-        .intersectObjects(this.scene.children)
-        .sort((a, b) => a.distance > b.distance)
-        .filter(x => x.object.name !== 'PolarGridHelper')
+      const groups = this.scene.children.filter(x => x.type === 'Group')
+
+      // TODO clean this up
+      let intersects = []
+      for (const g of groups) {
+        const intersections = raycaster.intersectObjects(
+          g.children.filter(x => x.type === 'Mesh')
+        )
+        if (intersections.length > 0) {
+          intersects.push([ { object: g } ])
+        }
+      }
+      intersects.push(
+        raycaster
+          .intersectObjects(this.scene.children)
+          .filter(x => x.object.name !== 'PolarGridHelper')
+      )
 
       if (
         (!intersects || intersects.length === 0) &&
@@ -106,12 +118,12 @@ export default class KeyboardControls {
         setSelected(null)
         this.selection = null
       } else {
-        console.log(intersects[0])
-        this.selection = intersects[0]
+        console.log(intersects[0][0])
+        this.selection = intersects[0][0]
         this.lastSelected = new Date().valueOf()
       }
+      this.testingIntersections = false
     }
-    this.testingIntersections = false
 
     if (this.mouse.buttonPressed(Mouse.RIGHT)) {
       this.mousemove(this.mouse.position.x, this.mouse.position.y)

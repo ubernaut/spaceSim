@@ -51,6 +51,9 @@ const main = async () => {
 
   logger.debug(addMessage('init: creating player ship...'))
   const { ship, animate: animateShip } = await createShip()
+  console.log(ship)
+  state.set([ 'scene', 'player', 'id' ], ship.uuid)
+  logger.debug(addMessage(` -- player ship: ${ship.uuid}`))
 
   logger.debug(addMessage('init: adding ship and camera to scene...'))
   ship.add(camera)
@@ -71,31 +74,7 @@ const main = async () => {
   createBasicUI()
 
   logger.debug(addMessage('init: opening websocket...'))
-  const socket = await net.init()
-
-  logger.debug(addMessage('init: registering event listeners...'))
-  registerEventListeners({ ship, socket })
+  await net.init({ ship, scene })
 }
+
 main()
-
-/**
- * Add global event listeners, e.g., network updates
- */
-const registerEventListeners = ({ ship, socket }) => {
-  const canvas = document.querySelector('#root canvas')
-  canvas.addEventListener(
-    'mousedown',
-    e => net.broadcastUpdate(socket, ship),
-    false
-  )
-  canvas.addEventListener(
-    'mouseup',
-    e => net.broadcastUpdate(socket, ship),
-    false
-  )
-  setInterval(() => {
-    const { quaternion, position } = ship
-    const payload = { quaternion, position }
-    net.broadcastUpdate(socket, { type: 'playerMove', payload })
-  }, 150)
-}

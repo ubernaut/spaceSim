@@ -4,6 +4,11 @@ import state from '-/state'
 
 const assetPath = state.get([ 'config', 'threejs', 'assetPath' ])
 
+const mtlLoader = new THREE.MTLLoader()
+const objLoader = new THREE.OBJLoader()
+mtlLoader.setPath(assetPath)
+objLoader.setPath(assetPath)
+
 const shipPolarGrid = ship => {
   const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
   helper.geometry.rotateY(Math.PI)
@@ -62,11 +67,6 @@ const createShip = ({ position, scale, rotation } = defaults) => {
   position = position || defaults.position
   scale = scale || defaults.scale
   rotation = rotation || defaults.rotation
-
-  const mtlLoader = new THREE.MTLLoader()
-  const objLoader = new THREE.OBJLoader()
-  mtlLoader.setPath(assetPath)
-  objLoader.setPath(assetPath)
 
   return new Promise(resolve => {
     mtlLoader.load('ship.mtl', materials => {
