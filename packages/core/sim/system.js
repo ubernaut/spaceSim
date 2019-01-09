@@ -73,7 +73,7 @@ const loadSystem = ({
   bodyDistance = 1,
   bodySpeed = 0.05,
   deltaT = 0.005,
-  useCuda = false,
+  useCuda = true,
   gpuCollisions,
   concurrency = 24,
   addAnimateCallback
