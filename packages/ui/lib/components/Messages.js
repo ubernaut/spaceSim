@@ -15,7 +15,7 @@ const style = props => ({
 
 const Messages = ({ messages }) => {
   return (
-    <HudElement className="speedometer">
+    <HudElement className="messages">
       <div style={style()}>
         <ul style={{ listStyle: 'none', paddingLeft: '1em' }}>
           {messages.map((m, i) => (

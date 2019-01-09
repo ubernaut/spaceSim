@@ -1,20 +1,35 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { hot } from 'react-hot-loader/root'
+import { root, branch } from 'baobab-react/higher-order'
+import dat from 'app/lib/dat.gui.js'
+
 import Speedometer from '@void/ui/lib/components/Speedometer'
 import BodyCounter from '@void/ui/lib/components/BodyCounter'
 import Messages from '@void/ui/lib/components/Messages'
+import Console from '@void/ui/lib/components/Console'
 import Reticle from '@void/ui/lib/components/Reticle'
 import Help from '@void/ui/lib/components/Help'
 import Selection from '@void/ui/lib/components/Selection'
-import { hot } from 'react-hot-loader/root'
-import { root, branch } from 'baobab-react/higher-order'
 
-import dat from 'app/lib/dat.gui.js'
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
 import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
+
+const handleCommand = ({ command, clear }) => {
+  const handlers = {
+    '/help': cmd => "Don't Panic! Commands: /help, /whoami, /players, /bodies",
+    '/whoami': cmd => state.get(['scene', 'player', 'id']),
+    '/players': cmd => state.get(['scene', 'players']).map(p => p.playerId),
+    '/bodies': cmd => state.get(['scene', 'bodyCount']),
+    '/clear': cmd => clear()
+  }
+  const handler = handlers[command] || (() => `command not found: ${command}`)
+
+  return handler(command)
+}
 
 const UI = branch(
   {
@@ -35,6 +50,9 @@ const UI = branch(
         </div>
         <div className="reticle">
           <Reticle />
+        </div>
+        <div className="scene-console">
+          <Console messages={messages} handleCommand={handleCommand} />
         </div>
         <div className="scene-messages">
           <Messages messages={messages} />
