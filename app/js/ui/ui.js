@@ -1,29 +1,52 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { hot } from 'react-hot-loader/root'
+import { root, branch } from 'baobab-react/higher-order'
+import dat from 'app/lib/dat.gui.js'
+
 import Speedometer from '@void/ui/lib/components/Speedometer'
 import BodyCounter from '@void/ui/lib/components/BodyCounter'
 import Messages from '@void/ui/lib/components/Messages'
+import Console from '@void/ui/lib/components/Console'
 import Reticle from '@void/ui/lib/components/Reticle'
 import Help from '@void/ui/lib/components/Help'
 import Selection from '@void/ui/lib/components/Selection'
-import { hot } from 'react-hot-loader/root'
-import { root, branch } from 'baobab-react/higher-order'
 
-import dat from 'app/lib/dat.gui.js'
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
 import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
 
+const handleCommand = ({ command, clear }) => {
+  const handlers = {
+    '/help': cmd => state.set(['gui', 'help', 'hidden'], false),
+    '/whoami': cmd => `Your UUID is ${state.get(['scene', 'player', 'id'])}`,
+    '/players': cmd => {
+      const players = state.get(['scene', 'players']).map(p => p.playerId)
+      if (!players || players.length === 0) {
+        return "You're the only player"
+      }
+      return players
+    },
+    '/bodies': cmd =>
+      `There area ${state.get(['scene', 'bodyCount'])} sim bodies`,
+    '/clear': cmd => clear()
+  }
+  const handler = handlers[command] || (() => `command not found: ${command}`)
+  return handler(command)
+}
+
 const UI = branch(
   {
     speed: ['scene', 'player', 'movementSpeed'],
     bodyCount: ['scene', 'bodyCount'],
     messages: ['scene', 'messages'],
-    selected: ['scene', 'selected']
+    selected: ['scene', 'selected'],
+    consoleHidden: ['gui', 'console', 'hidden'],
+    helpHidden: ['gui', 'help', 'hidden']
   },
-  ({ speed, bodyCount, messages, selected }) => {
+  ({ speed, bodyCount, messages, selected, consoleHidden, helpHidden }) => {
     // createFpsWidget()
     return (
       <div>
@@ -31,11 +54,22 @@ const UI = branch(
           <Selection data={selected} />
         </div>
         <div className="help">
-          <Help />
+          <Help
+            isHidden={helpHidden}
+            setIsHidden={() => state.set(['gui', 'help', 'hidden'], true)}
+          />
         </div>
         <div className="reticle">
           <Reticle />
         </div>
+
+        <Console
+          className="scene-console"
+          messages={messages}
+          handleCommand={handleCommand}
+          isHidden={consoleHidden}
+        />
+
         <div className="scene-messages">
           <Messages messages={messages} />
         </div>

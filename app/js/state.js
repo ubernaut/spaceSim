@@ -32,7 +32,12 @@ const Schema = struct({
   },
   gui: {
     enabled: 'boolean',
-    options: 'object'
+    console: {
+      hidden: 'boolean'
+    },
+    help: {
+      hidden: 'boolean'
+    }
   }
 })
 
@@ -69,22 +74,11 @@ const state = new Baobab(
     },
     gui: {
       enabled: true,
-      options: {
-        star: {
-          label: 'Star Options',
-          enabled: true,
-          options: {
-            type: '05',
-            size: 100
-          }
-        },
-        ship: {
-          label: 'Ship Options',
-          enabled: true,
-          options: {
-            type: 'aship'
-          }
-        }
+      console: {
+        hidden: false
+      },
+      help: {
+        hidden: true
       }
     }
   },

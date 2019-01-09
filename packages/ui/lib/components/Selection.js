@@ -16,7 +16,7 @@ const style = props => ({
 
 const Selection = ({ data }) => {
   return !data || data === '' ? null : (
-    <HudElement className="speedometer">
+    <HudElement>
       <div style={style()}>
         <label style={{ fontWeight: 'bold' }}>Selected Object</label>
         <pre style={{ width: '100%', height: '100%' }}>{data}</pre>

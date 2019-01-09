@@ -27,7 +27,7 @@ const Speedometer = ({ speed }) => {
   const percentC = speed / c
 
   return (
-    <HudElement className="speedometer">
+    <HudElement>
       <div style={style({ speed })}>
         <label style={{ marginBottom: '.25em', fontWeight: 'bold' }}>
           Speed

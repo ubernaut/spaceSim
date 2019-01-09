@@ -9,8 +9,12 @@ const style = props => ({
   borderRadius: '10px'
 })
 
-const HudElement = ({ children }) => {
-  return <div style={style()}>{children}</div>
+const HudElement = ({ className = '', children }) => {
+  return (
+    <div className={className} style={style()}>
+      {children}
+    </div>
+  )
 }
 
 export default HudElement

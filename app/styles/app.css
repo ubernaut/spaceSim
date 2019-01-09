@@ -6,6 +6,10 @@ body {
   overflow: hidden;
 }
 
+body * {
+  box-sizing: border-box;
+}
+
 #root {
   cursor: crosshair;
 }
@@ -107,4 +111,15 @@ a {
   left: 25px;
   font-size: 0.9em;
   line-height: 1.5em;
+}
+
+#ui .scene-console {
+  width: 33.3% !important;
+  height: 300px !important;
+  position: absolute;
+  top: 0px;
+  left: 33.3%;
+  font-size: 0.9em;
+  line-height: 1.5em;
+  pointer-events: all;
 }

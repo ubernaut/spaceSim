@@ -10,14 +10,16 @@ const style = props => ({
   fontSize: '1em',
   width: '100%',
   height: '100%',
-  overflowY: 'auto'
+  overflowY: 'auto',
+  padding: '1em'
 })
 
 const Messages = ({ messages }) => {
   return (
-    <HudElement className="speedometer">
+    <HudElement>
       <div style={style()}>
-        <ul style={{ listStyle: 'none', paddingLeft: '1em' }}>
+        <label style={{ fontWeight: 'bold' }}>System Messages</label>
+        <ul style={{ listStyle: 'none', paddingLeft: '0' }}>
           {messages.map((m, i) => (
             <li key={`message-${i}`}>{m}</li>
           ))}

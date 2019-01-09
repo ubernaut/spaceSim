@@ -14,7 +14,7 @@ const style = props => ({
 
 const BodyCounter = ({ bodies }) => {
   return (
-    <HudElement className="speedometer">
+    <HudElement>
       <div style={style()}>
         <label style={{ marginBottom: '.25em', fontWeight: 'bold' }}>
           Bodies
