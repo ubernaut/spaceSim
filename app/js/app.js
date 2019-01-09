@@ -52,9 +52,7 @@ const main = async () => {
 
   logger.debug(addMessage('init: creating player ship...'))
   const { ship, animate: animateShip } = await createShip()
-
   state.set([ 'scene', 'player', 'id' ], ship.uuid)
-  logger.debug(addMessage(` -- player ship: ${ship.uuid}`))
 
   logger.debug(addMessage('init: adding ship and camera to scene...'))
   ship.add(camera)

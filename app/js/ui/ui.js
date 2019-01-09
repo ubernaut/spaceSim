@@ -18,18 +18,21 @@ import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
 
-const handlers = {
-  '/help': cmd => {
-    state.set(['gui', 'help', 'hidden'], false)
-    return "Don't Panic! Commands: /help, /whoami, /players, /bodies"
-  },
-  '/whoami': cmd => 'You are ' + state.get(['scene', 'player', 'id']),
-  '/players': cmd => state.get(['scene', 'players']).map(p => p.playerId),
-  '/bodies': cmd => state.get(['scene', 'bodyCount']),
-  '/clear': cmd => clear()
-}
-
 const handleCommand = ({ command, clear }) => {
+  const handlers = {
+    '/help': cmd => state.set(['gui', 'help', 'hidden'], false),
+    '/whoami': cmd => `Your UUID is ${state.get(['scene', 'player', 'id'])}`,
+    '/players': cmd => {
+      const players = state.get(['scene', 'players']).map(p => p.playerId)
+      if (!players || players.length === 0) {
+        return "You're the only player"
+      }
+      return players
+    },
+    '/bodies': cmd =>
+      `There area ${state.get(['scene', 'bodyCount'])} sim bodies`,
+    '/clear': cmd => clear()
+  }
   const handler = handlers[command] || (() => `command not found: ${command}`)
   return handler(command)
 }
