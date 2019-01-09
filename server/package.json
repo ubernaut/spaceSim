@@ -1,0 +1,71 @@
+{
+  "name": "nm",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": "fdesjardins/nm",
+  "author": {
+    "name": "Forrest Desjardins",
+    "email": "desjardinsfg@gmail.com",
+    "url": "github.com/fdesjardins"
+  },
+  "engines": {
+    "node": ">=7"
+  },
+  "scripts": {
+    "start": "nodemon server/server.js",
+    "test": "eslint *.js && nyc ./node_modules/.bin/mocha --opts mocha.opts test.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.5.3",
+    "compression": "^1.7.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "msgpack-lite": "^0.1.26",
+    "redis": "^2.8.0",
+    "socket.io": "^2.2.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "coveralls": "^3.0.2",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.9",
+    "nyc": "^13.1.0",
+    "standard": "^12.0.1"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "standard",
+    "rules": {
+      "object-curly-spacing": [
+        2,
+        "always"
+      ],
+      "array-bracket-spacing": [
+        2,
+        "always"
+      ],
+      "func-style": [
+        2,
+        "expression"
+      ],
+      "prefer-arrow-callback": [
+        2,
+        {
+          "allowNamedFunctions": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+
+  api:
+    image: node:alpine
+    hostname: api
+    depends_on:
+      # - database
+      - redis
+    ports:
+      - 1137:1137
+    expose:
+      - "1137"
+    volumes:
+      - yarn:/root/.cache/yarn
+      - ./:/usr/src/app
+    user: node
+    working_dir: /usr/src/app
+    command: node server/server.js
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+
+  # database:
+  #   image: postgres:alpine
+  #   read_only: true
+  #   tmpfs:
+  #     - /tmp
+  #     - /var/run/postgresql
+  #   volumes:
+  #     - db:/var/lib/postgresql/data
+  #     - ./config/postgres-initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+  #
+  redis:
+    image: redis:alpine
+    read_only: true
+    volumes:
+      - redis:/data
+    user: redis
+
+volumes:
+  # db:
+  redis:
+  yarn:
