@@ -114,11 +114,11 @@ a {
 }
 
 #ui .scene-console {
-  width: 400px;
+  width: 33.3%;
   height: 300px;
   position: absolute;
-  bottom: 250px;
-  left: 25px;
+  top: 0px;
+  left: 33.3%;
   font-size: 0.9em;
   line-height: 1.5em;
   pointer-events: all;

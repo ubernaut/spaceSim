@@ -1,5 +1,6 @@
 import '@babel/polyfill'
 import '../styles/app.css'
+import { debounce } from 'throttle-debounce'
 
 import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
@@ -51,7 +52,7 @@ const main = async () => {
 
   logger.debug(addMessage('init: creating player ship...'))
   const { ship, animate: animateShip } = await createShip()
-  console.log(ship)
+
   state.set([ 'scene', 'player', 'id' ], ship.uuid)
   logger.debug(addMessage(` -- player ship: ${ship.uuid}`))
 
@@ -61,7 +62,19 @@ const main = async () => {
   scene.add(ship)
 
   logger.debug(addMessage('init: registering controls...'))
-  const controls = createControls({ type: 'fly', ship, camera, scene })
+  const controls = createControls(
+    { type: 'fly', ship, camera, scene },
+    {
+      toggleConsole: debounce(100, () => {
+        const consoleState = state.select([ 'gui', 'console' ])
+        consoleState.set('hidden', !consoleState.get('hidden'))
+      }),
+      toggleHelp: debounce(100, () => {
+        const helpState = state.select([ 'gui', 'help' ])
+        helpState.set('hidden', !helpState.get('hidden'))
+      })
+    }
+  )
 
   logger.debug(addMessage('init: registering system animations...'))
   addAnimateCallback(animateShip)

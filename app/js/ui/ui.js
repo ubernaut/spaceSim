@@ -18,16 +18,19 @@ import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
 
-const handleCommand = ({ command, clear }) => {
-  const handlers = {
-    '/help': cmd => "Don't Panic! Commands: /help, /whoami, /players, /bodies",
-    '/whoami': cmd => state.get(['scene', 'player', 'id']),
-    '/players': cmd => state.get(['scene', 'players']).map(p => p.playerId),
-    '/bodies': cmd => state.get(['scene', 'bodyCount']),
-    '/clear': cmd => clear()
-  }
-  const handler = handlers[command] || (() => `command not found: ${command}`)
+const handlers = {
+  '/help': cmd => {
+    state.set(['gui', 'help', 'hidden'], false)
+    return "Don't Panic! Commands: /help, /whoami, /players, /bodies"
+  },
+  '/whoami': cmd => 'You are ' + state.get(['scene', 'player', 'id']),
+  '/players': cmd => state.get(['scene', 'players']).map(p => p.playerId),
+  '/bodies': cmd => state.get(['scene', 'bodyCount']),
+  '/clear': cmd => clear()
+}
 
+const handleCommand = ({ command, clear }) => {
+  const handler = handlers[command] || (() => `command not found: ${command}`)
   return handler(command)
 }
 
@@ -36,9 +39,11 @@ const UI = branch(
     speed: ['scene', 'player', 'movementSpeed'],
     bodyCount: ['scene', 'bodyCount'],
     messages: ['scene', 'messages'],
-    selected: ['scene', 'selected']
+    selected: ['scene', 'selected'],
+    consoleHidden: ['gui', 'console', 'hidden'],
+    helpHidden: ['gui', 'help', 'hidden']
   },
-  ({ speed, bodyCount, messages, selected }) => {
+  ({ speed, bodyCount, messages, selected, consoleHidden, helpHidden }) => {
     // createFpsWidget()
     return (
       <div>
@@ -46,13 +51,20 @@ const UI = branch(
           <Selection data={selected} />
         </div>
         <div className="help">
-          <Help />
+          <Help
+            isHidden={helpHidden}
+            setIsHidden={() => state.set(['gui', 'help', 'hidden'], true)}
+          />
         </div>
         <div className="reticle">
           <Reticle />
         </div>
         <div className="scene-console">
-          <Console messages={messages} handleCommand={handleCommand} />
+          <Console
+            messages={messages}
+            handleCommand={handleCommand}
+            isHidden={consoleHidden}
+          />
         </div>
         <div className="scene-messages">
           <Messages messages={messages} />

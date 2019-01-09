@@ -18,15 +18,21 @@ const defaultMap = {
     [Keyboard.RIGHT]: 'yawRight',
     [Keyboard.Q]: 'rollLeft',
     [Keyboard.E]: 'rollRight'
+  },
+  guiState: {
+    toggleConsole: {
+      keys: [ Keyboard.CTRL, Keyboard.SHIFT, Keyboard.K ]
+    }
   }
 }
 
 export default class KeyboardControls {
-  constructor (object, domElement, scene, camera) {
+  constructor (object, domElement, scene, camera, handlers) {
     this.object = object
     this.domElement = domElement
     this.scene = scene
     this.camera = camera
+    this.handlers = handlers
     this.testingIntersections = false
     this.selection = null
     this.keyboard = new Keyboard()
@@ -75,9 +81,21 @@ export default class KeyboardControls {
       setSelected(null)
     }
 
-    Object.keys(this.keymap.moveState).map(key => {
-      if (this.keyboard.keyPressed(key)) {
-        this.moveState[this.keymap.moveState[key]] = 1
+    if (state.get([ 'gui', 'console', 'hidden' ]) === true) {
+      Object.keys(this.keymap.moveState).map(key => {
+        if (this.keyboard.keyPressed(key)) {
+          this.moveState[this.keymap.moveState[key]] = 1
+        }
+      })
+    }
+
+    Object.keys(this.keymap.guiState).map(funcName => {
+      if (
+        this.keymap.guiState[funcName].keys.every(key =>
+          this.keyboard.keyPressed(key)
+        )
+      ) {
+        this.handlers[funcName]()
       }
     })
 

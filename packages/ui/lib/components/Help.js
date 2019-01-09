@@ -19,14 +19,14 @@ const HelpContents = () => (
       url parameter thusly:
     </p>
     <p>
-      <a class="brightText" href="http://thedagda.co:9000?bodyCount=1000">
+      <a className="brightText" href="http://thedagda.co:9000?bodyCount=1000">
         http://thedagda.co:9000?bodyCount=1000
       </a>
     </p>
     <p>you can also disable stars by setting "nostars=true":</p>
     <p>
       <a
-        class="brightText"
+        className="brightText"
         href="http://thedagda.co:9000?bodyCount=100&stars=false"
       >
         http://thedagda.co:9000?bodyCount=100&stars=false
@@ -61,19 +61,19 @@ const HelpContents = () => (
   </div>
 )
 
-const Help = ({ isOpen, setIsOpen }) => {
+const Help = ({ isHidden, setIsHidden }) => {
   return (
-    <HudElement className="help">
-      <div style={style()}>
-        <div id="help">
-          <h3 onClick={() => setIsOpen(!isOpen)}>Help (click to toggle)</h3>
-          {isOpen && <HelpContents />}
+    !isHidden && (
+      <HudElement className="help">
+        <div style={style()}>
+          <div id="help">
+            <h3 onClick={() => setIsHidden(true)}>Help (click to hide)</h3>
+            <HelpContents />
+          </div>
         </div>
-      </div>
-    </HudElement>
+      </HudElement>
+    )
   )
 }
 
-const enhance = compose(withState('isOpen', 'setIsOpen', false))
-
-export default enhance(Help)
+export default Help

@@ -32,7 +32,16 @@ const inputStyle = props => ({
   outline: 'none'
 })
 
-const Console = ({ output, onChange, onKeyPress, command }) => {
+const Console = ({
+  isHidden = false,
+  output,
+  onChange,
+  onKeyPress,
+  command
+}) => {
+  if (isHidden) {
+    return false
+  }
   return (
     <HudElement className="console">
       <div style={style()}>
@@ -42,6 +51,7 @@ const Console = ({ output, onChange, onKeyPress, command }) => {
           ))}
         </ul>
         <input
+          autoFocus
           style={inputStyle()}
           type="text"
           onChange={onChange}
@@ -55,7 +65,10 @@ const Console = ({ output, onChange, onKeyPress, command }) => {
 
 const enhance = compose(
   withState('command', 'setCommand', ''),
-  withState('output', 'setOutput', []),
+  withState('output', 'setOutput', [
+    'Press CTRL + SHIFT + K to hide this console',
+    'Type /help to see instructions and available commands'
+  ]),
   withHandlers({
     onChange: ({ setCommand }) => event => setCommand(event.target.value),
     onKeyPress: ({
