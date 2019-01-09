@@ -51,7 +51,7 @@ const HelpContents = () => (
 const Help = ({ isHidden, setIsHidden }) => {
   return (
     !isHidden && (
-      <HudElement className="help">
+      <HudElement>
         <div style={style()}>
           <div id="help">
             <h3 onClick={() => setIsHidden(true)}>Help (click here to hide)</h3>

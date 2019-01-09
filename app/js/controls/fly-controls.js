@@ -35,6 +35,7 @@ export default class KeyboardControls {
     this.handlers = handlers
     this.testingIntersections = false
     this.selection = null
+    this.selectionMarker = null
     this.keyboard = new Keyboard()
     this.mouse = new Mouse()
     this.keymap = Object.assign({}, defaultMap)
@@ -124,22 +125,67 @@ export default class KeyboardControls {
         }
       }
       intersects.push(
-        raycaster
-          .intersectObjects(this.scene.children)
-          .filter(x => x.object.name !== 'PolarGridHelper')
+        raycaster.intersectObjects(
+          this.scene.children.filter(
+            x => x.name !== 'PolarGridHelper' && x.type !== 'Points'
+          )
+        )
       )
+      const obj = intersects[0][0]
 
-      if (
-        (!intersects || intersects.length === 0) &&
-        new Date().valueOf() - this.lastSelected > 1000
-      ) {
-        setSelected(null)
-        this.selection = null
+      if (!obj) {
+        if (this.selection !== null) {
+          const markers = this.selection.object.children.filter(
+            c => c.name === 'selection'
+          )
+          markers.map(m => this.selection.object.remove(m))
+          setSelected(null)
+          this.selection = null
+        }
       } else {
-        console.log(intersects[0][0])
-        this.selection = intersects[0][0]
+        console.log(obj)
+        if (this.selection !== null) {
+          const markers = this.selection.object.children.filter(
+            c => c.name === 'selection'
+          )
+          markers.map(m => this.selection.object.remove(m))
+          setSelected(null)
+          this.selection = null
+        }
+        const sprite = new THREE.TextureLoader().load(
+          'app/assets/images/corona.png'
+        )
+        const geometry = new THREE.BufferGeometry()
+        geometry.addAttribute(
+          'position',
+          new THREE.Float32BufferAttribute([ 0, 0, 0 ], 3)
+        )
+        const material = new THREE.PointsMaterial({
+          size: obj.object.scale.x * 4,
+          sizeAttenuation: true,
+          map: sprite,
+          alphaTest: 0.05,
+          transparent: true,
+          blending: THREE.AdditiveBlending
+        })
+        // const uniforms = getUniforms(radius, rgb, time)
+        material.color.setRGB(0, 0, 1)
+
+        const mesh = new THREE.Points(geometry, material)
+        mesh.frustumCulled = false
+        mesh.name = 'selection'
+
+        this.selectionMarker = mesh
+        obj.object.add(mesh)
+
+        const pointLight = new THREE.PointLight(0x0000ff, 1.25, 0, 2)
+        pointLight.name = 'selection'
+        obj.object.add(pointLight)
+
+        this.selection = obj
         this.lastSelected = new Date().valueOf()
       }
+
       this.testingIntersections = false
     }
 

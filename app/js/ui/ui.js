@@ -62,13 +62,14 @@ const UI = branch(
         <div className="reticle">
           <Reticle />
         </div>
-        <div className="scene-console">
-          <Console
-            messages={messages}
-            handleCommand={handleCommand}
-            isHidden={consoleHidden}
-          />
-        </div>
+
+        <Console
+          className="scene-console"
+          messages={messages}
+          handleCommand={handleCommand}
+          isHidden={consoleHidden}
+        />
+
         <div className="scene-messages">
           <Messages messages={messages} />
         </div>

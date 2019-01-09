@@ -9,11 +9,11 @@ const style = props => ({
   flexFlow: 'column',
   justifyContent: 'flex-end',
   fontSize: '1em',
-  width: '100%',
-  height: '100%',
   overflowY: 'auto',
   overflowX: 'hidden',
-  paddingBottom: '2em'
+  paddingBottom: '2em',
+  width: '100%',
+  height: '100%'
 })
 
 const inputStyle = props => ({
@@ -43,7 +43,7 @@ const Console = ({
     return false
   }
   return (
-    <HudElement className="console">
+    <HudElement className="scene-console">
       <div style={style()}>
         <ul style={{ listStyle: 'none', paddingLeft: '1em' }}>
           {output.map((o, i) => (

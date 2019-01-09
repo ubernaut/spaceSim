@@ -16,7 +16,7 @@ const style = props => ({
 
 const Messages = ({ messages }) => {
   return (
-    <HudElement className="messages">
+    <HudElement>
       <div style={style()}>
         <label style={{ fontWeight: 'bold' }}>System Messages</label>
         <ul style={{ listStyle: 'none', paddingLeft: '0' }}>

@@ -114,8 +114,8 @@ a {
 }
 
 #ui .scene-console {
-  width: 33.3%;
-  height: 300px;
+  width: 33.3% !important;
+  height: 300px !important;
   position: absolute;
   top: 0px;
   left: 33.3%;
