@@ -1,6 +1,6 @@
 import msgpack from 'msgpack-lite'
 
-import createSocket from '-/socket'
+import createSocket from '-/net/socket'
 import { onProgress, onError } from '-/utils'
 import { shoot } from '-/player/weapons'
 import state from '-/state'
