@@ -6,44 +6,28 @@ import { shoot } from '-/player/weapons'
 import state from '-/state'
 import logger from '-/logger'
 
-const handleEvent = eventData => {
+const playersState = state.select([ 'scene', 'players' ])
+const assetPath = state.get([ 'config', 'threejs', 'assetPath' ])
+
+const mtlLoader = new THREE.MTLLoader()
+const objLoader = new THREE.OBJLoader()
+mtlLoader.setPath(assetPath)
+objLoader.setPath(assetPath)
+
+const handleEvent = (scene, playerId) => eventData => {
   const decoded = msgpack.decode(new Uint8Array(eventData))
   const event = decoded.message
   // console.log(decoded)
 
   if (event.type === 'playerMove' || event.type === 'playerJoin') {
-    loadOrUpdatePlayer(decoded.playerId, event.payload)
+    loadOrUpdatePlayer(decoded.message.id, event.payload, scene, playerId)
   } else if (event.type === 'shotFired') {
     const { quaternion, position, color, weaponType } = event.payload
-
-    const newQuaternion = new THREE.Quaternion()
-    newQuaternion._w = quaternion._w
-    newQuaternion._x = quaternion._x
-    newQuaternion._y = quaternion._y
-    newQuaternion._z = quaternion._z
-
-    const newPosition = new THREE.Vector3()
-    newPosition.x = position.x
-    newPosition.y = position.y
-    newPosition.z = position.z
-
-    // console.log('shooting', quaternion, position, weaponType)
-    shoot({
-      quaternion: newQuaternion,
-      position: newPosition,
-      weaponType: 'planetCannon'
-    })
   }
 }
 
-const broadcastUpdate = (socket, { type, payload }) => {
-  socket.emit(
-    'events',
-    msgpack.encode({
-      type,
-      payload
-    })
-  )
+const broadcastUpdate = (socket, payload) => {
+  socket.emit('events', msgpack.encode(payload))
 }
 
 /**
@@ -59,56 +43,76 @@ const setShipProps = (ship, propsData) => {
   ship.quaternion._z = propsData.quaternion._z
 }
 
+let playersToLoad = []
+
 /**
  * Load a new player or update an existing one based on a socket message
  */
-const loadOrUpdatePlayer = (players, playerId, playerData) => {
-  const player = players.find(p => p.playerId === playerId)
+const loadOrUpdatePlayer = (playerId, playerData, scene, localPlayerId) => {
+  if (playerId === localPlayerId) {
+    return
+  }
+  const player = scene.children.find(
+    x => x.name === playerId && x.uuid !== localPlayerId
+  )
+
   if (player) {
-    setShipProps(player.ship, playerData)
+    setShipProps(player, playerData)
   } else {
-    loadNewPlayer(playerId, playerData)
+    playersToLoad.push({ playerId, playerData, scene })
   }
 }
 
-const assetPath = state.get([ 'config', 'threejs', 'assetPath' ])
+const loadNewPlayer = scene => ({ playerId, playerData }) => {
+  logger.debug('loading new player...', playerId)
 
-const mtlLoader = new THREE.MTLLoader()
-const objLoader = new THREE.OBJLoader()
-mtlLoader.setPath(assetPath)
-objLoader.setPath(assetPath)
+  return new Promise((resolve, reject) => {
+    const onShipObjLoaded = object => {
+      // meta
+      object.name = playerId
+      // position, orientation
+      setShipProps(object, playerData)
+      object.scale.set(20, 20, 20)
+      object.rotation.set(0, 0, 0)
 
-const loadNewPlayer = (playerId, playerData) => {
-  logger.debug('loading new player...')
+      playerData.ship = object
+      scene.add(object)
 
-  const onShipObjLoaded = object => {
-    // meta
-    object.name = playerId
-    // position, orientation
-    setShipProps(object, playerData)
-    object.scale.set(20, 20, 20)
-    object.rotation.set(0, 0, 0)
+      const players = [ ...playersState.get(), { playerId } ]
+      playersState.set(players)
 
-    playerData.ship = object
-    Void.scene.add(object)
-    Void.players.push(Object.assign({}, playerData, { playerId }))
-  }
+      resolve()
+    }
 
-  const onShipMaterialsLoaded = materials => {
-    materials.preload()
-    objLoader.setMaterials(materials)
-    objLoader.load('ship.obj', onShipObjLoaded)
-  }
+    const onShipMaterialsLoaded = materials => {
+      materials.preload()
+      objLoader.setMaterials(materials)
+      objLoader.load('ship.obj', onShipObjLoaded)
+    }
 
-  mtlLoader.load('ship.mtl', onShipMaterialsLoaded, onProgress, onError)
-}
-
-const init = () =>
-  new Promise((resolve, reject) => {
-    createSocket(socket => {
-      socket.on('event', handleEvent)
-      resolve(socket)
-    })
+    mtlLoader.load('ship.mtl', onShipMaterialsLoaded, onProgress, onError)
   })
+}
+
+const init = async ({ scene, ship }) => {
+  const socket = await createSocket()
+  socket.on('event', handleEvent(scene, ship.uuid))
+  setInterval(() => {
+    const { quaternion, position } = ship
+    const payload = { quaternion, position }
+    broadcastUpdate(socket, { type: 'playerMove', id: ship.uuid, payload })
+  }, 150)
+  setInterval(() => {
+    const nextPlayer = playersToLoad[0]
+    if (nextPlayer) {
+      loadNewPlayer(scene)(nextPlayer).then(() => {
+        playersToLoad = playersToLoad.filter(
+          x => x.playerId !== nextPlayer.playerId
+        )
+      })
+    }
+  }, 2000)
+  return socket
+}
 
 export { init, handleEvent, broadcastUpdate }
