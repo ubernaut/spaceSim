@@ -129,6 +129,7 @@ const loadSystem = ({
 const updateSystemCPU = (scene, physics) => {
   let i = 0
   var biggestBody = ''
+  // physics.convertToMetric()
   for (const body of system.bodies) {
     body.velocity = physics.gridSystem.vel[i]
     body.mass = physics.gridSystem.mass[i]

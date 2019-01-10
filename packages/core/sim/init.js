@@ -62,7 +62,7 @@ const init = async (rootEl, animateCallbackHelpers, config) => {
     gpuCollisions: config.system.gpuCollisions,
     addAnimateCallback: animateCallbackHelpers.addAnimateCallback
   })
-  console.log(systemWorker)
+  // console.log(systemWorker)
   animate({
     scene,
     systemWorker,

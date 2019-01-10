@@ -94,15 +94,44 @@ const animate = ({
   }
 
   // if (useCuda) {
-  //   physics.accelerateCuda()
-  //   updateSystemCPU()
+  // physics.accelerateCuda()
+  // updateSystemCPU()
   // } else {
-  physics.GPUAccelerate(useGpuCollisions)
-  if (useGpuCollisions) {
-    updateSystemGPU(scene, physics)
-  } else {
+  // physics.GPUAccelerate(useGpuCollisions)
+  // if (useGpuCollisions) {
+
+  // physics.GPUAccelerate()
+  // updateSystemCPU(scene, physics)
+
+  systemWorker.postMessage([ 'fetch' ])
+  // return new Promise((resolve, reject) => {
+  systemWorker.onmessage = e => {
+    // console.log(e.data)
+    // physics.system = e.data[0]
+    // physics.gridSystem = e.data[0]
+
+    physics.dt = e.data[0]
+    physics.system = e.data[1]
+    physics.metric = e.data[2]
+    physics.collisions = e.data[3]
+    physics.gridSystem = e.data[4]
+    physics.maxMark = e.data[5]
+    physics.fitness = e.data[6]
+    physics.sumFit = e.data[7]
+    physics.t = e.data[8]
+    physics.count = e.data[9]
+    physics.tryCount = e.data[10]
+    physics.gpuCollisions = e.data[11]
+    physics.biggestBody = e.data[12]
+
+    // resolve(systemWorker)
     updateSystemCPU(scene, physics)
   }
+  // })
+
+  // } else {
+  // updateSystemCPU(scene, physics)
+  // }
   // }
 
   // updateOimoPhysics()
