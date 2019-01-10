@@ -11,22 +11,38 @@ import { createControls } from '-/controls/controls'
 import logger from './logger'
 import sceneState, { addMessage } from '-/state/branches/scene'
 import { toggleConsole, toggleHelp } from '-/state/branches/gui'
-import createApp from '-/utils/create-app'
+import createApp, {
+  createCamera,
+  createPostprocessing
+} from '-/utils/create-app'
 
-const create = async () => {
-  logger.debug('init: creating viewer...')
-  const { scene, camera, physics, animate: animateSystem } = await createViewer(
-    'root',
-    {
-      system: {
-        bodyCount: 512,
-        bodyDistance: 0.2,
-        bodySpeed: 0.05,
-        deltaT: 0.005,
-        gpuCollisions: true
-      }
+const IAU = 9.4607 * Math.pow(10, 15)
+
+const create = async ({ scene, renderer }) => {
+  logger.debug(addMessage('init: creating camera...'))
+  const camera = createCamera({
+    fov: 70,
+    nearClip: 0.1,
+    farClip: 5 * IAU
+  })
+
+  logger.debug(addMessage('init: creating postprocessing...'))
+  const composer = createPostprocessing({
+    renderer,
+    scene,
+    camera
+  })
+
+  logger.debug(addMessage('init: creating viewer...'))
+  const { physics, animate: animateSystem } = await createViewer(scene, {
+    system: {
+      bodyCount: 512,
+      bodyDistance: 0.2,
+      bodySpeed: 0.05,
+      deltaT: 0.005,
+      gpuCollisions: true
     }
-  )
+  })
 
   logger.debug(addMessage('init: creating player ship...'))
   const { ship, animate: animateShip } = await createShip()
@@ -56,15 +72,18 @@ const create = async () => {
     scene,
     physics,
     controls,
+    camera,
     animateCallbacks: [
       animateSystem,
       animateShip,
-      delta => controls.update(delta)
+      delta => controls.update(delta),
+      delta => composer.render(delta)
     ]
   }
 }
 
 createApp({
+  root: '#root',
   scene: {
     preload: null,
     create,

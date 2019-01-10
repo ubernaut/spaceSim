@@ -21,7 +21,17 @@ const state = new Baobab(
     scene: {
       player: {
         id: '',
-        movementSpeed: 0
+        movementSpeed: 0,
+        ship: {
+          thruster: {
+            velocityRandomness: 0.2,
+            color: 0x0055ff,
+            turbulence: 0.1,
+            lifetime: 20,
+            size: 1,
+            sizeRandomness: 0.5
+          }
+        }
       },
       players: [],
       bodyCount: 0,
