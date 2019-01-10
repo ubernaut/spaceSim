@@ -112,7 +112,7 @@ const animate = ({
     // physics.gridSystem = e.data[0]
 
     physics.dt = e.data[0]
-    physics.system = e.data[1]
+    // physics.system = e.data[1]
     physics.metric = e.data[2]
     physics.collisions = e.data[3]
     physics.gridSystem = e.data[4]

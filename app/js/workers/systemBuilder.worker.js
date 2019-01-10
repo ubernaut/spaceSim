@@ -16,6 +16,8 @@ self.onmessage = function (e) {
     const bodySpeed = e.data[3]
     const deltaT = e.data[4]
     system = new System(1, 1, bodyCount, bodyDistance, bodySpeed)
+    const metersBodies = convertSystemToMeters(system)
+    system.bodies = metersBodies
     physics = new soPhysics(system, 0, deltaT, false, true, true)
     init()
     postMessage(system)
