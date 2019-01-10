@@ -302,17 +302,9 @@ const GPUParticleContainer = (THREE.GPUParticleContainer = function (
       )
     }
 
-    // velocity
-
-    var maxVel = 2
-
     var velX = velocity.x + particleSystem.random() * velocityRandomness
     var velY = velocity.y + particleSystem.random() * velocityRandomness
     var velZ = velocity.z + particleSystem.random() * velocityRandomness
-
-    velX = THREE.Math.clamp((velX - -maxVel) / (maxVel - -maxVel), 0, 1)
-    velY = THREE.Math.clamp((velY - -maxVel) / (maxVel - -maxVel), 0, 1)
-    velZ = THREE.Math.clamp((velZ - -maxVel) / (maxVel - -maxVel), 0, 1)
 
     velocityAttribute.array[i * 3 + 0] = velX
     velocityAttribute.array[i * 3 + 1] = velY

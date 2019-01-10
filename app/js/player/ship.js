@@ -29,16 +29,16 @@ const particleOptions = {
   position: new THREE.Vector3(0, 0, 0),
   positionRandomness: 0.3,
   velocity: new THREE.Vector3(0, 0, 10),
-  velocityRandomness: 0.2,
+  velocityRandomness: 0,
   color: 0xff5500,
   turbulence: 0,
-  lifetime: 20,
+  lifetime: 1,
   // size: 1,
-  sizeRandomness: 0.5
+  sizeRandomness: 1
 }
 
 const particleEmitterOptions = {
-  spawnRate: 450
+  spawnRate: 600
 }
 
 const animateShip = emitter => (delta, tick) => {
@@ -50,8 +50,12 @@ const animateShip = emitter => (delta, tick) => {
       y: Math.random() * 0.5 - 0.25,
       z: Math.random() * 0.5
     },
-    lifetime: Math.max(3, movementSpeed * 1e-4),
-    size: Math.max(3, Math.min(10.0, 3.0 * movementSpeed * 1e-5)),
+    velocity: new THREE.Vector3(
+      0,
+      0,
+      Math.max(1, Math.min(1e3, movementSpeed * 1e-5))
+    ),
+    size: Math.max(5, Math.min(50, movementSpeed * 1e-4)),
     color
   })
   for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
