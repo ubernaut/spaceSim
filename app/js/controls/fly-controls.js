@@ -62,6 +62,8 @@ export default class KeyboardControls {
     this.keyboard.update()
     this.mouse.update()
 
+    this.movementSpeed = sceneState.get([ 'player', 'movementSpeed' ])
+
     if (this.selection) {
       setSelected({
         name: this.selection.object.name,

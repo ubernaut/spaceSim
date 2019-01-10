@@ -14,11 +14,13 @@ import Selection from '@void/ui/lib/components/Selection'
 
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
+import sceneState from '-/state/branches/scene'
 import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
 
 const handleCommand = ({ command, clear }) => {
+  const [cmd, ...args] = command.split(' ')
   const handlers = {
     '/help': cmd => state.set(['gui', 'help', 'hidden'], false),
     '/whoami': cmd => `Your UUID is ${state.get(['scene', 'player', 'id'])}`,
@@ -31,9 +33,33 @@ const handleCommand = ({ command, clear }) => {
     },
     '/bodies': cmd =>
       `There area ${state.get(['scene', 'bodyCount'])} sim bodies`,
-    '/clear': cmd => clear()
+    '/clear': cmd => clear(),
+    '/ship': cmd => {
+      const [_, ...args] = cmd.split(' ')
+      console.log(args)
+      for (const arg of args) {
+        const [key, val] = arg.split('=')
+        if (!key || !val) {
+          return 'invalid arguments format'
+        }
+        if (key === 'thrust') {
+          sceneState.set(
+            ['player', 'ship', 'thruster', 'color'],
+            parseInt(val, 16)
+          )
+          return `set ship thrust color to ${val}`
+        }
+        return 'unknown key'
+      }
+    },
+    '/speed': cmd => {
+      const [_, speed] = cmd.split(' ')
+      sceneState.set(['player', 'movementSpeed'], parseFloat(speed, 10))
+      return `set speed to ${speed}`
+    }
   }
-  const handler = handlers[command] || (() => `command not found: ${command}`)
+  const handler = handlers[cmd] || (() => `command not found: ${cmd}`)
+
   return handler(command)
 }
 
