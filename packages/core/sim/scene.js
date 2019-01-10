@@ -97,6 +97,7 @@ const animate = ({
   // physics.accelerateCuda()
   // updateSystemCPU()
   // } else {
+
   // physics.GPUAccelerate(useGpuCollisions)
   // if (useGpuCollisions) {
 
@@ -127,12 +128,6 @@ const animate = ({
     // resolve(systemWorker)
     updateSystemCPU(scene, physics)
   }
-  // })
-
-  // } else {
-  // updateSystemCPU(scene, physics)
-  // }
-  // }
 
   // updateOimoPhysics()
 

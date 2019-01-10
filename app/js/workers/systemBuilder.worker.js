@@ -18,7 +18,6 @@ self.onmessage = function (e) {
     system = new System(1, 1, bodyCount, bodyDistance, bodySpeed)
     physics = new soPhysics(system, 0, deltaT, false, true, true)
     init()
-
     postMessage(system)
   } else if (e.data[0] == 'fetch') {
     sendSystemState()
