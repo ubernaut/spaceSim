@@ -1,6 +1,7 @@
 import { GPUParticleSystem } from 'app/js/webgl/gpu-particle-system'
 import { onProgress, onError } from 'app/js/utils'
 import state from '-/state'
+import sceneState from '-/state/branches/scene'
 
 const assetPath = state.get([ 'config', 'threejs', 'assetPath' ])
 
@@ -30,7 +31,7 @@ const particleOptions = {
   velocity: new THREE.Vector3(0, 0, 10),
   velocityRandomness: 0.2,
   color: 0xff5500,
-  turbulence: 0.1,
+  turbulence: 0,
   lifetime: 20,
   // size: 1,
   sizeRandomness: 0.5
@@ -41,14 +42,17 @@ const particleEmitterOptions = {
 }
 
 const animateShip = emitter => (delta, tick) => {
-  const movementSpeed = state.get([ 'scene', 'player', 'movementSpeed' ])
+  const movementSpeed = sceneState.get([ 'player', 'movementSpeed' ])
+  const { color } = sceneState.get([ 'player', 'ship', 'thruster' ])
   const options = Object.assign({}, particleOptions, {
     position: {
       x: Math.random() * 0.5 - 0.25,
       y: Math.random() * 0.5 - 0.25,
       z: Math.random() * 0.5
     },
-    size: Math.max(5, Math.min(10.0, 3.0 * movementSpeed * 0.000000001))
+    lifetime: Math.max(3, movementSpeed * 1e-4),
+    size: Math.max(3, Math.min(10.0, 3.0 * movementSpeed * 1e-5)),
+    color
   })
   for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
     emitter.spawnParticle(options)

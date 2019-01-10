@@ -44,6 +44,10 @@ const HelpContents = () => (
       <li>/players - Returns the list of players</li>
       <li>/bodies - Displays the # of sim bodies</li>
       <li>/clear - Clears the console</li>
+      <li>/ship - Set ship parameters</li>
+      <ul>
+        <li>e.g., /ship thrust=0xffffff</li>
+      </ul>
     </ul>
   </div>
 )

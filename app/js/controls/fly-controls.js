@@ -1,7 +1,7 @@
 import Keyboard from 'syncinput/Keyboard'
 import Mouse from 'syncinput/Mouse'
-import state from '-/state'
-import { setSelected } from '-/state'
+import sceneState, { setSelected } from '-/state/branches/scene'
+import guiState from '-/state/branches/gui'
 import { calcObjectDistance, calcDistances } from './utils'
 
 const defaultMap = {
@@ -55,12 +55,14 @@ export default class KeyboardControls {
     )
     const newSpeed = this.movementSpeed + dir * step
     this.movementSpeed = newSpeed
-    state.set([ 'scene', 'player', 'movementSpeed' ], newSpeed)
+    sceneState.set([ 'player', 'movementSpeed' ], newSpeed)
   }
 
   update (delta) {
     this.keyboard.update()
     this.mouse.update()
+
+    this.movementSpeed = sceneState.get([ 'player', 'movementSpeed' ])
 
     if (this.selection) {
       setSelected({
@@ -82,7 +84,7 @@ export default class KeyboardControls {
       setSelected(null)
     }
 
-    if (state.get([ 'gui', 'console', 'hidden' ]) === true) {
+    if (guiState.get([ 'console', 'hidden' ]) === true) {
       Object.keys(this.keymap.moveState).map(key => {
         if (this.keyboard.keyPressed(key)) {
           this.moveState[this.keymap.moveState[key]] = 1

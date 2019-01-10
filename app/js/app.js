@@ -9,50 +9,44 @@ import { createShip } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
 import logger from './logger'
-import { addMessage } from '-/state'
-import state from '-/state'
+import sceneState, { addMessage } from '-/state/branches/scene'
+import { toggleConsole, toggleHelp } from '-/state/branches/gui'
+import createApp, {
+  createCamera,
+  createPostprocessing
+} from '-/utils/create-app'
 
-/**
- * Global App State
- */
-const Void = {
-  players: [],
-  player: {
-    ship: null
-  },
-  time: { value: 100000000 },
-  scene: null,
-  world: null,
-  animateCallbacks: []
-}
+const IAU = 9.4607 * Math.pow(10, 15)
 
-const getAnimateCallbacks = () => Void.animateCallbacks
-const addAnimateCallback = cb => Void.animateCallbacks.push(cb)
+const create = async ({ scene, renderer }) => {
+  logger.debug(addMessage('init: creating camera...'))
+  const camera = createCamera({
+    fov: 70,
+    nearClip: 0.1,
+    farClip: 5 * IAU
+  })
 
-const defaultViewerOptions = {
-  system: {
-    bodyCount: 512,
-    bodyDistance: 0.2,
-    bodySpeed: 0.05,
-    deltaT: 0.005,
-    gpuCollisions: true
-  }
-}
+  logger.debug(addMessage('init: creating postprocessing...'))
+  const composer = createPostprocessing({
+    renderer,
+    scene,
+    camera
+  })
 
-const main = async () => {
-  logger.debug('init: creating viewer...')
-  const { scene, camera, physics } = await createViewer(
-    'root',
-    {
-      getAnimateCallbacks,
-      addAnimateCallback
-    },
-    defaultViewerOptions
-  )
+  logger.debug(addMessage('init: creating viewer...'))
+  const { physics, animate: animateSystem } = await createViewer(scene, {
+    system: {
+      bodyCount: 512,
+      bodyDistance: 0.2,
+      bodySpeed: 0.05,
+      deltaT: 0.005,
+      gpuCollisions: true
+    }
+  })
 
   logger.debug(addMessage('init: creating player ship...'))
   const { ship, animate: animateShip } = await createShip()
-  state.set([ 'scene', 'player', 'id' ], ship.uuid)
+  sceneState.set([ 'player', 'id' ], ship.uuid)
 
   logger.debug(addMessage('init: adding ship and camera to scene...'))
   ship.add(camera)
@@ -63,29 +57,36 @@ const main = async () => {
   const controls = createControls(
     { type: 'fly', ship, camera, scene },
     {
-      toggleConsole: debounce(100, () => {
-        const consoleState = state.select([ 'gui', 'console' ])
-        consoleState.set('hidden', !consoleState.get('hidden'))
-      }),
-      toggleHelp: debounce(100, () => {
-        const helpState = state.select([ 'gui', 'help' ])
-        helpState.set('hidden', !helpState.get('hidden'))
-      })
+      toggleConsole: debounce(100, toggleConsole),
+      toggleHelp: debounce(100, toggleHelp)
     }
   )
-
-  logger.debug(addMessage('init: registering system animations...'))
-  addAnimateCallback(animateShip)
-  addAnimateCallback(delta => controls.update(delta))
-  addAnimateCallback(() => {
-    state.set([ 'scene', 'bodyCount' ], physics.system.bodies.length)
-  })
 
   logger.debug(addMessage('init: creating dat.gui elements...'))
   createBasicUI()
 
   logger.debug(addMessage('init: opening websocket...'))
   await net.init({ ship, scene })
+
+  return {
+    scene,
+    physics,
+    controls,
+    camera,
+    animateCallbacks: [
+      animateSystem,
+      animateShip,
+      delta => controls.update(delta),
+      delta => composer.render(delta)
+    ]
+  }
 }
 
-main()
+createApp({
+  root: '#root',
+  scene: {
+    preload: null,
+    create,
+    update: null
+  }
+})
