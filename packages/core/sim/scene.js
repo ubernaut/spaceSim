@@ -68,6 +68,7 @@ const createUniverse = scene => {
  * animate/update the objects in the scene
  */
 const animate = ({
+  delta,
   scene,
   physics,
   clock,
@@ -76,18 +77,6 @@ const animate = ({
   useGpuCollisions = false,
   getAnimateCallbacks
 }) => {
-  requestAnimationFrame(() =>
-    animate({
-      scene,
-      physics,
-      clock,
-      composer,
-      useCuda,
-      useGpuCollisions,
-      getAnimateCallbacks
-    })
-  )
-
   if (!scene || !physics) {
     return
   }
@@ -105,10 +94,6 @@ const animate = ({
   }
 
   // updateOimoPhysics()
-
-  const delta = clock.getDelta()
-
-  getAnimateCallbacks().map(x => x(delta, clock.getElapsedTime()))
 
   composer.render(delta)
 }

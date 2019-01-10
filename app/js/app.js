@@ -11,36 +11,21 @@ import { createControls } from '-/controls/controls'
 import logger from './logger'
 import sceneState, { addMessage } from '-/state/branches/scene'
 import { toggleConsole, toggleHelp } from '-/state/branches/gui'
+import createApp from '-/utils/create-app'
 
-/**
- * Global App State
- */
-const Void = {
-  animateCallbacks: []
-}
-
-const getAnimateCallbacks = () => Void.animateCallbacks
-const addAnimateCallback = cb => Void.animateCallbacks.push(cb)
-
-const defaultViewerOptions = {
-  system: {
-    bodyCount: 512,
-    bodyDistance: 0.2,
-    bodySpeed: 0.05,
-    deltaT: 0.005,
-    gpuCollisions: true
-  }
-}
-
-const main = async () => {
+const create = async () => {
   logger.debug('init: creating viewer...')
-  const { scene, camera, physics } = await createViewer(
+  const { scene, camera, physics, animate: animateSystem } = await createViewer(
     'root',
     {
-      getAnimateCallbacks,
-      addAnimateCallback
-    },
-    defaultViewerOptions
+      system: {
+        bodyCount: 512,
+        bodyDistance: 0.2,
+        bodySpeed: 0.05,
+        deltaT: 0.005,
+        gpuCollisions: true
+      }
+    }
   )
 
   logger.debug(addMessage('init: creating player ship...'))
@@ -61,18 +46,28 @@ const main = async () => {
     }
   )
 
-  logger.debug(addMessage('init: registering system animations...'))
-  addAnimateCallback(animateShip)
-  addAnimateCallback(delta => controls.update(delta))
-  addAnimateCallback(() => {
-    sceneState.set('bodyCount', physics.system.bodies.length)
-  })
-
   logger.debug(addMessage('init: creating dat.gui elements...'))
   createBasicUI()
 
   logger.debug(addMessage('init: opening websocket...'))
   await net.init({ ship, scene })
+
+  return {
+    scene,
+    physics,
+    controls,
+    animateCallbacks: [
+      animateSystem,
+      animateShip,
+      delta => controls.update(delta)
+    ]
+  }
 }
 
-main()
+createApp({
+  scene: {
+    preload: null,
+    create,
+    update: null
+  }
+})

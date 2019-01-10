@@ -41,7 +41,7 @@ const createStar = ({ radius, position }) => {
   return star
 }
 
-const mkBody = (scene, body, addAnimateCallback) => {
+const mkBody = (scene, body) => {
   body.radius = computeRadiusStellarToMetric(body.mass)
 
   if (body.name === 'star') {
@@ -53,7 +53,7 @@ const mkBody = (scene, body, addAnimateCallback) => {
     if (star.corona) {
       scene.add(star.corona)
     }
-    addAnimateCallback(star.animate)
+    return { animate: star.animate }
   } else {
     const planet = createPlanet({
       radius: body.radius,

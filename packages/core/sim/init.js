@@ -34,7 +34,7 @@ const defaultConfig = {
   oimo: false
 }
 
-const init = async (rootEl, animateCallbackHelpers, config) => {
+const init = async (rootEl, config) => {
   config = Object.assign({}, defaultConfig, config)
   const renderer = createRenderer()
   const scene = new THREE.Scene()
@@ -59,22 +59,21 @@ const init = async (rootEl, animateCallbackHelpers, config) => {
     bodyDistance: config.system.bodyDistance,
     bodySpeed: config.system.bodySpeed,
     deltaT: config.system.deltaT,
-    gpuCollisions: config.system.gpuCollisions,
-    addAnimateCallback: animateCallbackHelpers.addAnimateCallback
+    gpuCollisions: config.system.gpuCollisions
   })
 
-  animate({
-    scene,
-    physics,
-    composer,
-    clock: new THREE.Clock(),
-    getAnimateCallbacks: animateCallbackHelpers.getAnimateCallbacks
-  })
+  const animateScene = delta =>
+    animate({
+      delta,
+      scene,
+      physics,
+      composer
+    })
 
   rootEl.appendChild(renderer.domElement)
   window.addEventListener('resize', onWindowResize({ renderer, camera }), false)
 
-  return { scene, camera, physics }
+  return { scene, camera, physics, animate: animateScene }
 }
 
 export default init
