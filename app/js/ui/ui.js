@@ -13,6 +13,7 @@ import Help from '@void/ui/lib/components/Help'
 import Selection from '@void/ui/lib/components/Selection'
 import Health from '@void/ui/lib/components/Health'
 import Shields from '@void/ui/lib/components/Shields'
+import Energy from '@void/ui/lib/components/Energy'
 
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
@@ -109,6 +110,9 @@ const UI = branch(
         </div>
         <div className="shields-bar">
           <Shields shields={10} maxShields={10} />
+        </div>
+        <div className="energy-bar">
+          <Energy energy={10} maxEnergy={10} />
         </div>
         <div className="speedometer">
           <Speedometer speed={speed} />

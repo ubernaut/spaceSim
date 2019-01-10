@@ -122,6 +122,17 @@ a {
   border-radius: 0 25px 0 0 !important;
 }
 
+#ui .energy-bar {
+  width: 200px;
+  height: 60px;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+}
+#ui .energy-bar > div {
+  border-radius: 0 0 25px 0 !important;
+}
+
 #ui .body-counter {
   width: 200px;
   height: 60px;
