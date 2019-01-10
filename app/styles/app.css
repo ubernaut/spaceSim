@@ -93,7 +93,7 @@ a {
   width: 200px;
   height: 60px;
   position: absolute;
-  bottom: 10px;
+  bottom: 70px;
   left: calc(50% - 200px);
 }
 #ui .health-bar > div {
@@ -105,9 +105,20 @@ a {
   height: 60px;
   position: absolute;
   bottom: 10px;
-  left: 50%;
+  left: calc(50% - 200px);
 }
 #ui .speedometer > div {
+  border-radius: 0 0 0 25px !important;
+}
+
+#ui .shields-bar {
+  width: 200px;
+  height: 60px;
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+}
+#ui .shields-bar > div {
   border-radius: 0 25px 0 0 !important;
 }
 

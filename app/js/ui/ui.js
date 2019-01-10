@@ -12,6 +12,7 @@ import Reticle from '@void/ui/lib/components/Reticle'
 import Help from '@void/ui/lib/components/Help'
 import Selection from '@void/ui/lib/components/Selection'
 import Health from '@void/ui/lib/components/Health'
+import Shields from '@void/ui/lib/components/Shields'
 
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
@@ -105,6 +106,9 @@ const UI = branch(
         </div>
         <div className="health-bar">
           <Health hp={10} maxHp={10} />
+        </div>
+        <div className="shields-bar">
+          <Shields shields={10} maxShields={10} />
         </div>
         <div className="speedometer">
           <Speedometer speed={speed} />
