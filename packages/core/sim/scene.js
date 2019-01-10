@@ -98,11 +98,12 @@ const animate = ({
   //   updateSystemCPU()
   // } else {
   physics.GPUAccelerate(useGpuCollisions)
-  if (useGpuCollisions) {
-    updateSystemGPU(scene, physics)
-  } else {
-    updateSystemCPU(scene, physics)
-  }
+  // if (useGpuCollisions) {
+  updateSystemGPU(scene, physics)
+  // }
+  // else {
+  //   updateSystemCPU(scene, physics)
+  // }
   // }
 
   // updateOimoPhysics()

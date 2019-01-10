@@ -7,7 +7,7 @@ import soPhysics from '@void/core/system-builder/soPhysics'
 // for example; this manager will handle adding and removing objects from the scene,
 //
 
-const renderLoop = function () {
+const worldLoop = function () {
   // collect physics state from worker
   // collect input from user
   // collect input from network
