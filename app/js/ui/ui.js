@@ -130,17 +130,23 @@ const UI = branch(
         <div className="speedometer">
           <Speedometer speed={player.movementSpeed} />
         </div>
-        <div className="ship-config">
-          <ShipConfig
-            isOpen={shipConfigIsOpen}
-            hull="basic"
-            thrustColor={player.ship.thruster.color}
-            setThrustColor={color =>
-              state.set(['scene', 'player', 'ship', 'thruster', 'color'], color)
-            }
-            close={() => state.set(['gui', 'shipConfig', 'isOpen'], false)}
-          />
-        </div>
+
+        {shipConfigIsOpen && (
+          <div className="ship-config">
+            <ShipConfig
+              isOpen={shipConfigIsOpen}
+              hull="basic"
+              thrustColor={player.ship.thruster.color}
+              setThrustColor={color =>
+                state.set(
+                  ['scene', 'player', 'ship', 'thruster', 'color'],
+                  color
+                )
+              }
+              close={() => state.set(['gui', 'shipConfig', 'isOpen'], false)}
+            />
+          </div>
+        )}
 
         <div className="ship-config-button">
           <a
