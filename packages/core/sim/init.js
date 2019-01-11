@@ -2,28 +2,9 @@ import { createUniverse } from '-/bodies/universe'
 import { createGalaxy } from '-/bodies/galaxy'
 import { initOimoPhysics } from './physics'
 import { loadSystem } from './system'
-import {
-  animate,
-  addLights,
-  createPostprocessing,
-  createRenderer,
-  createCamera
-} from './scene'
-
-const IAU = 9.4607 * Math.pow(10, 15)
-
-const onWindowResize = ({ renderer, camera }) => () => {
-  camera.aspect = window.innerWidth / window.innerHeight
-  camera.updateProjectionMatrix()
-  renderer.setSize(window.innerWidth, window.innerHeight)
-}
+import { animate, addLights } from './scene'
 
 const defaultConfig = {
-  camera: {
-    fov: 70,
-    nearClip: 0.1,
-    farClip: 5 * IAU
-  },
   system: {
     bodyCount: 512,
     bodyDistance: 1,
@@ -34,16 +15,8 @@ const defaultConfig = {
   oimo: false
 }
 
-const init = async (rootEl, animateCallbackHelpers, config) => {
+const init = async (scene, config) => {
   config = Object.assign({}, defaultConfig, config)
-  const renderer = createRenderer()
-  const scene = new THREE.Scene()
-  const camera = createCamera(config.camera)
-  const composer = createPostprocessing({
-    renderer,
-    scene,
-    camera
-  })
 
   if (config.oimo) {
     initOimoPhysics()
@@ -59,22 +32,18 @@ const init = async (rootEl, animateCallbackHelpers, config) => {
     bodyDistance: config.system.bodyDistance,
     bodySpeed: config.system.bodySpeed,
     deltaT: config.system.deltaT,
-    gpuCollisions: config.system.gpuCollisions,
-    addAnimateCallback: animateCallbackHelpers.addAnimateCallback
+    gpuCollisions: config.system.gpuCollisions
   })
   // console.log(systemWorker)
-  animate({
-    scene,
-    systemWorker,
-    composer,
-    clock: new THREE.Clock(),
-    getAnimateCallbacks: animateCallbackHelpers.getAnimateCallbacks
-  })
 
-  rootEl.appendChild(renderer.domElement)
-  window.addEventListener('resize', onWindowResize({ renderer, camera }), false)
+  const animateScene = delta =>
+    animate({
+      delta,
+      scene,
+      systemWorker
+    })
 
-  return { scene, camera, systemWorker }
+  return { systemWorker, animate: animateScene }
 }
 
 export default init

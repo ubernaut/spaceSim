@@ -1,5 +1,3 @@
-import * as THREE from 'three'
-
 import vertexShader from 'app/shaders/particles.vs.glsl'
 import fragmentShader from 'app/shaders/particles.fs.glsl'
 

@@ -1,9 +1,8 @@
 import FlyControls from './fly-controls'
 import { createGamepadControls } from './gamepad-controls'
 import { deployDrone } from '-/player/ship'
-import state from '-/state'
 
-export const createFlyControls = ({ ship, camera, el }) => {
+export const createFlyControls = ({ ship, camera, el, scene }, handlers) => {
   const onScroll = ({ camera, controls, event }) => {
     const deltaY = event.wheelDeltaY
     if (deltaY < 0) {
@@ -15,31 +14,13 @@ export const createFlyControls = ({ ship, camera, el }) => {
     }
   }
 
-  const adjustThrust = (val, controls) => {
-    const movementSpeed = state.get([ 'scene', 'player', 'movementSpeed' ])
-    const newSpeed =
-      movementSpeed + val * Math.max(1, Math.pow(Math.abs(movementSpeed), 0.85))
-    state.set([ 'scene', 'player', 'movementSpeed' ], newSpeed)
-    controls.movementSpeed = newSpeed
-  }
-
-  const controls = new FlyControls(ship, el)
-  controls.rollSpeed = 0.35
-  controls.autoForward = true
-  controls.dragToLook = true
+  const controls = new FlyControls(ship, el, scene, camera, handlers)
 
   el.addEventListener(
     'mousewheel',
     event => onScroll({ camera, controls, event }),
     false
   )
-  el.addEventListener('keydown', event => {
-    if (event.key === 'w') {
-      adjustThrust(2, controls)
-    } else if (event.key === 's') {
-      adjustThrust(-2, controls)
-    }
-  })
 
   return controls
 }
@@ -47,16 +28,23 @@ export const createFlyControls = ({ ship, camera, el }) => {
 /**
  * Create the controls used to explore the scene
  */
-const createControls = ({ type = 'fly', ship, camera, el }) => {
+const createControls = (
+  { type = 'fly', ship, camera, el, scene },
+  handlers
+) => {
   el = el || document.getElementById('root')
   if (type === 'gamepad') {
     return createGamepadControls(ship, el, deployDrone(ship))
   }
-  return createFlyControls({
-    ship,
-    camera,
-    el
-  })
+  return createFlyControls(
+    {
+      ship,
+      camera,
+      el,
+      scene
+    },
+    handlers
+  )
 }
 
 export { createControls }

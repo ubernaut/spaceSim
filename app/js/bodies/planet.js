@@ -45,9 +45,7 @@ const loadEarthMesh = () => {
             shininess: 1
           })
           const geometry = new THREE.IcosahedronBufferGeometry(1, 2)
-          const mesh = THREE.SceneUtils.createMultiMaterialObject(geometry, [
-            material
-          ])
+          const mesh = new THREE.Mesh(geometry, material, { castShadow: false })
           resolve(mesh)
         })
       })
@@ -100,6 +98,7 @@ const createPlanet = ({ radius, position }) => {
       planet.scale.set(radius, radius, radius)
       planet.position.set(position.x, position.y, position.z)
       planet.rotation.set(115, 0, 0)
+      planet.name = 'Planet'
     }
 
     return planet

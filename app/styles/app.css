@@ -4,6 +4,16 @@ body {
   color: #fff;
   margin: 0px;
   overflow: hidden;
+  font-size: 1rem;
+  line-height: 1.5em;
+}
+
+body * {
+  box-sizing: border-box;
+}
+
+#root {
+  cursor: crosshair;
 }
 
 #info {
@@ -14,18 +24,6 @@ body {
   text-align: center;
   z-index: 100;
   display: block;
-}
-
-#help {
-  color: #ffffff;
-  background-color: rgba(0, 0, 0, 0.5);
-  position: absolute;
-  top: 50px;
-  left: 0px;
-  max-width: 600px;
-  text-align: left;
-  z-index: 100;
-  display: inline-block;
 }
 
 #info a,
@@ -42,4 +40,88 @@ body {
 
 a {
   color: rgb(200, 200, 255);
+}
+
+#ui {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 99;
+  min-width: 1100px;
+  pointer-events: none;
+}
+
+#ui .help {
+  width: 500px;
+  height: auto;
+  pointer-events: all;
+  position: absolute;
+  left: 25px;
+  top: 25px;
+}
+
+#ui .selection {
+  width: 400px;
+  min-height: 250px;
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  font-size: 0.9em;
+  line-height: 1.5em;
+}
+
+#ui .reticle {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: calc(50% - 75px);
+  left: calc(50% - 75px);
+}
+
+#ui .fps-stats {
+  height: 60px;
+  display: block;
+  position: absolute !important;
+  left: auto !important;
+  top: 25px !important;
+  right: 25px !important;
+}
+
+#ui .speedometer {
+  width: 200px;
+  height: 60px;
+  position: absolute;
+  bottom: 25px;
+  left: calc(50% - 100px);
+}
+
+#ui .body-counter {
+  width: 200px;
+  height: 60px;
+  position: absolute;
+  top: 25px;
+  right: 125px;
+}
+
+#ui .scene-messages {
+  width: 400px;
+  height: 250px;
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  font-size: 0.9em;
+  line-height: 1.5em;
+}
+
+#ui .scene-console {
+  width: 33.3% !important;
+  height: 300px !important;
+  position: absolute;
+  top: 0px;
+  left: 33.3%;
+  font-size: 0.9em;
+  line-height: 1.5em;
+  pointer-events: all;
 }

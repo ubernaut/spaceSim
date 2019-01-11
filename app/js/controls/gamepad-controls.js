@@ -1,5 +1,6 @@
 import * as net from '-/net/net'
-import { xbox } from './keys'
+
+const xbox = {}
 
 const registerGamepads = () => {
   if (navigator.getGamepads) {

@@ -1,5 +1,6 @@
-import 'babel-polyfill'
+import '@babel/polyfill'
 import '../styles/app.css'
+import { debounce } from 'throttle-debounce'
 
 import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
@@ -8,89 +9,84 @@ import { createShip } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
 import logger from './logger'
+import sceneState, { addMessage } from '-/state/branches/scene'
+import { toggleConsole, toggleHelp } from '-/state/branches/gui'
+import createApp, {
+  createCamera,
+  createPostprocessing
+} from '-/utils/create-app'
 
-/**
- * Global App State
- */
-const Void = {
-  players: [],
-  player: {
-    ship: null
-  },
-  time: { value: 100000000 },
-  scene: null,
-  world: null,
-  animateCallbacks: []
-}
+const IAU = 9.4607 * Math.pow(10, 15)
 
-const getAnimateCallbacks = () => Void.animateCallbacks
-const addAnimateCallback = cb => Void.animateCallbacks.push(cb)
+const create = async ({ scene, renderer }) => {
+  logger.debug(addMessage('init: creating camera...'))
+  const camera = createCamera({
+    fov: 70,
+    nearClip: 0.1,
+    farClip: 5 * IAU
+  })
 
-const defaultViewerOptions = {
-  system: {
-    bodyCount: 256,
-    bodyDistance: 0.2,
-    bodySpeed: 0.05,
-    deltaT: 0.005,
-    gpuCollisions: true
-  }
-}
+  logger.debug(addMessage('init: creating postprocessing...'))
+  const composer = createPostprocessing({
+    renderer,
+    scene,
+    camera
+  })
 
-const main = async () => {
-  logger.debug('init: creating viewer...')
-  const { scene, camera } = await createViewer(
-    'root',
-    {
-      getAnimateCallbacks,
-      addAnimateCallback
-    },
-    defaultViewerOptions
-  )
+  logger.debug(addMessage('init: creating viewer...'))
+  const { physics, animate: animateSystem } = await createViewer(scene, {
+    system: {
+      bodyCount: 512,
+      bodyDistance: 0.2,
+      bodySpeed: 0.05,
+      deltaT: 0.005,
+      gpuCollisions: true
+    }
+  })
 
-  logger.debug('init: creating player ship...')
+  logger.debug(addMessage('init: creating player ship...'))
   const { ship, animate: animateShip } = await createShip()
+  sceneState.set([ 'player', 'id' ], ship.uuid)
 
-  logger.debug('init: adding ship and camera to scene...')
+  logger.debug(addMessage('init: adding ship and camera to scene...'))
   ship.add(camera)
   camera.position.set(...[ 0, 10, 30 ])
   scene.add(ship)
 
-  logger.debug('init: registering controls...')
-  const controls = createControls({ type: 'fly', ship, camera })
+  logger.debug(addMessage('init: registering controls...'))
+  const controls = createControls(
+    { type: 'fly', ship, camera, scene },
+    {
+      toggleConsole: debounce(100, toggleConsole),
+      toggleHelp: debounce(100, toggleHelp)
+    }
+  )
 
-  logger.debug('init: registering system animations...')
-  addAnimateCallback(animateShip)
-  addAnimateCallback(delta => controls.update(delta))
-
-  logger.debug('init: opening websocket...')
-  const socket = await net.init()
-
-  logger.debug('init: registering event listeners...')
-  registerEventListeners({ ship, socket })
-
-  logger.debug('init: creating dat.gui elements...')
+  logger.debug(addMessage('init: creating dat.gui elements...'))
   createBasicUI()
-}
-main()
 
-/**
- * Add global event listeners, e.g., network updates
- */
-const registerEventListeners = ({ ship, socket }) => {
-  const canvas = document.querySelector('#root canvas')
-  canvas.addEventListener(
-    'mousedown',
-    e => net.broadcastUpdate(socket, ship),
-    false
-  )
-  canvas.addEventListener(
-    'mouseup',
-    e => net.broadcastUpdate(socket, ship),
-    false
-  )
-  setInterval(() => {
-    const { quaternion, position } = ship
-    const payload = { quaternion, position }
-    net.broadcastUpdate(socket, { type: 'playerMove', payload })
-  }, 150)
+  logger.debug(addMessage('init: opening websocket...'))
+  await net.init({ ship, scene })
+
+  return {
+    scene,
+    physics,
+    controls,
+    camera,
+    animateCallbacks: [
+      animateSystem,
+      animateShip,
+      delta => controls.update(delta),
+      delta => composer.render(delta)
+    ]
+  }
 }
+
+createApp({
+  root: '#root',
+  scene: {
+    preload: null,
+    create,
+    update: null
+  }
+})
