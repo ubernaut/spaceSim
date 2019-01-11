@@ -4,7 +4,7 @@ body {
   margin: 0px;
   overflow: hidden;
   font-size: 1rem;
-  line-height: 1.5em;
+  line-height: 1.2em;
 }
 
 body * {
@@ -179,4 +179,14 @@ a {
   left: 10px;
   bottom: 270px;
   font-size: 2em;
+}
+
+#ui .help-button {
+  pointer-events: all;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  font-size: 1.9em;
 }

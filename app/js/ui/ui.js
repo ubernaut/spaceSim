@@ -16,6 +16,7 @@ import Shields from '@void/ui/lib/components/Shields'
 import Energy from '@void/ui/lib/components/Energy'
 import ShipConfig from '@void/ui/lib/components/ShipConfig'
 import ShipConfigIcon from '@void/ui/lib/components/icons/ShipConfig'
+import HelpIcon from '@void/ui/lib/components/icons/Help'
 
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
@@ -149,6 +150,17 @@ const UI = branch(
             <ShipConfigIcon />
           </a>
         </div>
+
+        {!helpIsOpen && (
+          <div className="help-button">
+            <a
+              href="#"
+              onClick={() => state.set(['gui', 'help', 'isOpen'], true)}
+            >
+              <HelpIcon />
+            </a>
+          </div>
+        )}
       </div>
     )
   }
