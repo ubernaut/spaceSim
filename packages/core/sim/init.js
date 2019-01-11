@@ -9,7 +9,7 @@ const defaultConfig = {
     bodyCount: 512,
     bodyDistance: 1,
     bodySpeed: 0.05,
-    deltaT: 0.005,
+    deltaT: 0.001,
     gpuCollisions: false
   },
   oimo: false
