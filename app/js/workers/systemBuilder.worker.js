@@ -15,10 +15,11 @@ self.onmessage = function (e) {
     const bodyDistance = e.data[2]
     const bodySpeed = e.data[3]
     const deltaT = e.data[4]
+    const gpuCollisions = e.data[5]
     system = new System(1, 1, bodyCount, bodyDistance, bodySpeed)
     const metersBodies = convertSystemToMeters(system)
     system.bodies = metersBodies
-    physics = new soPhysics(system, 0, deltaT, false, true, true)
+    physics = new soPhysics(system, 0, deltaT, false, true, gpuCollisions)
     init()
     postMessage(system)
   } else if (e.data[0] == 'fetch') {
