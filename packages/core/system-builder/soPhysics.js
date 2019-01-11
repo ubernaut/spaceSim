@@ -12,7 +12,7 @@ class soPhysics {
     dt = 0.02,
     metric = false,
     GPGPU = false,
-    gpuCollisions = false
+    gpuCollisions = true
   ) {
     this.dt = dt
     this.system = system
@@ -571,6 +571,7 @@ class soPhysics {
       this.gridSystem.pos[i][1] += this.dt * this.gridSystem.vel[i][1]
       this.gridSystem.pos[i][2] += this.dt * this.gridSystem.vel[i][2]
     }
+    // console.log(this.gridSystem.vel)
   }
 }
 

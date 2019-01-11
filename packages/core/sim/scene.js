@@ -43,33 +43,31 @@ const createUniverse = scene => {
 /**
  * animate/update the objects in the scene
  */
-const animate = ({
-  delta,
-  scene,
-  physics,
-  clock,
-  composer,
-  useCuda = false,
-  useGpuCollisions = false,
-  getAnimateCallbacks
-}) => {
+const animate = ({ delta, scene, systemWorker, useGpuCollisions = false }) => {
+  let physics = systemWorker.physics
+
   if (!scene || !physics) {
     return
   }
 
-  if (useCuda) {
-    physics.accelerateCuda()
-    updateSystemCPU()
-  } else {
-    physics.GPUAccelerate(useGpuCollisions)
-    if (useGpuCollisions) {
-      updateSystemGPU(scene, physics)
-    } else {
-      updateSystemCPU(scene, physics)
-    }
-  }
+  systemWorker.postMessage([ 'fetch' ])
 
-  // updateOimoPhysics()
+  systemWorker.onmessage = e => {
+    physics.dt = e.data[0]
+    physics.metric = e.data[2]
+    physics.collisions = e.data[3]
+    physics.gridSystem = e.data[4]
+    physics.maxMark = e.data[5]
+    physics.fitness = e.data[6]
+    physics.sumFit = e.data[7]
+    physics.t = e.data[8]
+    physics.count = e.data[9]
+    physics.tryCount = e.data[10]
+    physics.gpuCollisions = e.data[11]
+    physics.biggestBody = e.data[12]
+
+    updateSystemCPU(scene, physics)
+  }
 }
 
 export { addLights, animate, createUniverse, squareGrid }

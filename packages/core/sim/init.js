@@ -26,7 +26,7 @@ const init = async (scene, config) => {
   createGalaxy(scene)
   createUniverse(scene).map(body => scene.add(body))
 
-  const physics = await loadSystem({
+  let systemWorker = await loadSystem({
     scene,
     bodyCount: config.system.bodyCount,
     bodyDistance: config.system.bodyDistance,
@@ -34,15 +34,16 @@ const init = async (scene, config) => {
     deltaT: config.system.deltaT,
     gpuCollisions: config.system.gpuCollisions
   })
+  // console.log(systemWorker)
 
   const animateScene = delta =>
     animate({
       delta,
       scene,
-      physics
+      systemWorker
     })
 
-  return { physics, animate: animateScene }
+  return { systemWorker, animate: animateScene }
 }
 
 export default init

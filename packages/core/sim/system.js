@@ -74,14 +74,19 @@ const loadSystem = ({
   bodyDistance = 1,
   bodySpeed = 0.05,
   deltaT = 0.005,
-  useCuda = false,
+  useCuda = true,
   gpuCollisions,
   concurrency = 24,
   addAnimateCallback
 }) => {
-  const systemWorker = new SystemBuilderWorker()
+  let systemWorker = new SystemBuilderWorker()
 
-  systemWorker.postMessage([ Math.round(bodyCount / 4), bodyDistance, bodySpeed ])
+  systemWorker.postMessage([
+    'init',
+    Math.round(bodyCount / 4),
+    bodyDistance,
+    bodySpeed
+  ])
   return new Promise((resolve, reject) => {
     systemWorker.onmessage = e => {
       system = e.data
@@ -89,7 +94,7 @@ const loadSystem = ({
       const metersBodies = convertSystemToMeters(system)
       system.bodies = metersBodies
 
-      const physics = new soPhysics(
+      systemWorker.physics = new soPhysics(
         system,
         0,
         deltaT,
@@ -98,14 +103,14 @@ const loadSystem = ({
         gpuCollisions
       )
 
-      physics.gridSystem.rad.map((_, i) => {
-        physics.gridSystem.rad[i] = computeRadiusStellarToMetric(
-          physics.gridSystem.mass[i]
+      systemWorker.physics.gridSystem.rad.map((_, i) => {
+        systemWorker.physics.gridSystem.rad[i] = computeRadiusStellarToMetric(
+          systemWorker.physics.gridSystem.mass[i]
         )
       })
 
       if (useCuda) {
-        physics.initGPUStuff()
+        systemWorker.physics.initGPUStuff()
       }
 
       Promise.map(
@@ -117,7 +122,7 @@ const loadSystem = ({
         { concurrency }
       )
 
-      resolve(physics)
+      resolve(systemWorker)
     }
   })
 }
@@ -125,6 +130,7 @@ const loadSystem = ({
 const updateSystemCPU = (scene, physics) => {
   let i = 0
   var biggestBody = ''
+  // physics.convertToMetric()
   for (const body of system.bodies) {
     body.velocity = physics.gridSystem.vel[i]
     body.mass = physics.gridSystem.mass[i]
