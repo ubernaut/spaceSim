@@ -14,6 +14,7 @@ import Selection from '@void/ui/lib/components/Selection'
 import Health from '@void/ui/lib/components/Health'
 import Shields from '@void/ui/lib/components/Shields'
 import Energy from '@void/ui/lib/components/Energy'
+import ShipConfig from '@void/ui/lib/components/ShipConfig'
 
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
@@ -59,7 +60,8 @@ const handleCommand = ({ command, clear }) => {
       const [_, speed] = cmd.split(' ')
       sceneState.set(['player', 'movementSpeed'], parseFloat(speed, 10))
       return `set speed to ${speed}`
-    }
+    },
+    '/shipconfig': cmd => state.set(['gui', 'shipConfig', 'isOpen'], true)
   }
   const handler = handlers[cmd] || (() => `command not found: ${cmd}`)
 
@@ -68,14 +70,23 @@ const handleCommand = ({ command, clear }) => {
 
 const UI = branch(
   {
-    speed: ['scene', 'player', 'movementSpeed'],
+    player: ['scene', 'player'],
     bodyCount: ['scene', 'bodyCount'],
     messages: ['scene', 'messages'],
     selected: ['scene', 'selected'],
-    consoleHidden: ['gui', 'console', 'hidden'],
-    helpHidden: ['gui', 'help', 'hidden']
+    consoleIsOpen: ['gui', 'console', 'isOpen'],
+    helpIsOpen: ['gui', 'help', 'isOpen'],
+    shipConfigIsOpen: ['gui', 'shipConfig', 'isOpen']
   },
-  ({ speed, bodyCount, messages, selected, consoleHidden, helpHidden }) => {
+  ({
+    player,
+    bodyCount,
+    messages,
+    selected,
+    consoleIsOpen,
+    helpIsOpen,
+    shipConfigIsOpen
+  }) => {
     // createFpsWidget()
     return (
       <div>
@@ -84,8 +95,8 @@ const UI = branch(
         </div>
         <div className="help">
           <Help
-            isHidden={helpHidden}
-            setIsHidden={() => state.set(['gui', 'help', 'hidden'], true)}
+            isHidden={!helpIsOpen}
+            setIsHidden={() => state.set(['gui', 'help', 'isOpen'], false)}
           />
         </div>
         <div className="reticle">
@@ -96,7 +107,7 @@ const UI = branch(
           className="scene-console"
           messages={messages}
           handleCommand={handleCommand}
-          isHidden={consoleHidden}
+          isHidden={!consoleIsOpen}
         />
 
         <div className="scene-messages">
@@ -115,7 +126,18 @@ const UI = branch(
           <Energy energy={10} maxEnergy={10} />
         </div>
         <div className="speedometer">
-          <Speedometer speed={speed} />
+          <Speedometer speed={player.movementSpeed} />
+        </div>
+        <div className="ship-config">
+          <ShipConfig
+            isOpen={shipConfigIsOpen}
+            hull="basic"
+            thrustColor={player.ship.thruster.color}
+            setThrustColor={color =>
+              state.set(['scene', 'player', 'ship', 'thruster', 'color'], color)
+            }
+            close={() => state.set(['gui', 'shipConfig', 'isOpen'], false)}
+          />
         </div>
       </div>
     )

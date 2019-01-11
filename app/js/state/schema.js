@@ -28,10 +28,13 @@ const Schema = struct({
   gui: {
     enabled: 'boolean',
     console: {
-      hidden: 'boolean'
+      isOpen: 'boolean'
     },
     help: {
-      hidden: 'boolean'
+      isOpen: 'boolean'
+    },
+    shipConfig: {
+      isOpen: 'boolean'
     }
   }
 })

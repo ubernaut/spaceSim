@@ -1,5 +1,4 @@
 body {
-  font-family: Monospace;
   background-color: #000;
   color: #fff;
   margin: 0px;
@@ -9,6 +8,7 @@ body {
 }
 
 body * {
+  font-family: Monospace;
   box-sizing: border-box;
 }
 
@@ -159,5 +159,14 @@ a {
   left: 33.3%;
   font-size: 0.9em;
   line-height: 1.5em;
+  pointer-events: all;
+}
+
+#ui .ship-config {
+  width: 400px;
+  height: 300px;
+  position: absolute;
+  top: calc(50% - 150px);
+  right: calc(50% - 200px);
   pointer-events: all;
 }

@@ -84,7 +84,7 @@ export default class KeyboardControls {
       setSelected(null)
     }
 
-    if (guiState.get([ 'console', 'hidden' ]) === true) {
+    if (guiState.get([ 'console', 'isOpen' ]) !== true) {
       Object.keys(this.keymap.moveState).map(key => {
         if (this.keyboard.keyPressed(key)) {
           this.moveState[this.keymap.moveState[key]] = 1

@@ -25,7 +25,7 @@ const state = new Baobab(
         ship: {
           thruster: {
             velocityRandomness: 0.2,
-            color: 0x0055ff,
+            color: '#0055ff',
             turbulence: 0.1,
             lifetime: 20,
             size: 1,
@@ -41,10 +41,13 @@ const state = new Baobab(
     gui: {
       enabled: true,
       console: {
-        hidden: false
+        isOpen: true
       },
       help: {
-        hidden: true
+        isOpen: false
+      },
+      shipConfig: {
+        isOpen: true
       }
     }
   },
