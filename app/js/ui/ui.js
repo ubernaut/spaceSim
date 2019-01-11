@@ -15,6 +15,7 @@ import Health from '@void/ui/lib/components/Health'
 import Shields from '@void/ui/lib/components/Shields'
 import Energy from '@void/ui/lib/components/Energy'
 import ShipConfig from '@void/ui/lib/components/ShipConfig'
+import ShipConfigIcon from '@void/ui/lib/components/icons/ShipConfig'
 
 import { starTypes } from '-/bodies/star'
 import state from '-/state'
@@ -138,6 +139,15 @@ const UI = branch(
             }
             close={() => state.set(['gui', 'shipConfig', 'isOpen'], false)}
           />
+        </div>
+
+        <div className="ship-config-button">
+          <a
+            href="#"
+            onClick={() => state.set(['gui', 'shipConfig', 'isOpen'], true)}
+          >
+            <ShipConfigIcon />
+          </a>
         </div>
       </div>
     )
