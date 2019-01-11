@@ -170,3 +170,13 @@ a {
   right: calc(50% - 200px);
   pointer-events: all;
 }
+
+#ui .ship-config-button {
+  pointer-events: all;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 10px;
+  bottom: 270px;
+  font-size: 2em;
+}
