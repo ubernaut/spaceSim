@@ -10,7 +10,7 @@ const style = ({ speed }) => ({
   fontSize: '1em',
   width: '100%',
   height: '100%',
-  color: speed > 0 ? 'inherit' : '#ee4444cc'
+  color: speed >= 0 ? 'inherit' : '#ee4444cc'
 })
 
 const Speedometer = ({ speed }) => {
