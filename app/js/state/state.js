@@ -41,13 +41,13 @@ const state = new Baobab(
     gui: {
       enabled: true,
       console: {
-        isOpen: true
+        isOpen: false
       },
       help: {
         isOpen: false
       },
       shipConfig: {
-        isOpen: true
+        isOpen: false
       }
     }
   },

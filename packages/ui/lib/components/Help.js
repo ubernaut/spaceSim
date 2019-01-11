@@ -38,6 +38,10 @@ const HelpContents = () => (
     <p>This is multiplayer and you may see other ships.</p>
 
     <h3>Commands</h3>
+    <p>
+      There's also a console you can open at any time using CTRL + SHIFT + K
+      with the following commands:
+    </p>
     <ul>
       <li>/help - Display this help screen</li>
       <li>/whoami - Returns your UUID</li>
