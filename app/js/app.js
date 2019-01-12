@@ -37,7 +37,7 @@ const create = async ({ scene, renderer }) => {
   logger.debug(addMessage('init: creating viewer...'))
   const { physics, animate: animateSystem } = await createViewer(scene, {
     system: {
-      bodyCount: 256,
+      bodyCount: 4000,
       bodyDistance: 1,
       bodySpeed: 0.05,
       deltaT: 0.003,
