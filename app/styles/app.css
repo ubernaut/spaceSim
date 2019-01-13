@@ -58,8 +58,8 @@ a {
   height: auto;
   pointer-events: all;
   position: absolute;
-  left: 25px;
-  top: 25px;
+  left: 10px;
+  top: 10px;
 }
 
 #ui .selection {
@@ -85,8 +85,8 @@ a {
   display: block;
   position: absolute !important;
   left: auto !important;
-  top: 25px !important;
-  right: 25px !important;
+  top: 10px !important;
+  right: 10px !important;
 }
 
 #ui .health-bar {
@@ -137,8 +137,8 @@ a {
   width: 200px;
   height: 60px;
   position: absolute;
-  top: 25px;
-  right: 125px;
+  top: 10px;
+  right: 100px;
 }
 
 #ui .scene-messages {
