@@ -1,3 +1,4 @@
+import { updateSystemCPU, updateSystemGPU } from './system'
 import { createUniverse } from '-/bodies/universe'
 import { createGalaxy } from '-/bodies/galaxy'
 import { initOimoPhysics } from './physics'
@@ -34,16 +35,27 @@ const init = async (scene, config) => {
     deltaT: config.system.deltaT,
     gpuCollisions: config.system.gpuCollisions
   })
-  // console.log(systemWorker)
 
-  const animateScene = delta =>
-    animate({
-      delta,
-      scene,
-      systemWorker
-    })
+  systemWorker.onmessage = e => {
+    systemWorker.physics.dt = e.data[0]
+    systemWorker.physics.metric = e.data[2]
+    systemWorker.physics.collisions = e.data[3]
+    systemWorker.physics.gridSystem = e.data[4]
+    systemWorker.physics.maxMark = e.data[5]
+    systemWorker.physics.fitness = e.data[6]
+    systemWorker.physics.sumFit = e.data[7]
+    systemWorker.physics.t = e.data[8]
+    systemWorker.physics.count = e.data[9]
+    systemWorker.physics.tryCount = e.data[10]
+    systemWorker.physics.gpuCollisions = e.data[11]
+    systemWorker.physics.biggestBody = e.data[12]
 
-  return { systemWorker, animate: animateScene }
+    updateSystemCPU(scene, systemWorker.physics)
+  }
+
+  const animate = delta => systemWorker.postMessage([ 'fetch' ])
+
+  return { systemWorker, animate }
 }
 
 export default init
