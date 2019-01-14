@@ -107,35 +107,20 @@ const updateUserOptions = debounce(250, ({ username, options }) =>
 
 const UI = branch(
   {
-    guiEnabled: ['gui', 'enabled'],
+    scene: ['scene'],
     player: ['scene', 'player'],
-    bodyCount: ['scene', 'bodyCount'],
-    messages: ['scene', 'messages'],
-    selected: ['scene', 'selected'],
-    consoleIsOpen: ['gui', 'console', 'isOpen'],
-    helpIsOpen: ['gui', 'help', 'isOpen'],
-    shipConfigIsOpen: ['gui', 'shipConfig', 'isOpen']
+    gui: ['gui']
   },
-  ({
-    guiEnabled,
-    player,
-    bodyCount,
-    messages,
-    selected,
-    consoleIsOpen,
-    helpIsOpen,
-    shipConfigIsOpen
-  }) => {
-    // createFpsWidget()
+  ({ scene, player, gui }) => {
     return (
-      guiEnabled && (
+      gui.isEnabled && (
         <div>
           <div className="selection">
-            <Selection data={selected} />
+            <Selection data={scene.selected && JSON.parse(scene.selected)} />
           </div>
           <div className="help">
             <Help
-              isHidden={!helpIsOpen}
+              isHidden={!gui.help.isOpen}
               setIsHidden={() => state.set(['gui', 'help', 'isOpen'], false)}
             />
           </div>
@@ -145,16 +130,15 @@ const UI = branch(
 
           <Console
             className="scene-console"
-            messages={messages}
             handleCommand={handleCommand}
-            isHidden={!consoleIsOpen}
+            isHidden={!gui.console.isOpen}
           />
 
           <div className="scene-messages">
-            <Messages messages={messages} />
+            <Messages messages={scene.messages} />
           </div>
           <div className="body-counter">
-            <BodyCounter bodies={bodyCount} />
+            <BodyCounter bodies={scene.bodyCount} />
           </div>
           <div className="health-bar">
             <Health hp={10} maxHp={10} />
@@ -166,13 +150,13 @@ const UI = branch(
             <Energy energy={10} maxEnergy={10} />
           </div>
           <div className="speedometer">
-            <Speedometer speed={player.movementSpeed} />
+            <Speedometer speed={player.ship.movementSpeed} />
           </div>
 
-          {shipConfigIsOpen && (
+          {gui.shipConfig.isOpen && (
             <div className="ship-config">
               <ShipConfig
-                isOpen={shipConfigIsOpen}
+                isOpen={gui.shipConfig.isOpen}
                 hull="basic"
                 thrustColor={player.ship.thrust.color}
                 setThrustColor={color => {
@@ -197,6 +181,16 @@ const UI = branch(
                     })
                   }
                 }}
+                displayName={player.displayName}
+                setDisplayName={displayName => {
+                  state.set(['scene', 'player', 'displayName'], displayName)
+                  if (player.username) {
+                    updateUserOptions({
+                      username: player.username,
+                      options: { displayName }
+                    })
+                  }
+                }}
                 close={() => state.set(['gui', 'shipConfig', 'isOpen'], false)}
               />
             </div>
@@ -211,7 +205,7 @@ const UI = branch(
             </a>
           </div>
 
-          {!helpIsOpen && (
+          {!gui.help.isOpen && (
             <div className="help-button">
               <a
                 href="#"
@@ -234,6 +228,7 @@ const HotRootedUI = hot(RootedUI)
  * Create a basic set of configurable options in a dat.gui element
  */
 const createBasicUI = () => {
+  createFpsWidget()
   ReactDOM.render(<HotRootedUI />, document.getElementById('ui'))
 }
 

@@ -42,7 +42,7 @@ const particleEmitterOptions = {
 }
 
 const animateShip = (ship, emitter) => (delta, tick) => {
-  const movementSpeed = sceneState.get([ 'player', 'movementSpeed' ])
+  const movementSpeed = sceneState.get([ 'player', 'ship', 'movementSpeed' ])
   const { color: bodyColor } = sceneState.get([ 'player', 'ship', 'hull' ])
   const { color: thrustColor } = sceneState.get([ 'player', 'ship', 'thrust' ])
 

@@ -65,16 +65,9 @@ module.exports = async config => {
   io.on('connection', socket => {
     let time = 0
     const clientId = uuid()
-    console.log('conn', clientId)
     socket.on('events', data => {
       const message = msgpack.decode(data)
-      pub.publish(
-        'events',
-        JSON.stringify({
-          playerId: clientId,
-          message
-        })
-      )
+      pub.publish('events', JSON.stringify(message))
     })
     sub.on('message', (channel, message) => {
       socket.emit('event', msgpack.encode(JSON.parse(message)))

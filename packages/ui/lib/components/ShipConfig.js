@@ -30,13 +30,15 @@ const inputStyle = {
 }
 
 const ShipConfig = ({
-  isOpen,
   close,
+  displayName,
   hull,
   hullColor,
-  thrustColor,
+  isOpen,
+  setDisplayName,
   setHullColor,
-  setThrustColor
+  setThrustColor,
+  thrustColor
 }) => {
   return (
     isOpen && (
@@ -59,6 +61,13 @@ const ShipConfig = ({
           <label style={{ fontWeight: 'bold' }}>Ship Config</label>
           <br />
           <form style={formStyle}>
+            <label>Display Name</label>
+            <input
+              style={inputStyle}
+              defaultValue={displayName}
+              onChange={event => setDisplayName(event.target.value)}
+            />
+
             <label>Hull Type</label>
             <select style={inputStyle}>
               <option>Basic</option>

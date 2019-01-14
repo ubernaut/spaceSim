@@ -1,12 +1,13 @@
 import Baobab from 'baobab'
 import Schema from './schema'
+import { guid } from '-/utils'
 
 const state = new Baobab(
   {
     config: {
       server: {
-        host: process.env.API_HOST || 'http://192.168.0.112',
-        port: process.env.API_PORT || 1137
+        host: process.env.API_HOST || 'https://void-server-0.herokuapp.com',
+        port: process.env.API_PORT || 443
       },
       threejs: {
         assetPath: 'app/assets/models/'
@@ -19,22 +20,20 @@ const state = new Baobab(
     scene: {
       player: {
         isLoggedIn: false,
-        username: undefined,
-        id: '',
-        movementSpeed: 0,
+        isLocalPlayer: true,
+        userId: guid(),
+        username: 'Anonymous',
+        displayName: 'Anonymous',
         ship: {
           hull: {
             type: 'basic',
             color: '#ffffff'
           },
           thrust: {
-            velocityRandomness: 0.2,
-            color: '#0055ff',
-            turbulence: 0.1,
-            lifetime: 20,
-            size: 1,
-            sizeRandomness: 0.5
-          }
+            type: 'basic',
+            color: '#0055ff'
+          },
+          movementSpeed: 0
         }
       },
       players: [],
@@ -43,7 +42,7 @@ const state = new Baobab(
       selected: ''
     },
     gui: {
-      enabled: true,
+      isEnabled: true,
       console: {
         isOpen: false
       },

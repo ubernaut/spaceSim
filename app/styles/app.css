@@ -64,19 +64,21 @@ a {
 
 #ui .selection {
   width: 375px;
-  min-height: 250px;
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   right: 10px;
   font-size: 0.9em;
   line-height: 1.5em;
+}
+#ui .selection > div {
+  min-height: 260px;
 }
 
 #ui .reticle {
   width: 150px;
   height: 150px;
   position: absolute;
-  top: calc(50% - 75px);
+  top: calc(62% - 75px);
   left: calc(50% - 75px);
 }
 
@@ -93,44 +95,44 @@ a {
   width: 200px;
   height: 60px;
   position: absolute;
-  bottom: 70px;
+  bottom: 60px;
   left: calc(50% - 200px);
 }
 #ui .health-bar > div {
-  border-radius: 25px 0 0 0 !important;
+  border-radius: 30px 0 0 0 !important;
 }
 
 #ui .speedometer {
   width: 200px;
   height: 60px;
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   left: calc(50% - 200px);
 }
 #ui .speedometer > div {
-  border-radius: 0 0 0 25px !important;
+  border-radius: 0 !important;
 }
 
 #ui .shields-bar {
   width: 200px;
   height: 60px;
   position: absolute;
-  bottom: 70px;
+  bottom: 60px;
   left: 50%;
 }
 #ui .shields-bar > div {
-  border-radius: 0 25px 0 0 !important;
+  border-radius: 0 30px 0 0 !important;
 }
 
 #ui .energy-bar {
   width: 200px;
   height: 60px;
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   left: 50%;
 }
 #ui .energy-bar > div {
-  border-radius: 0 0 25px 0 !important;
+  border-radius: 0 !important;
 }
 
 #ui .body-counter {
@@ -143,9 +145,9 @@ a {
 
 #ui .scene-messages {
   width: 375px;
-  height: 250px;
+  height: 260px;
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   left: 10px;
   font-size: 0.9em;
   line-height: 1.5em;
@@ -164,9 +166,9 @@ a {
 
 #ui .ship-config {
   width: 400px;
-  height: 300px;
+  height: 400px;
   position: absolute;
-  top: calc(50% - 150px);
+  top: calc(50% - 200px);
   right: calc(50% - 200px);
   pointer-events: all;
 }
@@ -189,4 +191,9 @@ a {
   left: 10px;
   top: 10px;
   font-size: 1.9em;
+}
+
+#ui .help-button:hover,
+#ui .ship-config-button:hover {
+  background-color: #555555aa;
 }
