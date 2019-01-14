@@ -17,7 +17,7 @@ const style = props => ({
 const Selection = ({ data }) => {
   return !data || data === '' ? null : (
     <HudElement>
-      {data.name === 'spaceShip' ? (
+      {data.name === 'spaceShip' && data.userData && data.userData.ship ? (
         <ShipInfo data={data} />
       ) : (
         <Default data={data} />

@@ -4,10 +4,14 @@
     "type": "admin",
     "options": {
       "ship": {
+        "hull": {
+          "color": "#2449b0"
+        },
         "thrust": {
-          "color": "#ff00ff"
+          "color": "#0dc4cd"
         }
-      }
+      },
+      "displayName": "Admin"
     }
   },
   {
@@ -15,10 +19,14 @@
     "type": "admin",
     "options": {
       "ship": {
+        "hull": {
+          "color": "#2449b0"
+        },
         "thrust": {
-          "color": "#00ff00"
+          "color": "#0dc4cd"
         }
-      }
+      },
+      "displayName": "C"
     }
   },
   {
@@ -33,7 +41,7 @@
           "color": "#0dc4cd"
         }
       },
-      "displayName": "Forrest"
+      "displayName": "F"
     }
   },
   {
@@ -41,13 +49,14 @@
     "type": "admin",
     "options": {
       "ship": {
-        "thrust": {
-          "color": "#b02fff"
-        },
         "hull": {
-          "color": "#ff5a7a"
+          "color": "#2449b0"
+        },
+        "thrust": {
+          "color": "#0dc4cd"
         }
-      }
+      },
+      "displayName": "S"
     }
   }
 ]
