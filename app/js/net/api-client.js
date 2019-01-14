@@ -1,11 +1,16 @@
-const apiUrl = 'http://localhost:1137'
+import state from '-/state'
 
+const serverConfig = state.get([ 'config', 'server' ])
+const apiUrl = `${serverConfig.host}:${serverConfig.port}`
+
+/**
+ * API Client
+ */
 export const client = {
   get: async (route, data = {}) => {
     return (await fetch(`${apiUrl}${route}`)).json()
   },
   post: async (route, data = {}) => {
-    console.log({ data })
     const result = await fetch(`${apiUrl}${route}`, {
       method: 'POST',
       headers: {
@@ -17,16 +22,17 @@ export const client = {
   }
 }
 
+/**
+ * API Methods
+ */
 export const getUser = async username => {
   return client.get(`/users/${username}`)
 }
 
 export const createUser = async username => {
-  const response = await client.post('/users', { username })
-
-  return response
+  return client.post('/users', { username })
 }
 
 export const updateUser = async (username, options) => {
-  await client.post(`/users/${username}`, { options })
+  return client.post(`/users/${username}`, { options })
 }

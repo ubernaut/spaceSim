@@ -1,7 +1,11 @@
 const fs = require('fs').promises
 const path = require('path')
 const config = require('./config')
+const _ = require('lodash')
 
+/**
+ * Database helpers
+ */
 const select = async tableName => {
   const data = await fs.readFile(
     path.join(config.directories.data, `${tableName}.json`)
@@ -16,6 +20,9 @@ const update = async (tableName, data) => {
   )
 }
 
+/**
+ * DAL
+ */
 const getUsers = () => select('users')
 exports.getUsers = getUsers
 
@@ -60,9 +67,8 @@ const updateUser = async ({ username, options }) => {
       error: 'no user'
     }
   }
-  console.log({ user })
-  user.options = Object.assign({}, user.options, options)
-  console.log({ user })
+  user.options = _.merge({}, user.options, options)
+
   await update('users', users)
 
   return {

@@ -1,5 +1,6 @@
 import React from 'react'
 import HudElement from './HudElement'
+import { FaRegWindowClose } from 'react-icons/fa'
 
 const style = props => ({
   fontSize: '1em',
@@ -28,7 +29,15 @@ const inputStyle = {
   marginBottom: '1.5em'
 }
 
-const ShipConfig = ({ isOpen, close, hull, thrustColor, setThrustColor }) => {
+const ShipConfig = ({
+  isOpen,
+  close,
+  hull,
+  hullColor,
+  thrustColor,
+  setHullColor,
+  setThrustColor
+}) => {
   return (
     isOpen && (
       <HudElement>
@@ -36,14 +45,15 @@ const ShipConfig = ({ isOpen, close, hull, thrustColor, setThrustColor }) => {
           href="#"
           style={{
             position: 'absolute',
-            top: '1em',
-            right: '1.5em',
+            top: '15px',
+            right: '15px',
             textDecoration: 'none',
-            color: 'inherit'
+            color: 'inherit',
+            fontSize: '1.5em'
           }}
           onClick={() => close()}
         >
-          X
+          <FaRegWindowClose />
         </a>
         <div style={style()}>
           <label style={{ fontWeight: 'bold' }}>Ship Config</label>
@@ -54,7 +64,15 @@ const ShipConfig = ({ isOpen, close, hull, thrustColor, setThrustColor }) => {
               <option>Basic</option>
             </select>
 
-            <label>Thruster Color</label>
+            <label>Hull Color</label>
+            <input
+              style={inputStyle}
+              type="color"
+              defaultValue={hullColor}
+              onChange={event => setHullColor(event.target.value)}
+            />
+
+            <label>Thrust Color</label>
             <input
               style={inputStyle}
               type="color"

@@ -41,9 +41,11 @@ const particleEmitterOptions = {
   spawnRate: 600
 }
 
-const animateShip = emitter => (delta, tick) => {
+const animateShip = (ship, emitter) => (delta, tick) => {
   const movementSpeed = sceneState.get([ 'player', 'movementSpeed' ])
-  const { color } = sceneState.get([ 'player', 'ship', 'thruster' ])
+  const { color: bodyColor } = sceneState.get([ 'player', 'ship', 'hull' ])
+  const { color: thrustColor } = sceneState.get([ 'player', 'ship', 'thrust' ])
+
   const options = Object.assign({}, particleOptions, {
     position: {
       x: Math.random() * 0.5 - 0.25,
@@ -56,12 +58,14 @@ const animateShip = emitter => (delta, tick) => {
       Math.max(1, Math.min(1e3, movementSpeed * 1e-5))
     ),
     size: Math.max(5, Math.min(50, movementSpeed * 1e-4)),
-    color
+    color: thrustColor
   })
   for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
     emitter.spawnParticle(options)
   }
   emitter.update(tick)
+
+  ship.children[1].material.color = new THREE.Color(bodyColor)
 }
 
 // kinda above things, looking towards the sun
@@ -97,7 +101,7 @@ const createShip = ({ position, scale, rotation } = defaults) => {
 
           resolve({
             ship,
-            animate: animateShip(emitter)
+            animate: animateShip(ship, emitter)
           })
         },
         onProgress,
