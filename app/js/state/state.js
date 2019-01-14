@@ -5,10 +5,8 @@ const state = new Baobab(
   {
     config: {
       server: {
-        // host: 'http://thedagda.co/',
-        // host: 'https://void-server-0.herokuapp.com/',
-        host: 'localhost',
-        port: 1137
+        host: process.env.API_HOST || 'http://localhost',
+        port: process.env.API_PORT || 1137
       },
       threejs: {
         assetPath: 'app/assets/models/'
@@ -25,7 +23,11 @@ const state = new Baobab(
         id: '',
         movementSpeed: 0,
         ship: {
-          thruster: {
+          hull: {
+            type: 'basic',
+            color: '#ffffff'
+          },
+          thrust: {
             velocityRandomness: 0.2,
             color: '#0055ff',
             turbulence: 0.1,

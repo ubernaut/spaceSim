@@ -52,7 +52,7 @@ const handleCommand = ({ command, clear }) => {
         }
         if (key === 'thrust') {
           sceneState.set(
-            ['player', 'ship', 'thruster', 'color'],
+            ['player', 'ship', 'thrust', 'color'],
             parseInt(val, 16)
           )
           return `set ship thrust color to ${val}`
@@ -71,8 +71,8 @@ const handleCommand = ({ command, clear }) => {
       const userData = await getUser(username)
       if (userData && userData.payload) {
         sceneState.set(
-          ['player', 'ship', 'thruster', 'color'],
-          userData.payload.options.ship.thrustColor
+          ['player', 'ship', 'thrust', 'color'],
+          userData.payload.options.ship.thrust.color
         )
         sceneState.set(['player', 'isLoggedIn'], true)
         sceneState.set(['player', 'username'], userData.payload.username)
@@ -97,12 +97,13 @@ const handleCommand = ({ command, clear }) => {
   return handler(command)
 }
 
-const updateUserOptions = debounce(250, ({ username, color }) =>
-  updateUser(username, { ship: { thrustColor: color } })
+const updateUserOptions = debounce(250, ({ username, options }) =>
+  updateUser(username, options)
 )
 
 const UI = branch(
   {
+    guiEnabled: ['gui', 'enabled'],
     player: ['scene', 'player'],
     bodyCount: ['scene', 'bodyCount'],
     messages: ['scene', 'messages'],
@@ -112,6 +113,7 @@ const UI = branch(
     shipConfigIsOpen: ['gui', 'shipConfig', 'isOpen']
   },
   ({
+    guiEnabled,
     player,
     bodyCount,
     messages,
@@ -122,87 +124,101 @@ const UI = branch(
   }) => {
     // createFpsWidget()
     return (
-      <div>
-        <div className="selection">
-          <Selection data={selected} />
-        </div>
-        <div className="help">
-          <Help
-            isHidden={!helpIsOpen}
-            setIsHidden={() => state.set(['gui', 'help', 'isOpen'], false)}
-          />
-        </div>
-        <div className="reticle">
-          <Reticle />
-        </div>
-
-        <Console
-          className="scene-console"
-          messages={messages}
-          handleCommand={handleCommand}
-          isHidden={!consoleIsOpen}
-        />
-
-        <div className="scene-messages">
-          <Messages messages={messages} />
-        </div>
-        <div className="body-counter">
-          <BodyCounter bodies={bodyCount} />
-        </div>
-        <div className="health-bar">
-          <Health hp={10} maxHp={10} />
-        </div>
-        <div className="shields-bar">
-          <Shields shields={10} maxShields={10} />
-        </div>
-        <div className="energy-bar">
-          <Energy energy={10} maxEnergy={10} />
-        </div>
-        <div className="speedometer">
-          <Speedometer speed={player.movementSpeed} />
-        </div>
-
-        {shipConfigIsOpen && (
-          <div className="ship-config">
-            <ShipConfig
-              isOpen={shipConfigIsOpen}
-              hull="basic"
-              thrustColor={player.ship.thruster.color}
-              setThrustColor={color => {
-                state.set(
-                  ['scene', 'player', 'ship', 'thruster', 'color'],
-                  color
-                )
-                updateUserOptions({
-                  username: sceneState.get('player', 'username'),
-                  color
-                })
-              }}
-              close={() => state.set(['gui', 'shipConfig', 'isOpen'], false)}
+      guiEnabled && (
+        <div>
+          <div className="selection">
+            <Selection data={selected} />
+          </div>
+          <div className="help">
+            <Help
+              isHidden={!helpIsOpen}
+              setIsHidden={() => state.set(['gui', 'help', 'isOpen'], false)}
             />
           </div>
-        )}
+          <div className="reticle">
+            <Reticle />
+          </div>
 
-        <div className="ship-config-button">
-          <a
-            href="#"
-            onClick={() => state.set(['gui', 'shipConfig', 'isOpen'], true)}
-          >
-            <ShipConfigIcon />
-          </a>
-        </div>
+          <Console
+            className="scene-console"
+            messages={messages}
+            handleCommand={handleCommand}
+            isHidden={!consoleIsOpen}
+          />
 
-        {!helpIsOpen && (
-          <div className="help-button">
+          <div className="scene-messages">
+            <Messages messages={messages} />
+          </div>
+          <div className="body-counter">
+            <BodyCounter bodies={bodyCount} />
+          </div>
+          <div className="health-bar">
+            <Health hp={10} maxHp={10} />
+          </div>
+          <div className="shields-bar">
+            <Shields shields={10} maxShields={10} />
+          </div>
+          <div className="energy-bar">
+            <Energy energy={10} maxEnergy={10} />
+          </div>
+          <div className="speedometer">
+            <Speedometer speed={player.movementSpeed} />
+          </div>
+
+          {shipConfigIsOpen && (
+            <div className="ship-config">
+              <ShipConfig
+                isOpen={shipConfigIsOpen}
+                hull="basic"
+                thrustColor={player.ship.thrust.color}
+                setThrustColor={color => {
+                  state.set(
+                    ['scene', 'player', 'ship', 'thrust', 'color'],
+                    color
+                  )
+                  if (player.username) {
+                    updateUserOptions({
+                      username: player.username,
+                      options: { ship: { thrust: { color } } }
+                    })
+                  }
+                }}
+                hullColor={player.ship.hull.color}
+                setHullColor={color => {
+                  state.set(['scene', 'player', 'ship', 'hull', 'color'], color)
+                  if (player.username) {
+                    updateUserOptions({
+                      username: player.username,
+                      options: { ship: { hull: { color } } }
+                    })
+                  }
+                }}
+                close={() => state.set(['gui', 'shipConfig', 'isOpen'], false)}
+              />
+            </div>
+          )}
+
+          <div className="ship-config-button">
             <a
               href="#"
-              onClick={() => state.set(['gui', 'help', 'isOpen'], true)}
+              onClick={() => state.set(['gui', 'shipConfig', 'isOpen'], true)}
             >
-              <HelpIcon />
+              <ShipConfigIcon />
             </a>
           </div>
-        )}
-      </div>
+
+          {!helpIsOpen && (
+            <div className="help-button">
+              <a
+                href="#"
+                onClick={() => state.set(['gui', 'help', 'isOpen'], true)}
+              >
+                <HelpIcon />
+              </a>
+            </div>
+          )}
+        </div>
+      )
     )
   }
 )
@@ -214,66 +230,7 @@ const HotRootedUI = hot(RootedUI)
  * Create a basic set of configurable options in a dat.gui element
  */
 const createBasicUI = () => {
-  if (!guiState.enabled) {
-    return
-  }
-  createFpsWidget()
   ReactDOM.render(<HotRootedUI />, document.getElementById('ui'))
-
-  // const gui = new dat.gui.GUI()
-  //
-  // const starOptions = guiState.options.star
-  // if (starOptions.enabled) {
-  //   initStarOptions(gui, starOptions)
-  // }
-  //
-  // const shipOptions = guiState.options.ship
-  // if (shipOptions.enabled) {
-  //   initShipOptions(gui, shipOptions)
-  // }
-}
-
-/**
- * Ship options
- */
-const initShipOptions = (gui, options) => {
-  const shipFolder = gui.addFolder(options.label)
-  const ship = {
-    type: 'aship'
-  }
-  shipFolder
-    .add(ship, 'type')
-    .options([])
-    .name('Type')
-    .listen()
-  shipFolder.open()
-}
-
-/**
- * Star options
- */
-const initStarOptions = (gui, options) => {
-  const starFolder = gui.addFolder(options.label)
-  const star = {
-    type: options.options.type,
-    size: options.options.size
-  }
-  starFolder
-    .add(star, 'type')
-    .options(starTypes)
-    .name('Type')
-    .onChange(value => {
-      const [r, g, b] = value.split(',').map(parseFloat)
-      uniforms.sun.color.red.value = (r / 255) * 0.75
-      uniforms.sun.color.green.value = (g / 255) * 0.75
-      uniforms.sun.color.blue.value = (b / 255) * 0.75
-    })
-    .listen()
-  starFolder
-    .add(star, 'size', 0, 200, 5)
-    .name('Size')
-    .listen()
-  starFolder.open()
 }
 
 /**

@@ -4,7 +4,9 @@
     "type": "admin",
     "options": {
       "ship": {
-        "thrustColor": "#ff00ff"
+        "thrust": {
+          "color": "#ff00ff"
+        }
       }
     }
   },
@@ -13,7 +15,9 @@
     "type": "admin",
     "options": {
       "ship": {
-        "thrustColor": "#00ff00"
+        "thrust": {
+          "color": "#00ff00"
+        }
       }
     }
   },
@@ -22,7 +26,23 @@
     "type": "admin",
     "options": {
       "ship": {
-        "thrustColor": "#0aff00"
+        "hull": {
+          "color": "#c6ca0f"
+        },
+        "thrust": {
+          "color": "#ff0000"
+        }
+      }
+    }
+  },
+  {
+    "username": "s",
+    "type": "admin",
+    "options": {
+      "ship": {
+        "thrust": {
+          "color": "#b02fff"
+        }
       }
     }
   }
