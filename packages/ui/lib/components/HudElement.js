@@ -6,7 +6,7 @@ const style = props => ({
   color: '#44ff44cc',
   width: '100%',
   height: '100%',
-  borderRadius: '10px'
+  borderRadius: '5px'
 })
 
 const HudElement = ({ className = '', children }) => {

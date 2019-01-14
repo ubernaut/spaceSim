@@ -55,14 +55,14 @@ export default class KeyboardControls {
     )
     const newSpeed = this.movementSpeed + dir * step
     this.movementSpeed = newSpeed
-    sceneState.set([ 'player', 'movementSpeed' ], newSpeed)
+    sceneState.set([ 'player', 'ship', 'movementSpeed' ], newSpeed)
   }
 
   update (delta) {
     this.keyboard.update()
     this.mouse.update()
 
-    this.movementSpeed = sceneState.get([ 'player', 'movementSpeed' ])
+    this.movementSpeed = sceneState.get([ 'player', 'ship', 'movementSpeed' ])
 
     if (this.selection) {
       setSelected({

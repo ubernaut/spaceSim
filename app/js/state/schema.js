@@ -1,5 +1,40 @@
 import { struct } from 'superstruct'
 
+const Ship = struct({
+  uuid: 'string?',
+  hull: {
+    type: 'string',
+    color: 'string'
+  },
+  thrust: {
+    type: 'string',
+    color: 'string'
+  },
+  movementSpeed: 'number'
+})
+
+const Player = struct({
+  isLoggedIn: 'boolean',
+  isLocalPlayer: 'boolean',
+  userId: 'string',
+  username: 'string?',
+  displayName: 'string',
+  ship: Ship
+})
+
+const GUI = struct({
+  isEnabled: 'boolean',
+  console: {
+    isOpen: 'boolean'
+  },
+  help: {
+    isOpen: 'boolean'
+  },
+  shipConfig: {
+    isOpen: 'boolean'
+  }
+})
+
 const Schema = struct({
   config: {
     server: {
@@ -15,30 +50,13 @@ const Schema = struct({
     }
   },
   scene: {
-    player: {
-      isLoggedIn: 'boolean',
-      username: 'string?',
-      id: 'string',
-      ship: 'object?',
-      movementSpeed: 'number'
-    },
-    players: [ 'object' ],
+    player: Player,
+    players: [ Player ],
     bodyCount: 'number',
     messages: [ 'string' ],
     selected: 'string?'
   },
-  gui: {
-    enabled: 'boolean',
-    console: {
-      isOpen: 'boolean'
-    },
-    help: {
-      isOpen: 'boolean'
-    },
-    shipConfig: {
-      isOpen: 'boolean'
-    }
-  }
+  gui: GUI
 })
 
 export default Schema

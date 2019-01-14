@@ -4,6 +4,7 @@ import createSocket from '-/net/socket'
 import { onProgress, onError } from '-/utils'
 import { shoot } from '-/player/weapons'
 import state from '-/state'
+import { addMessage } from '-/state/branches/scene'
 import logger from '-/logger'
 
 const playersState = state.select([ 'scene', 'players' ])
@@ -59,17 +60,24 @@ const loadOrUpdatePlayer = (playerId, playerData, scene, localPlayerId) => {
   if (player) {
     setShipProps(player, playerData)
   } else {
+    const players = playersState.get()
+    for (const p of players) {
+      if (p.userId === playerId) {
+        return
+      }
+    }
     playersToLoad.push({ playerId, playerData, scene })
   }
 }
 
 const loadNewPlayer = scene => ({ playerId, playerData }) => {
-  logger.debug('loading new player...', playerId)
+  logger.debug('loading new player...', playerId, playerData)
+  addMessage(`loading player ${playerId}...`)
 
   return new Promise((resolve, reject) => {
     const onShipObjLoaded = object => {
       // meta
-      object.name = playerId
+      object.name = playerData.username
       // position, orientation
       setShipProps(object, playerData)
       object.scale.set(20, 20, 20)
@@ -78,7 +86,28 @@ const loadNewPlayer = scene => ({ playerId, playerData }) => {
       playerData.ship = object
       scene.add(object)
 
-      const players = [ ...playersState.get(), { playerId } ]
+      const players = [
+        ...playersState.get(),
+        {
+          isLoggedIn: true,
+          isLocalPlayer: false,
+          userId: '',
+          username: playerData.username || 'Anonymous',
+          displayName: playerData.username || 'Anonymous',
+          ship: {
+            uuid: object.uuid,
+            hull: {
+              type: 'basic',
+              color: '#ffffff'
+            },
+            thrust: {
+              type: 'basic',
+              color: '#ffffff'
+            },
+            movementSpeed: 0
+          }
+        }
+      ]
       playersState.set(players)
 
       resolve()

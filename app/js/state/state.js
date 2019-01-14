@@ -19,22 +19,20 @@ const state = new Baobab(
     scene: {
       player: {
         isLoggedIn: false,
-        username: undefined,
-        id: '',
-        movementSpeed: 0,
+        isLocalPlayer: true,
+        userId: '',
+        username: 'Anonymous',
+        displayName: 'Anonymous',
         ship: {
           hull: {
             type: 'basic',
             color: '#ffffff'
           },
           thrust: {
-            velocityRandomness: 0.2,
-            color: '#0055ff',
-            turbulence: 0.1,
-            lifetime: 20,
-            size: 1,
-            sizeRandomness: 0.5
-          }
+            type: 'basic',
+            color: '#0055ff'
+          },
+          movementSpeed: 0
         }
       },
       players: [],
@@ -43,7 +41,7 @@ const state = new Baobab(
       selected: ''
     },
     gui: {
-      enabled: true,
+      isEnabled: true,
       console: {
         isOpen: false
       },
