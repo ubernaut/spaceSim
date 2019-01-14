@@ -74,6 +74,10 @@ const handleCommand = ({ command, clear }) => {
           ['player', 'ship', 'thrust', 'color'],
           userData.payload.options.ship.thrust.color
         )
+        sceneState.set(
+          ['player', 'ship', 'hull', 'color'],
+          userData.payload.options.ship.hull.color
+        )
         sceneState.set(['player', 'isLoggedIn'], true)
         sceneState.set(['player', 'username'], userData.payload.username)
         return `Logged in as ${username}`
