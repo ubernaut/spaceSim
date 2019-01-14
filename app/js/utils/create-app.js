@@ -67,7 +67,7 @@ export const createPostprocessing = ({ renderer, scene, camera }) => {
   const bloomPass = new BloomPass({
     resolutionScale: 0.05,
     kernelSize: 3.0,
-    intensity: 0.3,
+    intensity: 0.5,
     distinction: 1
   })
   bloomPass.renderToScreen = true
