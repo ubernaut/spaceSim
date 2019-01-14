@@ -1,0 +1,29 @@
+[
+  {
+    "username": "admin",
+    "type": "admin",
+    "options": {
+      "ship": {
+        "thrustColor": "#ff00ff"
+      }
+    }
+  },
+  {
+    "username": "c",
+    "type": "admin",
+    "options": {
+      "ship": {
+        "thrustColor": "#00ff00"
+      }
+    }
+  },
+  {
+    "username": "f",
+    "type": "admin",
+    "options": {
+      "ship": {
+        "thrustColor": "#0aff00"
+      }
+    }
+  }
+]

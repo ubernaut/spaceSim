@@ -16,6 +16,8 @@ const Schema = struct({
   },
   scene: {
     player: {
+      isLoggedIn: 'boolean',
+      username: 'string?',
       id: 'string',
       ship: 'object?',
       movementSpeed: 'number'

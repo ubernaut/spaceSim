@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { hot } from 'react-hot-loader/root'
 import { root, branch } from 'baobab-react/higher-order'
 import dat from 'app/lib/dat.gui.js'
+import { debounce, throttle } from 'throttle-debounce'
 
 import Speedometer from '@void/ui/lib/components/Speedometer'
 import BodyCounter from '@void/ui/lib/components/BodyCounter'
@@ -19,6 +20,7 @@ import ShipConfigIcon from '@void/ui/lib/components/icons/ShipConfig'
 import HelpIcon from '@void/ui/lib/components/icons/Help'
 
 import { starTypes } from '-/bodies/star'
+import { getUser, createUser, updateUser } from '-/net/api-client'
 import state from '-/state'
 import sceneState from '-/state/branches/scene'
 import uniforms from '-/uniforms'
@@ -63,12 +65,41 @@ const handleCommand = ({ command, clear }) => {
       sceneState.set(['player', 'movementSpeed'], parseFloat(speed, 10))
       return `set speed to ${speed}`
     },
-    '/shipconfig': cmd => state.set(['gui', 'shipConfig', 'isOpen'], true)
+    '/shipconfig': cmd => state.set(['gui', 'shipConfig', 'isOpen'], true),
+    '/login': async cmd => {
+      const [_, username, ...rest] = cmd.split(' ')
+      const userData = await getUser(username)
+      if (userData && userData.payload) {
+        sceneState.set(
+          ['player', 'ship', 'thruster', 'color'],
+          userData.payload.options.ship.thrustColor
+        )
+        sceneState.set(['player', 'isLoggedIn'], true)
+        sceneState.set(['player', 'username'], userData.payload.username)
+        return `Logged in as ${username}`
+      } else {
+        return `Unknown user ${username}`
+      }
+    },
+    '/newuser': async cmd => {
+      const [_, username, ...rest] = cmd.split(' ')
+      const userData = await getUser(username)
+      if (userData && userData.payload) {
+        return `User ${username} already exists`
+      } else {
+        const result = await createUser(username)
+        console.log(result)
+      }
+    }
   }
   const handler = handlers[cmd] || (() => `command not found: ${cmd}`)
 
   return handler(command)
 }
+
+const updateUserOptions = debounce(250, ({ username, color }) =>
+  updateUser(username, { ship: { thrustColor: color } })
+)
 
 const UI = branch(
   {
@@ -137,12 +168,16 @@ const UI = branch(
               isOpen={shipConfigIsOpen}
               hull="basic"
               thrustColor={player.ship.thruster.color}
-              setThrustColor={color =>
+              setThrustColor={color => {
                 state.set(
                   ['scene', 'player', 'ship', 'thruster', 'color'],
                   color
                 )
-              }
+                updateUserOptions({
+                  username: sceneState.get('player', 'username'),
+                  color
+                })
+              }}
               close={() => state.set(['gui', 'shipConfig', 'isOpen'], false)}
             />
           </div>

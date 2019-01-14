@@ -4,6 +4,7 @@ import { debounce } from 'throttle-debounce'
 
 import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
+import { getUser } from '-/net/api-client'
 import * as weapons from '-/player/weapons'
 import { createShip } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
