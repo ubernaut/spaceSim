@@ -1,11 +1,16 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const resolve = p => path.join(__dirname, p)
 
+const isProd = process.env.NODE_ENV === 'production'
+
+const devPlugins = [ new webpack.HotModuleReplacementPlugin() ]
+
 module.exports = {
-  mode: 'development',
+  mode: isProd ? ' production' : 'development',
 
   context: path.resolve(__dirname),
 
@@ -66,7 +71,11 @@ module.exports = {
       filename: 'index.html',
       template: 'app/index.html'
     }),
-    new webpack.HotModuleReplacementPlugin(),
+    new CopyWebpackPlugin([
+      { from: 'app/lib', to: 'app/lib' },
+      { from: 'app/assets', to: 'app/assets' }
+    ]),
+    ...(isProd ? [] : devPlugins),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
   ],
