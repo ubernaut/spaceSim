@@ -20,6 +20,8 @@ const state = new Baobab(
     },
     scene: {
       player: {
+        isLoggedIn: false,
+        username: undefined,
         id: '',
         movementSpeed: 0,
         ship: {

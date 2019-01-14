@@ -7,8 +7,10 @@ const redis = require('redis')
 const Promise = require('bluebird')
 const uuid = require('uuid/v4')
 const msgpack = require('msgpack-lite')
+const bodyParser = require('body-parser')
 
 const config = require('./config')
+const users = require('./controllers/users')
 
 Promise.promisifyAll(redis.RedisClient.prototype)
 Promise.promisifyAll(redis.Multi.prototype)
@@ -22,20 +24,31 @@ module.exports = async config => {
   const server = http.Server(app)
 
   /**
-   * Middleware
+   * Middleware & config
    */
   const stats = {
     hits: 0
   }
   app.use('*', (req, res, next) => {
     stats.hits += 1
+    res.wrap = data =>
+      res.json({
+        success: true,
+        payload: data
+      })
     next()
   })
+  app.use(bodyParser.json())
+  app.set('json spaces', 2)
 
   /**
    * REST API
    */
   app.get('/stats', (req, res, next) => res.json(stats))
+  app.get('/users', users.get)
+  app.post('/users', users.createUser)
+  app.get('/users/:username', users.getUser)
+  app.post('/users/:username', users.updateUser)
 
   /**
    * Realtime API
