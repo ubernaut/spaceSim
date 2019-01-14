@@ -5,8 +5,8 @@ const state = new Baobab(
   {
     config: {
       server: {
-        host: process.env.API_HOST || 'http://192.168.0.112',
-        port: process.env.API_PORT || 1137
+        host: process.env.API_HOST || 'https://void-server-0.herokuapp.com',
+        port: process.env.API_PORT || 443
       },
       threejs: {
         assetPath: 'app/assets/models/'
