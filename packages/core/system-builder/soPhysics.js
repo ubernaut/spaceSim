@@ -9,7 +9,7 @@ class soPhysics {
   constructor (
     system,
     maxMark = 100000,
-    dt = 0.02,
+    dt = 0.002,
     metric = false,
     GPGPU = false,
     gpuCollisions = true
@@ -174,78 +174,78 @@ class soPhysics {
     // this.GPUcombineAcceleration=GPUcombineAcceleration;
   }
 
-  initSuperKernel () {
-    this.gpu = new GPU()
-    this.GPUcomputeAcceleration = this.gpu.createKernel(
-      function (pos, mass, acc, rad) {
-        var result = 0
-        var d_x = pos[this.thread.x][0] - pos[this.thread.z][0]
-        var d_y = pos[this.thread.x][1] - pos[this.thread.z][1]
-        var d_z = pos[this.thread.x][2] - pos[this.thread.z][2]
-        var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
-        var rad2 = Math.sqrt(radius)
-        var grav_mag = 0.0
-        var grav = 0
-        if (
-          this.thread.x != 0 &&
-          this.thread.x != this.thread.z &&
-          rad2 > 0.333 * (rad[this.thread.z] + rad[this.thread.x])
-        ) {
-          grav_mag = this.constants.G / Math.pow(radius, 3.0 / 2.0)
-          if (this.thread.y == 0) {
-            grav = grav_mag * d_x
-          } else if (this.thread.y == 1) {
-            grav = grav_mag * d_y
-          } else if (this.thread.y == 2) {
-            grav = grav_mag * d_z
-          } else {
-            return 999
-            /* FOURTH DIMENSION this should never happen */
-          }
-          result +=
-            0 - (acc[this.thread.x][this.thread.y] + grav * mass[this.thread.z])
-        } else {
-          // collision detected
-        }
-
-        return result
-      },
-      {
-        output: [ this.gridSystem.pos.length, 3, this.gridSystem.pos.length ],
-        constants: { size: this.gridSystem.pos.length, G }
-      }
-    )
-    const GPUcomputeAcceleration = this.GPUcomputeAcceleration
-    this.sum = this.gpu.createKernel(
-      function (acc) {
-        var sumDim = 0
-        for (var i = 0; i < this.constants.size; i++) {
-          sumDim = sumDim + acc[this.thread.x][this.thread.y][i]
-        }
-        return sumDim
-        // if(sumPosition==0){return runningSum;}
-        // else{return runningSum+sum(pos, mass, acc, rad, sumPosition-1, runningSum)}
-      },
-      {
-        output: [ this.gridSystem.pos.length, 3 ],
-        constants: { size: this.gridSystem.pos.length, G }
-      }
-    )
-    const sum = this.sum
-    this.GPUcombineAcceleration = this.gpu.combineKernels(
-      sum,
-      GPUcomputeAcceleration,
-      function (pos, mass, acc, rad) {
-        return sum(GPUcomputeAcceleration(pos, mass, acc, rad)[this.thread.x])
-      },
-      {
-        output: [ this.gridSystem.pos.length, 3 ],
-        constants: { size: this.gridSystem.pos.length, G }
-      }
-    )
-
-    var shit = this.GPUcombineAcceleration
-  }
+  // initSuperKernel () {
+  //   this.gpu = new GPU()
+  //   this.GPUcomputeAcceleration = this.gpu.createKernel(
+  //     function (pos, mass, acc, rad) {
+  //       var result = 0
+  //       var d_x = pos[this.thread.x][0] - pos[this.thread.z][0]
+  //       var d_y = pos[this.thread.x][1] - pos[this.thread.z][1]
+  //       var d_z = pos[this.thread.x][2] - pos[this.thread.z][2]
+  //       var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
+  //       var rad2 = Math.sqrt(radius)
+  //       var grav_mag = 0.0
+  //       var grav = 0
+  //       if (
+  //         this.thread.x != 0 &&
+  //         this.thread.x != this.thread.z &&
+  //         rad2 > 0.333 * (rad[this.thread.z] + rad[this.thread.x])
+  //       ) {
+  //         grav_mag = this.constants.G / Math.pow(radius, 3.0 / 2.0)
+  //         if (this.thread.y == 0) {
+  //           grav = grav_mag * d_x
+  //         } else if (this.thread.y == 1) {
+  //           grav = grav_mag * d_y
+  //         } else if (this.thread.y == 2) {
+  //           grav = grav_mag * d_z
+  //         } else {
+  //           return 999
+  //           /* FOURTH DIMENSION this should never happen */
+  //         }
+  //         result +=
+  //           0 - (acc[this.thread.x][this.thread.y] + grav * mass[this.thread.z])
+  //       } else {
+  //         // collision detected
+  //       }
+  //
+  //       return result
+  //     },
+  //     {
+  //       output: [ this.gridSystem.pos.length, 3, this.gridSystem.pos.length ],
+  //       constants: { size: this.gridSystem.pos.length, G }
+  //     }
+  //   )
+  //   const GPUcomputeAcceleration = this.GPUcomputeAcceleration
+  //   this.sum = this.gpu.createKernel(
+  //     function (acc) {
+  //       var sumDim = 0
+  //       for (var i = 0; i < this.constants.size; i++) {
+  //         sumDim = sumDim + acc[this.thread.x][this.thread.y][i]
+  //       }
+  //       return sumDim
+  //       // if(sumPosition==0){return runningSum;}
+  //       // else{return runningSum+sum(pos, mass, acc, rad, sumPosition-1, runningSum)}
+  //     },
+  //     {
+  //       output: [ this.gridSystem.pos.length, 3 ],
+  //       constants: { size: this.gridSystem.pos.length, G }
+  //     }
+  //   )
+  //   const sum = this.sum
+  //   this.GPUcombineAcceleration = this.gpu.combineKernels(
+  //     sum,
+  //     GPUcomputeAcceleration,
+  //     function (pos, mass, acc, rad) {
+  //       return sum(GPUcomputeAcceleration(pos, mass, acc, rad)[this.thread.x])
+  //     },
+  //     {
+  //       output: [ this.gridSystem.pos.length, 3 ],
+  //       constants: { size: this.gridSystem.pos.length, G }
+  //     }
+  //   )
+  //
+  //   var shit = this.GPUcombineAcceleration
+  // }
 
   GPUAccelerate (useGpuCollisions) {
     this.convertToStellar()
@@ -521,47 +521,47 @@ class soPhysics {
     }
   }
 
-  accelerateCuda () {
-    let G = 2.93558 * Math.pow(10, -4)
-    let epsilon = 0.01
-    if (this.metric) {
-      this.convertToStellar()
-    }
-    for (let i = 0; i < this.gridSystem.count; i++) {
-      if (this.gridSystem.names[i] != 'DELETED') {
-        for (let j = 0; j < i; j++) {
-          if (this.gridSystem.names[j] != 'DELETED') {
-            this.accGravSingle(
-              this.gridSystem.player,
-              this.gridSystem.names,
-              this.gridSystem.mass,
-              this.gridSystem.pos,
-              this.gridSystem.vel,
-              this.gridSystem.acc,
-              this.gridSystem.rad,
-              i,
-              j
-            )
-          }
-        }
-      }
-    }
-    // console.log("CPU")
-    // console.log(this.gridSystem.acc)
-    this.calVelPosCuda()
-
-    this.gridSystem.resetAcc()
-    for (let i = 0; i < this.gridSystem.length; i++) {
-      if (this.gridSystem.names[i] == 'DELETED') {
-        this.gridSystem.removeBody(i)
-      }
-    }
-    if (!this.metric) {
-      this.convertToMetric()
-    }
-    this.gridSystem.collisions = []
-  }
-
+  // accelerateCuda () {
+  //   let G = 2.93558 * Math.pow(10, -4)
+  //   let epsilon = 0.01
+  //   if (this.metric) {
+  //     this.convertToStellar()
+  //   }
+  //   for (let i = 0; i < this.gridSystem.count; i++) {
+  //     if (this.gridSystem.names[i] != 'DELETED') {
+  //       for (let j = 0; j < i; j++) {
+  //         if (this.gridSystem.names[j] != 'DELETED') {
+  //           this.accGravSingle(
+  //             this.gridSystem.player,
+  //             this.gridSystem.names,
+  //             this.gridSystem.mass,
+  //             this.gridSystem.pos,
+  //             this.gridSystem.vel,
+  //             this.gridSystem.acc,
+  //             this.gridSystem.rad,
+  //             i,
+  //             j
+  //           )
+  //         }
+  //       }
+  //     }
+  //   }
+  //   // console.log("CPU")
+  //   // console.log(this.gridSystem.acc)
+  //   this.calVelPosCuda()
+  //
+  //   this.gridSystem.resetAcc()
+  //   for (let i = 0; i < this.gridSystem.length; i++) {
+  //     if (this.gridSystem.names[i] == 'DELETED') {
+  //       this.gridSystem.removeBody(i)
+  //     }
+  //   }
+  //   if (!this.metric) {
+  //     this.convertToMetric()
+  //   }
+  //   this.gridSystem.collisions = []
+  // }
+  //
   calVelPosCuda () {
     for (let i = 0; i < this.gridSystem.count; i++) {
       this.gridSystem.vel[i][0] += this.dt * this.gridSystem.acc[i][0]
