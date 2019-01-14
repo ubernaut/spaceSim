@@ -39,7 +39,7 @@ const init = function () {
 
 const physicsLoop = function () {
   // while (ticks < 10000) {
-  physics.GPUAccelerate()
+  physics.GPUAccelerate(true)
   // }
 }
 
