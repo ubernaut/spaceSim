@@ -64,19 +64,21 @@ a {
 
 #ui .selection {
   width: 375px;
-  min-height: 260px;
   position: absolute;
   bottom: 0px;
   right: 10px;
   font-size: 0.9em;
   line-height: 1.5em;
 }
+#ui .selection > div {
+  min-height: 260px;
+}
 
 #ui .reticle {
   width: 150px;
   height: 150px;
   position: absolute;
-  top: calc(50% - 75px);
+  top: calc(62% - 75px);
   left: calc(50% - 75px);
 }
 
@@ -164,9 +166,9 @@ a {
 
 #ui .ship-config {
   width: 400px;
-  height: 300px;
+  height: 400px;
   position: absolute;
-  top: calc(50% - 150px);
+  top: calc(50% - 200px);
   right: calc(50% - 200px);
   pointer-events: all;
 }

@@ -116,7 +116,7 @@ const UI = branch(
       gui.isEnabled && (
         <div>
           <div className="selection">
-            <Selection data={scene.selected} />
+            <Selection data={scene.selected && JSON.parse(scene.selected)} />
           </div>
           <div className="help">
             <Help
@@ -178,6 +178,16 @@ const UI = branch(
                     updateUserOptions({
                       username: player.username,
                       options: { ship: { hull: { color } } }
+                    })
+                  }
+                }}
+                displayName={player.displayName}
+                setDisplayName={displayName => {
+                  state.set(['scene', 'player', 'displayName'], displayName)
+                  if (player.username) {
+                    updateUserOptions({
+                      username: player.username,
+                      options: { displayName }
                     })
                   }
                 }}

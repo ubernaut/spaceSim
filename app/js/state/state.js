@@ -1,5 +1,6 @@
 import Baobab from 'baobab'
 import Schema from './schema'
+import { guid } from '-/utils'
 
 const state = new Baobab(
   {
@@ -20,7 +21,7 @@ const state = new Baobab(
       player: {
         isLoggedIn: false,
         isLocalPlayer: true,
-        userId: '',
+        userId: guid(),
         username: 'Anonymous',
         displayName: 'Anonymous',
         ship: {

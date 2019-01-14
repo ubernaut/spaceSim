@@ -13,7 +13,7 @@ const style = props => ({
   minWidth: '100px',
   minHeight: '100px',
   borderRadius: '100px',
-  border: '1px dashed #44ee4477'
+  border: '1px dashed #44ee4455'
 })
 
 const BodyCounter = ({ bodies }) => {
