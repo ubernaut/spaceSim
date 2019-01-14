@@ -1,3 +1,6 @@
+**Deps**
+You'll need Node and npm
+
 **Dev**
 ```
 sudo apt install build-essential
