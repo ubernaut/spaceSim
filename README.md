@@ -1,9 +1,5 @@
 **Dev**
 ```
-#in order for input to work you'll need this:
-
-https://github.com/ubernaut/voidServer
-
 sudo apt install build-essential
 npm install
 npm run dev
