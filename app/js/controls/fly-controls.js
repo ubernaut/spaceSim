@@ -21,7 +21,7 @@ const defaultMap = {
   },
   guiState: {
     toggleConsole: {
-      keys: [ Keyboard.CTRL, Keyboard.SHIFT, Keyboard.K ]
+      keys: [ Keyboard.ESC ]
     }
   }
 }

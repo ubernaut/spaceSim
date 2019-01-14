@@ -66,7 +66,7 @@ const Console = ({
 const enhance = compose(
   withState('command', 'setCommand', ''),
   withState('output', 'setOutput', [
-    'Press CTRL + SHIFT + K to hide this console',
+    'Press ESC to toggle this console',
     'Type /help to see instructions and available commands'
   ]),
   withHandlers({

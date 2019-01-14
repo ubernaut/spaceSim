@@ -39,8 +39,8 @@ const HelpContents = () => (
 
     <h3>Commands</h3>
     <p>
-      There's also a console you can open at any time using CTRL + SHIFT + K
-      with the following commands:
+      There's also a console you can open at any time using ESC (escape) with
+      the following commands:
     </p>
     <ul>
       <li>/help - Display this help screen</li>
