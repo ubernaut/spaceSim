@@ -25,6 +25,7 @@
     "baobab-react": "^3.0.0",
     "bluebird": "^3.5.0",
     "browser-bunyan": "^0.4.0",
+    "compression": "^1.7.3",
     "express": "^4.16.4",
     "gpu.js": "^1.10.4",
     "msgpack-lite": "^0.1.26",
