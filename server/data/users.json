@@ -27,10 +27,10 @@
     "options": {
       "ship": {
         "hull": {
-          "color": "#c6ca0f"
+          "color": "#2449b0"
         },
         "thrust": {
-          "color": "#ff0000"
+          "color": "#0dc4cd"
         }
       }
     }
@@ -42,6 +42,9 @@
       "ship": {
         "thrust": {
           "color": "#b02fff"
+        },
+        "hull": {
+          "color": "#ff5a7a"
         }
       }
     }

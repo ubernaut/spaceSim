@@ -5,7 +5,7 @@ const state = new Baobab(
   {
     config: {
       server: {
-        host: process.env.API_HOST || 'http://localhost',
+        host: process.env.API_HOST || 'http://192.168.0.112',
         port: process.env.API_PORT || 1137
       },
       threejs: {
