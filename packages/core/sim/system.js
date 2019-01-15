@@ -141,6 +141,7 @@ const updateSystemCPU = (scene, physics) => {
     body.name = physics.gridSystem.names[i]
     if (physics.gridSystem.names[i] === 'DELETED') {
       scene.remove(body.object)
+      console.log('found deleted planet' + i)
       body.object = ''
     } else if (body.object) {
       let collidedIndex = physics.collisions.indexOf(body.name)
@@ -193,25 +194,6 @@ const updateSystemCPU = (scene, physics) => {
         physics.biggestBody = i
       }
     }
-  }
-}
-
-const updateSystemGPU = (scene, physics) => {
-  let i = 0
-
-  for (const body of system.bodies) {
-    // if (physics.gridSystem.names[i] === 'DELETED') {
-    //   scene.remove(body.object)
-    //   // console.log('removed body')
-    //   body.object = ''
-    // }
-    // else
-    if (body.object) {
-      body.object.position.x = physics.gridSystem.pos[i][0]
-      body.object.position.y = physics.gridSystem.pos[i][1]
-      body.object.position.z = physics.gridSystem.pos[i][2]
-    }
-    i++
   }
 }
 
