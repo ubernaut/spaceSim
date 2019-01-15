@@ -141,7 +141,7 @@ const updateSystemCPU = (scene, physics) => {
     body.name = physics.gridSystem.names[i]
     if (physics.gridSystem.names[i] === 'DELETED') {
       scene.remove(body.object)
-      console.log('found deleted planet' + i)
+      // console.log('found deleted planet' + i)
       body.object = ''
     } else if (body.object) {
       let collidedIndex = physics.collisions.indexOf(body.name)
