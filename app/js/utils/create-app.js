@@ -11,6 +11,14 @@ const createApp = async options => {
   const renderer = createRenderer()
   root.appendChild(renderer.domElement)
 
+  const animateCallbacks = []
+  const addAnimateCallback = animateCallback => {
+    animateCallbacks.push(animateCallback)
+  }
+  const removeAnimateCallback = animateCallback => {
+    animateCallbacks.remove(animateCallback)
+  }
+
   /**
    * Preload assets, data, etc.
    */
@@ -25,7 +33,8 @@ const createApp = async options => {
   const create = await options.scene.create({
     preload,
     scene,
-    renderer
+    renderer,
+    addAnimateCallback
   })
 
   window.addEventListener(

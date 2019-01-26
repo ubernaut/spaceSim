@@ -41,28 +41,45 @@ const createStar = ({ radius, position }) => {
   return star
 }
 
-const mkBody = (scene, body) => {
-  body.radius = computeRadiusStellarToMetric(body.mass)
+const mkBody = systemBody => {
+  const bodies = []
+  const animations = []
 
-  if (body.name === 'star') {
-    createScaleGrid().map(grid => scene.add(grid))
+  systemBody.radius = computeRadiusStellarToMetric(systemBody.mass)
 
-    const star = createStar({ radius: body.radius, position: body.position })
-    body.object = star.chromosphere
-    scene.add(star.chromosphere)
+  if (systemBody.name === 'star') {
+    const gridObjects = createScaleGrid()
+    bodies.push(...gridObjects)
+
+    const star = createStar({
+      radius: systemBody.radius,
+      position: systemBody.position
+    })
+    systemBody.object = star.chromosphere
+    bodies.push(star.chromosphere)
+
     if (star.corona) {
-      scene.add(star.corona)
+      bodies.push(star.corona)
     }
-    return { animate: star.animate }
-  } else {
+    animations.push(star.animate)
+    return { bodies, animations }
+  }
+
+  if (systemBody.name) {
     const planet = createPlanet({
-      radius: body.radius,
-      position: body.position
+      radius: systemBody.radius,
+      position: systemBody.position
     })
     if (planet) {
-      body.object = planet
-      scene.add(planet)
+      systemBody.object = planet
+      bodies.push(planet)
     }
+    return { bodies, animations }
+  }
+
+  return {
+    bodies,
+    animations
   }
 }
 
@@ -113,16 +130,18 @@ const loadSystem = ({
         systemWorker.physics.initGPUStuff()
       }
 
+      const systemAnimations = []
       Promise.map(
         system.bodies,
-        body =>
-          Promise.resolve(mkBody(scene, body, addAnimateCallback)).delay(
-            Math.random() * 2
-          ),
+        systemBody => {
+          const { bodies, animations } = mkBody(systemBody)
+          bodies.map(b => scene.add(b))
+          systemAnimations.push(...animations)
+        },
         { concurrency }
       )
 
-      resolve(systemWorker)
+      resolve({ systemWorker, systemAnimations })
     }
   })
 }
