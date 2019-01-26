@@ -137,9 +137,6 @@ const UI = branch(
           <div className="scene-messages">
             <Messages messages={scene.messages} />
           </div>
-          <div className="body-counter">
-            <BodyCounter bodies={scene.bodyCount} />
-          </div>
           <div className="health-bar">
             <Health hp={10} maxHp={10} />
           </div>

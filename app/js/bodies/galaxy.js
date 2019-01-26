@@ -1,3 +1,10 @@
+import {
+  MeshBasicMaterial,
+  Vector3,
+  Geometry,
+  PointsMaterial,
+  Points
+} from 'three'
 import Point from '@void/core/system-builder/Point'
 
 import { createRandomDistantStar } from '-/bodies/star'
@@ -32,7 +39,7 @@ class Galaxy {
         let zPos = Math.random() * (randMax - randMin) + randMin
         // let newStar = new Star(xPos, yPos, zPos, 'star', 'cos')
         let randColor = randomUniform(0.5, 1) * 0xffffff
-        const material = new THREE.MeshBasicMaterial({ color: randColor })
+        const material = new MeshBasicMaterial({ color: randColor })
         let starRadius = 1.9 * Math.pow(10, 16)
         let starPosition = new Point([ xPos, yPos, zPos ])
         const newStar = createRandomDistantStar({
@@ -64,9 +71,9 @@ const addStars = scene => {
   let i = 0
   let r = radius
 
-  let starsGeometry = [ new THREE.Geometry(), new THREE.Geometry() ]
+  let starsGeometry = [ new Geometry(), new Geometry() ]
   for (i = 0; i < 5000; i++) {
-    const vertex = new THREE.Vector3()
+    const vertex = new Vector3()
     vertex.x = Math.random() * (2 - 1)
     vertex.y = (Math.random() * (2 - 1)) / 3
     vertex.z = Math.random() * (2 - 1)
@@ -75,7 +82,7 @@ const addStars = scene => {
     starsGeometry[0].vertices.push(vertex)
   }
   for (i = 0; i < 5000; i++) {
-    const vertex = new THREE.Vector3()
+    const vertex = new Vector3()
     vertex.x = Math.random() * (2 - 1)
     vertex.y = (Math.random() * (2 - 1)) / 3
     vertex.z = Math.random() * (2 - 1)
@@ -85,37 +92,37 @@ const addStars = scene => {
 
   let stars
   const starsMaterials = [
-    new THREE.PointsMaterial({
+    new PointsMaterial({
       color: 0xffffff,
       size: 10000000000000000,
       sizeAttenuation: true,
       fog: false
     }),
-    new THREE.PointsMaterial({
+    new PointsMaterial({
       color: 0xaaaaaa,
       size: 10000000000000000,
       sizeAttenuation: true,
       fog: false
     }),
-    new THREE.PointsMaterial({
+    new PointsMaterial({
       color: 0x555555,
       size: 10000000000000000,
       sizeAttenuation: true,
       fog: false
     }),
-    new THREE.PointsMaterial({
+    new PointsMaterial({
       color: 0xff0000,
       size: 10000000000000000,
       sizeAttenuation: true,
       fog: false
     }),
-    new THREE.PointsMaterial({
+    new PointsMaterial({
       color: 0xffdddd,
       size: 10000000000000000,
       sizeAttenuation: true,
       fog: false
     }),
-    new THREE.PointsMaterial({
+    new PointsMaterial({
       color: 0xddddff,
       size: 10000000000000000,
       sizeAttenuation: true,
@@ -123,7 +130,7 @@ const addStars = scene => {
     })
   ]
   for (i = 10; i < 30; i++) {
-    stars = new THREE.Points(starsGeometry[i % 2], starsMaterials[i % 6])
+    stars = new Points(starsGeometry[i % 2], starsMaterials[i % 6])
     // stars.rotation.x = Math.random() * 6;
     // stars.rotation.y = Math.random() * 6;
     // stars.rotation.z = Math.random() * 6;

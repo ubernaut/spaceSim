@@ -1,17 +1,14 @@
+import { PolarGridHelper, Vector3, Color } from 'three'
+import GLTFLoader from 'three/examples/js/loaders/GLTFLoader'
 import { GPUParticleSystem } from 'app/js/webgl/gpu-particle-system'
 import { onProgress, onError } from 'app/js/utils'
 import state from '-/state'
 import sceneState from '-/state/branches/scene'
 
-const assetPath = state.get([ 'config', 'threejs', 'assetPath' ])
-
-const mtlLoader = new THREE.MTLLoader()
-const objLoader = new THREE.OBJLoader()
-mtlLoader.setPath(assetPath)
-objLoader.setPath(assetPath)
+const loader = new THREE.GLTFLoader()
 
 const shipPolarGrid = ship => {
-  const helper = new THREE.PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
+  const helper = new PolarGridHelper(2000, 1, 6, 36, 0xfffff, 0xfffff)
   helper.geometry.rotateY(Math.PI)
   return helper
 }
@@ -26,9 +23,9 @@ const deployDrone = ship => createDroneOpts => {
 }
 
 const particleOptions = {
-  position: new THREE.Vector3(0, 0, 0),
+  position: new Vector3(0, 0, 0),
   positionRandomness: 0.3,
-  velocity: new THREE.Vector3(0, 0, 10),
+  velocity: new Vector3(0, 0, 10),
   velocityRandomness: 0,
   color: 0xff5500,
   turbulence: 0,
@@ -52,7 +49,7 @@ const animateShip = (ship, emitter) => (delta, tick) => {
       y: Math.random() * 0.5 - 0.25,
       z: Math.random() * 0.5
     },
-    velocity: new THREE.Vector3(
+    velocity: new Vector3(
       0,
       0,
       Math.max(1, Math.min(1e3, movementSpeed * 1e-5))
@@ -60,19 +57,23 @@ const animateShip = (ship, emitter) => (delta, tick) => {
     size: Math.max(5, Math.min(50, movementSpeed * 1e-4)),
     color: thrustColor
   })
-  for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
-    emitter.spawnParticle(options)
-  }
-  emitter.update(tick)
 
-  ship.children[1].material.color = new THREE.Color(bodyColor)
+  if (emitter) {
+    for (var x = 0; x < particleEmitterOptions.spawnRate * delta; x++) {
+      emitter.spawnParticle(options)
+    }
+    emitter.update(tick)
+  }
+
+  const hull = ship.children.find(c => c.name === 'Icosahedron_Standard')
+  hull.children[0].children[0].material.color = new Color(bodyColor)
 }
 
 // kinda above things, looking towards the sun
 const defaults = {
-  position: new THREE.Vector3(0, -5000000000, 3000000000),
-  scale: new THREE.Vector3(20, 20, 20),
-  rotation: new THREE.Vector3(1, -0.25, -0.25)
+  position: new Vector3(0, -1e9, 1e9),
+  scale: new Vector3(20, 20, 20),
+  rotation: new Vector3(1, -0.25, -0.25)
 }
 
 const createShip = ({ position, scale, rotation } = defaults) => {
@@ -81,33 +82,35 @@ const createShip = ({ position, scale, rotation } = defaults) => {
   rotation = rotation || defaults.rotation
 
   return new Promise(resolve => {
-    mtlLoader.load('ship.mtl', materials => {
-      materials.preload()
-      objLoader.setMaterials(materials)
-      objLoader.load(
-        'ship.obj',
-        ship => {
-          ship.position.set(position.x, position.y, position.z)
-          ship.scale.set(scale.x, scale.y, scale.z)
-          ship.rotation.set(rotation.x, rotation.y, rotation.z)
-          ship.name = 'spaceShip'
+    loader.load(
+      'app/assets/models/ship.glb',
+      ship => {
+        ship.scene.position.set(position.x, position.y, position.z)
+        ship.scene.scale.set(scale.x, scale.y, scale.z)
+        ship.scene.rotation.set(rotation.x, rotation.y, rotation.z)
+        ship.scene.name = 'spaceShip'
 
+        let emitter
+        try {
           const emitter = new GPUParticleSystem({
-            maxParticles: 250000
+            maxParticles: 25000
           })
-          ship.add(emitter)
+          emitter.init()
+          ship.scene.add(emitter)
           emitter.rotation.set(0, 0, 0)
           emitter.position.set(0, 0.5, 3)
-
           resolve({
-            ship,
-            animate: animateShip(ship, emitter)
+            ship: ship.scene,
+            animate: animateShip(ship.scene, emitter)
           })
-        },
-        onProgress,
-        onError
-      )
-    })
+        } catch (err) {
+          console.error('error creating emitter', err)
+        }
+      },
+      onProgress,
+      onError
+    )
+    // })
   })
 }
 

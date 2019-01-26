@@ -1,9 +1,8 @@
-import { updateSystemCPU, updateSystemGPU } from './system'
+import { updateSystemCPU, updateSystemGPU, loadSystem } from './system'
 import { createUniverse } from '-/bodies/universe'
 import { createGalaxy } from '-/bodies/galaxy'
 import { initOimoPhysics } from './physics'
-import { loadSystem } from './system'
-import { animate, addLights } from './scene'
+import { addLights } from './scene'
 
 const defaultConfig = {
   system: {
@@ -27,7 +26,7 @@ const init = async (scene, config) => {
   createGalaxy(scene)
   createUniverse(scene).map(body => scene.add(body))
 
-  let systemWorker = await loadSystem({
+  const { systemWorker, systemAnimations } = await loadSystem({
     scene,
     bodyCount: config.system.bodyCount,
     bodyDistance: config.system.bodyDistance,
@@ -53,7 +52,10 @@ const init = async (scene, config) => {
     updateSystemCPU(scene, systemWorker.physics)
   }
 
-  const animate = delta => systemWorker.postMessage([ 'fetch' ])
+  const animate = delta => {
+    systemWorker.postMessage([ 'fetch' ])
+    systemAnimations.map(a => a(delta))
+  }
 
   return { systemWorker, animate }
 }

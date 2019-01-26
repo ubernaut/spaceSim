@@ -19,7 +19,7 @@ import createApp, {
 
 const IAU = 9.4607 * Math.pow(10, 15)
 
-const create = async ({ scene, renderer }) => {
+const create = async ({ scene, renderer, addAnimateCallback }) => {
   logger.debug(addMessage('init: creating camera...'))
   const camera = createCamera({
     fov: 70,
@@ -42,7 +42,8 @@ const create = async ({ scene, renderer }) => {
       bodySpeed: 0.05,
       deltaT: 0.001,
       gpuCollisions: true
-    }
+    },
+    addAnimateCallback
   })
 
   logger.debug(addMessage('init: creating player ship...'))

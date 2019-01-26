@@ -1,21 +1,13 @@
+import { Color } from 'three'
 import msgpack from 'msgpack-lite'
 
 import createSocket from '-/net/socket'
-import { onProgress, onError } from '-/utils'
 import { createShip } from '-/player/ship'
-import { shoot } from '-/player/weapons'
 import state from '-/state'
 import { addMessage } from '-/state/branches/scene'
-import logger from '-/logger'
 
 const playerState = state.select([ 'scene', 'player' ])
 const playersState = state.select([ 'scene', 'players' ])
-const assetPath = state.get([ 'config', 'threejs', 'assetPath' ])
-
-const mtlLoader = new THREE.MTLLoader()
-const objLoader = new THREE.OBJLoader()
-mtlLoader.setPath(assetPath)
-objLoader.setPath(assetPath)
 
 const init = async ({ scene, ship }) => {
   const socket = await createSocket()
@@ -67,6 +59,7 @@ const broadcastUpdate = (socket, payload) => {
   socket.emit('events', msgpack.encode(payload))
 }
 
+let once = false
 /**
  * Set position, orientation, etc
  */
@@ -78,7 +71,15 @@ const setShipProps = ({ ship, player, quaternion, position }) => {
   ship.quaternion._x = quaternion._x
   ship.quaternion._y = quaternion._y
   ship.quaternion._z = quaternion._z
-  ship.children[1].material.color = new THREE.Color(player.ship.hull.color)
+
+  const hull = ship.children.find(c => c.name === 'Icosahedron_Standard')
+  if (!once) {
+    console.log(hull)
+    once = true
+  }
+  hull.children[0].children[0].material.color = new Color(
+    player.ship.hull.color
+  )
   ship.userData = Object.assign({}, player)
 }
 

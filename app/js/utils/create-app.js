@@ -1,3 +1,4 @@
+import { WebGLRenderer, PerspectiveCamera, Scene, Clock } from 'three'
 import { EffectComposer, BloomPass, RenderPass } from 'postprocessing'
 
 const createApp = async options => {
@@ -7,9 +8,18 @@ const createApp = async options => {
     return
   }
 
-  const scene = new THREE.Scene()
+  const scene = new Scene()
   const renderer = createRenderer()
+
   root.appendChild(renderer.domElement)
+
+  const animateCallbacks = []
+  const addAnimateCallback = animateCallback => {
+    animateCallbacks.push(animateCallback)
+  }
+  const removeAnimateCallback = animateCallback => {
+    animateCallbacks.remove(animateCallback)
+  }
 
   /**
    * Preload assets, data, etc.
@@ -25,7 +35,8 @@ const createApp = async options => {
   const create = await options.scene.create({
     preload,
     scene,
-    renderer
+    renderer,
+    addAnimateCallback
   })
 
   window.addEventListener(
@@ -37,7 +48,7 @@ const createApp = async options => {
   /**
    * Set up animations and the update/render loop
    */
-  const clock = new THREE.Clock()
+  const clock = new Clock()
   const animate = animateOptions => {
     requestAnimationFrame(() => animate(animateOptions))
 
@@ -79,7 +90,7 @@ export const createPostprocessing = ({ renderer, scene, camera }) => {
 }
 
 export const createRenderer = () => {
-  const renderer = new THREE.WebGLRenderer({
+  const renderer = new WebGLRenderer({
     antialias: true,
     logarithmicDepthBuffer: true
   })
@@ -89,7 +100,7 @@ export const createRenderer = () => {
 }
 
 export const createCamera = options => {
-  const camera = new THREE.PerspectiveCamera(
+  const camera = new PerspectiveCamera(
     options.fov,
     window.innerWidth / window.innerHeight,
     options.nearClip,

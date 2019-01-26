@@ -1,3 +1,4 @@
+import { PolarGridHelper } from 'three'
 import Promise from 'bluebird'
 
 import soPhysics from '@void/core/system-builder/soPhysics'
@@ -13,15 +14,15 @@ import SystemBuilderWorker from '-/workers/systemBuilder.worker'
 
 const createScaleGrid = () => {
   return [
-    new THREE.PolarGridHelper(58000000000, 1, 1, 128, 0x000000, 0x999999),
-    new THREE.PolarGridHelper(108000000000, 1, 1, 128, 0x000000, 0xff5555),
-    new THREE.PolarGridHelper(150000000000, 1, 1, 128, 0x000000, 0x9999ff),
-    new THREE.PolarGridHelper(227000000000, 1, 1, 128, 0x000000, 0xff9900f),
-    new THREE.PolarGridHelper(778000000000, 1, 1, 128, 0x000000, 0xff9999),
-    new THREE.PolarGridHelper(1427000000000, 1, 1, 128, 0x000000, 0xffff99),
-    new THREE.PolarGridHelper(2871000000000, 1, 1, 128, 0x000000, 0x99ffff),
-    new THREE.PolarGridHelper(4497000000000, 1, 1, 128, 0x000000, 0x0000ff),
-    new THREE.PolarGridHelper(5913000000000, 1, 1, 128, 0x000000, 0xffffff)
+    new PolarGridHelper(58000000000, 1, 1, 128, 0x000000, 0x999999),
+    new PolarGridHelper(108000000000, 1, 1, 128, 0x000000, 0xff5555),
+    new PolarGridHelper(150000000000, 1, 1, 128, 0x000000, 0x9999ff),
+    new PolarGridHelper(227000000000, 1, 1, 128, 0x000000, 0xff9900f),
+    new PolarGridHelper(778000000000, 1, 1, 128, 0x000000, 0xff9999),
+    new PolarGridHelper(1427000000000, 1, 1, 128, 0x000000, 0xffff99),
+    new PolarGridHelper(2871000000000, 1, 1, 128, 0x000000, 0x99ffff),
+    new PolarGridHelper(4497000000000, 1, 1, 128, 0x000000, 0x0000ff),
+    new PolarGridHelper(5913000000000, 1, 1, 128, 0x000000, 0xffffff)
   ].map(grid => {
     grid.name = 'PolarGridHelper'
     grid.rotation.x = Math.PI / 2
@@ -41,28 +42,45 @@ const createStar = ({ radius, position }) => {
   return star
 }
 
-const mkBody = (scene, body) => {
-  body.radius = computeRadiusStellarToMetric(body.mass)
+const mkBody = systemBody => {
+  const bodies = []
+  const animations = []
 
-  if (body.name === 'star') {
-    createScaleGrid().map(grid => scene.add(grid))
+  systemBody.radius = computeRadiusStellarToMetric(systemBody.mass)
 
-    const star = createStar({ radius: body.radius, position: body.position })
-    body.object = star.chromosphere
-    scene.add(star.chromosphere)
+  if (systemBody.name === 'star') {
+    const gridObjects = createScaleGrid()
+    bodies.push(...gridObjects)
+
+    const star = createStar({
+      radius: systemBody.radius,
+      position: systemBody.position
+    })
+    systemBody.object = star.chromosphere
+    bodies.push(star.chromosphere)
+
     if (star.corona) {
-      scene.add(star.corona)
+      bodies.push(star.corona)
     }
-    return { animate: star.animate }
-  } else {
+    animations.push(star.animate)
+    return { bodies, animations }
+  }
+
+  if (systemBody.name) {
     const planet = createPlanet({
-      radius: body.radius,
-      position: body.position
+      radius: systemBody.radius,
+      position: systemBody.position
     })
     if (planet) {
-      body.object = planet
-      scene.add(planet)
+      systemBody.object = planet
+      bodies.push(planet)
     }
+    return { bodies, animations }
+  }
+
+  return {
+    bodies,
+    animations
   }
 }
 
@@ -113,16 +131,18 @@ const loadSystem = ({
         systemWorker.physics.initGPUStuff()
       }
 
+      const systemAnimations = []
       Promise.map(
         system.bodies,
-        body =>
-          Promise.resolve(mkBody(scene, body, addAnimateCallback)).delay(
-            Math.random() * 2
-          ),
+        systemBody => {
+          const { bodies, animations } = mkBody(systemBody)
+          bodies.map(b => scene.add(b))
+          systemAnimations.push(...animations)
+        },
         { concurrency }
       )
 
-      resolve(systemWorker)
+      resolve({ systemWorker, systemAnimations })
     }
   })
 }
