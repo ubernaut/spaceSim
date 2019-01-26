@@ -59,6 +59,7 @@ const broadcastUpdate = (socket, payload) => {
   socket.emit('events', msgpack.encode(payload))
 }
 
+let once = false
 /**
  * Set position, orientation, etc
  */
@@ -70,7 +71,15 @@ const setShipProps = ({ ship, player, quaternion, position }) => {
   ship.quaternion._x = quaternion._x
   ship.quaternion._y = quaternion._y
   ship.quaternion._z = quaternion._z
-  ship.children[1].material.color = new Color(player.ship.hull.color)
+
+  const hull = ship.children.find(c => c.name === 'Icosahedron_Standard')
+  if (!once) {
+    console.log(hull)
+    once = true
+  }
+  hull.children[0].children[0].material.color = new Color(
+    player.ship.hull.color
+  )
   ship.userData = Object.assign({}, player)
 }
 

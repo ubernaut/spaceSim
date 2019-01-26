@@ -114,26 +114,30 @@ export default class KeyboardControls {
       const raycaster = new THREE.Raycaster()
       raycaster.setFromCamera(mouse, this.camera)
 
-      const groups = this.scene.children.filter(x => x.type === 'Group')
-
-      // TODO clean this up
-      let intersects = []
-      for (const g of groups) {
-        const intersections = raycaster.intersectObjects(
-          g.children.filter(x => x.type === 'Mesh')
-        )
-        if (intersections.length > 0) {
-          intersects.push([ { object: g } ])
-        }
-      }
-      intersects.push(
-        raycaster.intersectObjects(
-          this.scene.children.filter(
-            x => x.name !== 'PolarGridHelper' && x.type !== 'Points'
-          )
-        )
+      const objects = this.scene.children.filter(
+        x => x.name === 'Planet' || x.name === 'Chromosphere'
       )
-      const obj = intersects[0][0]
+
+      const spaceShips = this.scene.children
+        .filter(x => x.name === 'spaceShip')
+        .map(
+          ship =>
+            ship.children.find(c => c.name === 'Icosahedron_Standard')
+              .children[0].children[0]
+        )
+
+      const intersects = raycaster.intersectObjects([ ...objects, ...spaceShips ])
+
+      let obj = intersects[0]
+
+      if (
+        obj &&
+        obj.object &&
+        obj.object.name &&
+        obj.object.name === 'Icosahedron_Standard_0'
+      ) {
+        obj = { object: obj.object.parent.parent.parent }
+      }
 
       if (!obj) {
         if (this.selection !== null) {

@@ -65,7 +65,8 @@ const animateShip = (ship, emitter) => (delta, tick) => {
     emitter.update(tick)
   }
 
-  // ship.children[1].material.color = new Color(bodyColor)
+  const hull = ship.children.find(c => c.name === 'Icosahedron_Standard')
+  hull.children[0].children[0].material.color = new Color(bodyColor)
 }
 
 // kinda above things, looking towards the sun
