@@ -1,5 +1,5 @@
-import fragmentShader from 'app/shaders/star.fs.glsl'
-import vertexShader from 'app/shaders/star.vs.glsl'
+import lavaMaterial from '-/materials/lava'
+import createCoronaMaterial from '-/materials/corona'
 import { randomUniform } from '-/utils'
 
 import uniforms from '-/uniforms'
@@ -191,22 +191,15 @@ const rgb2hex = rgb => {
 }
 
 const createCorona = (radius, rgb, time) => {
-  const sprite = new THREE.TextureLoader().load('app/assets/images/corona.png')
   const geometry = new THREE.BufferGeometry()
   geometry.addAttribute(
     'position',
     new THREE.Float32BufferAttribute([ 0, 0, 0 ], 3)
   )
-  const material = new THREE.PointsMaterial({
-    size: radius * 1250000000,
-    sizeAttenuation: true,
-    map: sprite,
-    alphaTest: 0.05,
-    transparent: true,
-    blending: THREE.AdditiveBlending
-  })
-  // const uniforms = getUniforms(radius, rgb, time)
-  material.color.setRGB(0.9, 0.7, 0.7)
+
+  const material = createCoronaMaterial({ radius })
+  material.uniforms = getUniforms(radius, rgb, time)
+  // material.color.setRGB(0.9, 0.7, 0.7)
 
   const mesh = new THREE.Points(geometry, material)
   mesh.frustumCulled = false
@@ -217,15 +210,9 @@ const createCorona = (radius, rgb, time) => {
 
 const createChromosphere = (radius, rgb, time) => {
   const geometry = new THREE.SphereGeometry(radius, 64, 64)
-  const material = new THREE.ShaderMaterial({
-    uniforms: getUniforms(radius, rgb, time),
-    vertexShader,
-    fragmentShader,
-    blending: THREE.NormalBlending,
-    depthTest: false,
-    transparent: false,
-    side: THREE.FrontSide
-  })
+
+  const material = lavaMaterial.clone()
+  material.uniforms = getUniforms(radius, rgb, time)
 
   const mesh = new THREE.Mesh(geometry, material)
   mesh.name = 'Chromosphere'
