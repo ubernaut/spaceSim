@@ -9,6 +9,7 @@ const createApp = async options => {
 
   const scene = new THREE.Scene()
   const renderer = createRenderer()
+
   root.appendChild(renderer.domElement)
 
   const animateCallbacks = []

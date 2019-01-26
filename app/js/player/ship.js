@@ -70,7 +70,7 @@ const animateShip = (ship, emitter) => (delta, tick) => {
 
 // kinda above things, looking towards the sun
 const defaults = {
-  position: new THREE.Vector3(0, -5000000000, 3000000000),
+  position: new THREE.Vector3(0, -1e9, 1e9),
   scale: new THREE.Vector3(20, 20, 20),
   rotation: new THREE.Vector3(1, -0.25, -0.25)
 }

@@ -160,26 +160,25 @@ const createRandomDistantStar = ({ radius, position, simple = true }) => {
 const createStar = ({ radius, position, color, time = 0 }) => {
   const rgb = starTypes.K7
 
-  const photosphere = createPhotosphere(radius, rgb, time)
+  // const photosphere = createPhotosphere(radius, rgb, time)
   const chromosphere = createChromosphere(radius, rgb, time)
   const corona = createCorona(radius, rgb, time)
 
   const pointLight = new THREE.PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
   pointLight.castShadow = true
-  ;[ photosphere, chromosphere, corona, pointLight ].map(s => {
+  ;[ chromosphere, corona, pointLight ].map(s => {
     s.position.x = position.x
     s.position.y = position.y
     s.position.z = position.z
   })
 
   const animate = (delta, tick) => {
-    ;[ photosphere, chromosphere ].map(mesh => {
+    ;[ chromosphere ].map(mesh => {
       mesh.rotation.z -= 0.0005
     })
   }
 
   return {
-    photosphere,
     chromosphere,
     corona,
     pointLight,
@@ -222,24 +221,33 @@ const createChromosphere = (radius, rgb, time) => {
     uniforms: getUniforms(radius, rgb, time),
     vertexShader,
     fragmentShader,
-    blending: THREE.AdditiveBlending
+    blending: THREE.NormalBlending,
+    depthTest: false,
+    transparent: false,
+    side: THREE.FrontSide
   })
+
   const mesh = new THREE.Mesh(geometry, material)
   mesh.name = 'Chromosphere'
+  mesh.renderOrder = 0
   return mesh
 }
 
-const createPhotosphere = (radius, rgb, time) => {
-  const geometry = new THREE.SphereGeometry(radius * 0.99, 16, 16)
-  const material = new THREE.ShaderMaterial({
-    uniforms: getUniforms(radius, rgb, time),
-    vertexShader,
-    fragmentShader
-  })
-  const mesh = new THREE.Mesh(geometry, material)
-  mesh.name = 'Photosphere'
-  return mesh
-}
+// const createPhotosphere = (radius, rgb, time) => {
+//   const geometry = new THREE.SphereGeometry(radius * 0.99, 16, 16)
+//   const material = new THREE.ShaderMaterial({
+//     uniforms: getUniforms(radius, rgb, time),
+//     vertexShader,
+//     fragmentShader,
+//     transparent: true,
+//     depthTest: false,
+//     opacity: 0.5
+//   })
+//   material.side = THREE.DoubleSide
+//   const mesh = new THREE.Mesh(geometry, material)
+//   mesh.name = 'Photosphere'
+//   return mesh
+// }
 
 const getUniforms = (radius, rgb, time = 0) => {
   uniforms.sun.color.red.value = (rgb[0] / 255.0) * 0.7
