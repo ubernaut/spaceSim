@@ -37,6 +37,7 @@
     "socket.io": "^2.0.3",
     "superstruct": "^0.6.0",
     "three": "^0.87.1",
+    "three-gltf-loader": "^1.100.0",
     "throttle-debounce": "^2.0.1",
     "uuid": "^3.1.0"
   },

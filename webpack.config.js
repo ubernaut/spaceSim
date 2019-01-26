@@ -33,7 +33,11 @@ module.exports = {
       '-': resolve('app/js'),
       app: resolve('app'),
       '@void': resolve('packages'),
-      syncinput: resolve('app/lib/syncinput')
+      syncinput: resolve('app/lib/syncinput'),
+      'three/OBJLoader': path.join(
+        __dirname,
+        'node_modules/three/examples/js/loaders/OBJLoader.js'
+      )
     }
   },
 
@@ -75,6 +79,9 @@ module.exports = {
       { from: 'app/lib', to: 'app/lib' },
       { from: 'app/assets', to: 'app/assets' }
     ]),
+    new webpack.ProvidePlugin({
+      THREE: 'three'
+    }),
     ...(isProd ? [] : devPlugins),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin()

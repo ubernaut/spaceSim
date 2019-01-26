@@ -1,13 +1,15 @@
-const createCorona = ({ radius }) => {
-  const sprite = new THREE.TextureLoader().load('app/assets/images/corona.png')
+import { PointsMaterial, AdditiveBlending, TextureLoader } from 'three'
 
-  return new THREE.PointsMaterial({
+const createCorona = ({ radius }) => {
+  const sprite = new TextureLoader().load('app/assets/images/corona.png')
+
+  return new PointsMaterial({
     sizeAttenuation: true,
     size: radius * 1e9,
     map: sprite,
     alphaTest: 0.05,
     transparent: true,
-    blending: THREE.AdditiveBlending
+    blending: AdditiveBlending
   })
 }
 

@@ -1,11 +1,12 @@
+import { ShaderMaterial, NormalBlending, FrontSide } from 'three'
 import shader from 'app/shaders/lava'
 
-const material = new THREE.ShaderMaterial({
+const material = new ShaderMaterial({
   ...shader,
-  blending: THREE.NormalBlending,
+  blending: NormalBlending,
   depthTest: false,
   transparent: false,
-  side: THREE.FrontSide
+  side: FrontSide
 })
 
 export default material

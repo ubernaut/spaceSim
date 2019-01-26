@@ -1,3 +1,4 @@
+import { PolarGridHelper } from 'three'
 import Promise from 'bluebird'
 
 import soPhysics from '@void/core/system-builder/soPhysics'
@@ -13,15 +14,15 @@ import SystemBuilderWorker from '-/workers/systemBuilder.worker'
 
 const createScaleGrid = () => {
   return [
-    new THREE.PolarGridHelper(58000000000, 1, 1, 128, 0x000000, 0x999999),
-    new THREE.PolarGridHelper(108000000000, 1, 1, 128, 0x000000, 0xff5555),
-    new THREE.PolarGridHelper(150000000000, 1, 1, 128, 0x000000, 0x9999ff),
-    new THREE.PolarGridHelper(227000000000, 1, 1, 128, 0x000000, 0xff9900f),
-    new THREE.PolarGridHelper(778000000000, 1, 1, 128, 0x000000, 0xff9999),
-    new THREE.PolarGridHelper(1427000000000, 1, 1, 128, 0x000000, 0xffff99),
-    new THREE.PolarGridHelper(2871000000000, 1, 1, 128, 0x000000, 0x99ffff),
-    new THREE.PolarGridHelper(4497000000000, 1, 1, 128, 0x000000, 0x0000ff),
-    new THREE.PolarGridHelper(5913000000000, 1, 1, 128, 0x000000, 0xffffff)
+    new PolarGridHelper(58000000000, 1, 1, 128, 0x000000, 0x999999),
+    new PolarGridHelper(108000000000, 1, 1, 128, 0x000000, 0xff5555),
+    new PolarGridHelper(150000000000, 1, 1, 128, 0x000000, 0x9999ff),
+    new PolarGridHelper(227000000000, 1, 1, 128, 0x000000, 0xff9900f),
+    new PolarGridHelper(778000000000, 1, 1, 128, 0x000000, 0xff9999),
+    new PolarGridHelper(1427000000000, 1, 1, 128, 0x000000, 0xffff99),
+    new PolarGridHelper(2871000000000, 1, 1, 128, 0x000000, 0x99ffff),
+    new PolarGridHelper(4497000000000, 1, 1, 128, 0x000000, 0x0000ff),
+    new PolarGridHelper(5913000000000, 1, 1, 128, 0x000000, 0xffffff)
   ].map(grid => {
     grid.name = 'PolarGridHelper'
     grid.rotation.x = Math.PI / 2

@@ -1,3 +1,17 @@
+import {
+  IcosahedronBufferGeometry,
+  MeshBasicMaterial,
+  Mesh,
+  Vector3,
+  Geometry,
+  PointsMaterial,
+  Points,
+  PointLight,
+  BufferGeometry,
+  Float32BufferAttribute,
+  SphereGeometry
+} from 'three'
+
 import lavaMaterial from '-/materials/lava'
 import createCoronaMaterial from '-/materials/corona'
 import { randomUniform } from '-/utils'
@@ -127,28 +141,28 @@ const createRandomDistantStar = ({ radius, position, simple = true }) => {
   star.type = getRandomStarType()
   star.color = starTypes[star.type]
   if (simple) {
-    const geometry = new THREE.Geometry()
-    const vertex = new THREE.Vector3()
+    const geometry = new Geometry()
+    const vertex = new Vector3()
     vertex.x = position.x
     vertex.y = position.y
     vertex.z = position.z
     geometry.vertices.push(vertex)
-    const material = new THREE.PointsMaterial({
+    const material = new PointsMaterial({
       color: rgb2hex(star.color),
       size: 2,
       sizeAttenuation: false,
       fog: false
     })
-    star.object = new THREE.Points(geometry, material)
+    star.object = new Points(geometry, material)
     star.object.matrixAutoUpdate = false
     star.object.updateMatrix()
   } else {
-    const geometry = new THREE.IcosahedronBufferGeometry(radius, 0)
-    const material = new THREE.MeshBasicMaterial({
+    const geometry = new IcosahedronBufferGeometry(radius, 0)
+    const material = new MeshBasicMaterial({
       color: rgb2hex(star.color),
       emissive: rgb2hex(star.color)
     })
-    star.object = new THREE.Mesh(geometry, material)
+    star.object = new Mesh(geometry, material)
     star.object.position.x = position.x
     star.object.position.y = position.y
     star.object.position.z = position.z
@@ -164,7 +178,7 @@ const createStar = ({ radius, position, color, time = 0 }) => {
   const chromosphere = createChromosphere(radius, rgb, time)
   const corona = createCorona(radius, rgb, time)
 
-  const pointLight = new THREE.PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
+  const pointLight = new PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
   pointLight.castShadow = true
   ;[ chromosphere, corona, pointLight ].map(s => {
     s.position.x = position.x
@@ -191,17 +205,14 @@ const rgb2hex = rgb => {
 }
 
 const createCorona = (radius, rgb, time) => {
-  const geometry = new THREE.BufferGeometry()
-  geometry.addAttribute(
-    'position',
-    new THREE.Float32BufferAttribute([ 0, 0, 0 ], 3)
-  )
+  const geometry = new BufferGeometry()
+  geometry.addAttribute('position', new Float32BufferAttribute([ 0, 0, 0 ], 3))
 
   const material = createCoronaMaterial({ radius })
   material.uniforms = getUniforms(radius, rgb, time)
   // material.color.setRGB(0.9, 0.7, 0.7)
 
-  const mesh = new THREE.Points(geometry, material)
+  const mesh = new Points(geometry, material)
   mesh.frustumCulled = false
   mesh.name = 'Corona'
 
@@ -209,12 +220,12 @@ const createCorona = (radius, rgb, time) => {
 }
 
 const createChromosphere = (radius, rgb, time) => {
-  const geometry = new THREE.SphereGeometry(radius, 64, 64)
+  const geometry = new SphereGeometry(radius, 64, 64)
 
   const material = lavaMaterial.clone()
   material.uniforms = getUniforms(radius, rgb, time)
 
-  const mesh = new THREE.Mesh(geometry, material)
+  const mesh = new Mesh(geometry, material)
   mesh.name = 'Chromosphere'
   mesh.renderOrder = 0
   return mesh

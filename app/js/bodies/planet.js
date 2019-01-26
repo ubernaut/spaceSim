@@ -1,4 +1,11 @@
 import Promise from 'bluebird'
+import {
+  TextureLoader,
+  MeshPhongMaterial,
+  IcosahedronGeometry,
+  IcosahedronBufferGeometry,
+  Mesh
+} from 'three'
 
 import earth from 'app/assets/images/planets/earth/earth-512x512.jpg'
 import earthBump from 'app/assets/images/planets/earth/earth-512x512.bump.jpg'
@@ -25,27 +32,27 @@ const basicPlanetTextures = [
 ]
 
 const loadTextures = textureUrls => {
-  const loader = new THREE.TextureLoader()
+  const loader = new TextureLoader()
   return textureUrls.map(
     url => new Promise(resolve => loader.load(url, resolve))
   )
 }
 
 const loadEarthMesh = () => {
-  const loader = new THREE.TextureLoader()
+  const loader = new TextureLoader()
   return new Promise(resolve => {
     loader.load(earth, map => {
       loader.load(earthBump, specularMap => {
         loader.load(earthSpec, normalMap => {
-          const material = new THREE.MeshPhongMaterial({
+          const material = new MeshPhongMaterial({
             map,
             specularMap,
             normalMap,
             specular: 0xeeddaa,
             shininess: 1
           })
-          const geometry = new THREE.IcosahedronBufferGeometry(1, 2)
-          const mesh = new THREE.Mesh(geometry, material, { castShadow: false })
+          const geometry = new IcosahedronBufferGeometry(1, 2)
+          const mesh = new Mesh(geometry, material, { castShadow: false })
           resolve(mesh)
         })
       })
@@ -64,13 +71,13 @@ const randomMesh = meshes => meshes[Math.floor(Math.random() * meshes.length)]
 const planetsMeshes = []
 
 const loadPlanets = () => {
-  const geometry = new THREE.IcosahedronGeometry(1, 2)
+  const geometry = new IcosahedronGeometry(1, 2)
 
   return Promise.all(loadTextures(basicPlanetTextures))
-    .then(textures => textures.map(map => new THREE.MeshPhongMaterial({ map })))
+    .then(textures => textures.map(map => new MeshPhongMaterial({ map })))
     .then(materials =>
       materials.map(
-        mat => new THREE.Mesh(geometry.clone(), mat, { castShadow: false })
+        mat => new Mesh(geometry.clone(), mat, { castShadow: false })
       )
     )
     .then(meshes => [ ...meshes, loadEarthMesh() ])
