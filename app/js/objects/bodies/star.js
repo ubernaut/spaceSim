@@ -15,36 +15,7 @@ import {
 import * as lavaMaterial from '-/materials/lava'
 import createCoronaMaterial from '-/materials/corona'
 import { randomUniform } from '-/utils'
-
-const starTypes = {
-  O5: [ 157, 180, 255 ],
-
-  B1: [ 162, 185, 255 ],
-  B3: [ 167, 188, 255 ],
-  B5: [ 170, 191, 255 ],
-  B8: [ 175, 195, 255 ],
-
-  A1: [ 186, 204, 255 ],
-  A3: [ 192, 209, 255 ],
-  A5: [ 202, 216, 255 ],
-
-  F0: [ 228, 232, 255 ],
-  F2: [ 237, 238, 255 ],
-  F5: [ 251, 248, 255 ],
-  F8: [ 255, 249, 249 ],
-
-  G2: [ 255, 245, 236 ],
-  G5: [ 255, 244, 232 ],
-  G8: [ 255, 241, 223 ],
-
-  K0: [ 255, 235, 209 ],
-  K4: [ 255, 215, 174 ],
-  K7: [ 255, 198, 144 ],
-
-  M2: [ 255, 190, 127 ],
-  M4: [ 255, 187, 123 ],
-  M6: [ 255, 187, 123 ]
-}
+import constants from '-/constants'
 
 const getRandomStarType = () => {
   let starColor = 'F8'
@@ -137,7 +108,7 @@ const createRandomDistantStar = ({ radius, position, simple = true }) => {
   let star = {}
 
   star.type = getRandomStarType()
-  star.color = starTypes[star.type]
+  star.color = constants.starTypes[star.type]
   if (simple) {
     const geometry = new Geometry()
     const vertex = new Vector3()
@@ -170,11 +141,16 @@ const createRandomDistantStar = ({ radius, position, simple = true }) => {
 }
 
 const createStar = ({ radius, position, color, time = 0 }) => {
-  const rgb = starTypes.K7
+  const rgb = constants.starTypes.K7
   const chromosphere = createChromosphere(radius, rgb, time)
   const corona = createCorona(radius, rgb, time)
 
-  const pointLight = new PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
+  const pointLight = new PointLight(
+    rgb2hex(constants.starTypes[color]),
+    1.7,
+    0,
+    2
+  )
 
   ;[ chromosphere, corona, pointLight ].map(s => {
     s.position.x = position.x
@@ -225,4 +201,4 @@ const createChromosphere = (radius, rgb, time) => {
   return mesh
 }
 
-export { createStar, createRandomStar, starTypes, createRandomDistantStar }
+export { createStar, createRandomStar, createRandomDistantStar }

@@ -4,27 +4,24 @@ import { debounce } from 'throttle-debounce'
 
 import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
-import { getUser } from '-/net/api-client'
-import * as weapons from '-/player/weapons'
 import { createShip } from '-/player/ship'
 import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
-import logger from './logger'
+import logger from '-/utils/logger'
 import sceneState, { addMessage } from '-/state/branches/scene'
 import { toggleConsole, toggleHelp } from '-/state/branches/gui'
 import createApp, {
   createCamera,
   createPostprocessing
 } from '-/utils/create-app'
-
-const IAU = 9.4607 * Math.pow(10, 15)
+import constants from '-/constants'
 
 const create = async ({ scene, renderer, addAnimateCallback }) => {
   logger.debug(addMessage('init: creating camera...'))
   const camera = createCamera({
     fov: 70,
     nearClip: 0.1,
-    farClip: 5 * IAU
+    farClip: 10 * constants.ly
   })
 
   logger.debug(addMessage('init: creating postprocessing...'))
@@ -52,7 +49,7 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
 
   logger.debug(addMessage('init: adding ship and camera to scene...'))
   ship.add(camera)
-  camera.position.set(...[ 0, 10, 30 ])
+  camera.position.set(0, 10, 30)
   scene.add(ship)
 
   logger.debug(addMessage('init: registering controls...'))

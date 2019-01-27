@@ -1,6 +1,6 @@
 import io from 'socket.io-client'
 import state from '-/state'
-import logger from '-/logger'
+import logger from '-/utils/logger'
 
 const serverConfig = state.get([ 'config', 'server' ])
 

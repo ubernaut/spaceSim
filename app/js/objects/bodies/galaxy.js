@@ -1,14 +1,7 @@
-import {
-  MeshBasicMaterial,
-  Vector3,
-  Geometry,
-  PointsMaterial,
-  Points
-} from 'three'
+import { Vector3, Geometry, PointsMaterial, Points } from 'three'
 import Point from '@void/core/system-builder/Point'
 
 import { createRandomDistantStar } from './star'
-import { randomUniform } from '-/utils'
 
 class Galaxy {
   constructor () {
@@ -18,8 +11,8 @@ class Galaxy {
     this.maxTheta = 8
     this.alpha = 5 * Math.pow(10, 19)
     this.beta = 0.25
-    this.e = 2.71828182845904523536
     this.starDensity = 10
+
     while (this.theta < this.maxTheta) {
       this.theta += this.dTheta
       let randMax = this.alpha / (1 + this.theta)
@@ -28,18 +21,16 @@ class Galaxy {
       for (let i = 0; i <= this.starDensity; i++) {
         let xPos =
           this.alpha *
-          Math.pow(this.e, this.beta * this.theta) *
+          Math.pow(Math.E, this.beta * this.theta) *
           Math.cos(this.theta)
         let yPos =
           this.alpha *
-          Math.pow(this.e, this.beta * this.theta) *
+          Math.pow(Math.E, this.beta * this.theta) *
           Math.sin(this.theta)
         xPos = xPos + Math.random() * (randMax - randMin) + randMin
         yPos = yPos + Math.random() * (randMax - randMin) + randMin
-        let zPos = Math.random() * (randMax - randMin) + randMin
-        // let newStar = new Star(xPos, yPos, zPos, 'star', 'cos')
-        let randColor = randomUniform(0.5, 1) * 0xffffff
-        const material = new MeshBasicMaterial({ color: randColor })
+        const zPos = Math.random() * (randMax - randMin) + randMin
+
         let starRadius = 1.9 * Math.pow(10, 16)
         let starPosition = new Point([ xPos, yPos, zPos ])
         const newStar = createRandomDistantStar({
@@ -66,6 +57,45 @@ const createGalaxy = scene => {
   return galaxy
 }
 
+const createStarsMaterials = () => [
+  new PointsMaterial({
+    color: 0xffffff,
+    size: 10000000000000000,
+    sizeAttenuation: true,
+    fog: false
+  }),
+  new PointsMaterial({
+    color: 0xaaaaaa,
+    size: 10000000000000000,
+    sizeAttenuation: true,
+    fog: false
+  }),
+  new PointsMaterial({
+    color: 0x555555,
+    size: 10000000000000000,
+    sizeAttenuation: true,
+    fog: false
+  }),
+  new PointsMaterial({
+    color: 0xff0000,
+    size: 10000000000000000,
+    sizeAttenuation: true,
+    fog: false
+  }),
+  new PointsMaterial({
+    color: 0xffdddd,
+    size: 10000000000000000,
+    sizeAttenuation: true,
+    fog: false
+  }),
+  new PointsMaterial({
+    color: 0xddddff,
+    size: 10000000000000000,
+    sizeAttenuation: true,
+    fog: false
+  })
+]
+
 const addStars = scene => {
   const radius = 5 * Math.pow(10, 20)
   let i = 0
@@ -90,51 +120,10 @@ const addStars = scene => {
     starsGeometry[1].vertices.push(vertex)
   }
 
+  const starsMaterials = createStarsMaterials()
   let stars
-  const starsMaterials = [
-    new PointsMaterial({
-      color: 0xffffff,
-      size: 10000000000000000,
-      sizeAttenuation: true,
-      fog: false
-    }),
-    new PointsMaterial({
-      color: 0xaaaaaa,
-      size: 10000000000000000,
-      sizeAttenuation: true,
-      fog: false
-    }),
-    new PointsMaterial({
-      color: 0x555555,
-      size: 10000000000000000,
-      sizeAttenuation: true,
-      fog: false
-    }),
-    new PointsMaterial({
-      color: 0xff0000,
-      size: 10000000000000000,
-      sizeAttenuation: true,
-      fog: false
-    }),
-    new PointsMaterial({
-      color: 0xffdddd,
-      size: 10000000000000000,
-      sizeAttenuation: true,
-      fog: false
-    }),
-    new PointsMaterial({
-      color: 0xddddff,
-      size: 10000000000000000,
-      sizeAttenuation: true,
-      fog: false
-    })
-  ]
   for (i = 10; i < 30; i++) {
     stars = new Points(starsGeometry[i % 2], starsMaterials[i % 6])
-    // stars.rotation.x = Math.random() * 6;
-    // stars.rotation.y = Math.random() * 6;
-    // stars.rotation.z = Math.random() * 6;
-    //  stars.scale.setScalar( i * 10 );
     stars.position.x -= radius / 2
     stars.position.y -= radius / 6
     stars.position.z -= radius / 2
