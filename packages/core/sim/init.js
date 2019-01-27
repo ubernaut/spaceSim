@@ -1,6 +1,6 @@
-import { updateSystemCPU, updateSystemGPU, loadSystem } from './system'
-import { createUniverse } from '-/models/bodies/universe'
-import { createGalaxy } from '-/models/bodies/galaxy'
+import { updateSystemCPU, loadSystem } from './system'
+import { createUniverse } from '-/objects/bodies/universe'
+import { createGalaxy } from '-/objects/bodies/galaxy'
 import { initOimoPhysics } from './physics'
 import { addLights } from './scene'
 

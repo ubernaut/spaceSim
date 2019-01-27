@@ -1,6 +1,6 @@
 import { PolarGridHelper, Vector3, Color } from 'three'
 
-import * as basicShip from '-/models/ships/basic'
+import * as basicShip from '-/objects/ships/basic'
 import sceneState from '-/state/branches/scene'
 
 const shipPolarGrid = ship => {

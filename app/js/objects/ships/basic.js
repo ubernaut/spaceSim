@@ -1,5 +1,5 @@
 import { Vector3 } from 'three'
-import { GPUParticleSystem } from 'app/js/webgl/gpu-particle-system'
+import { GPUParticleSystem } from '-/objects/gpu-particle-system'
 import 'three/examples/js/loaders/GLTFLoader'
 
 export const create = ({ position, scale, rotation, loader }) => {
