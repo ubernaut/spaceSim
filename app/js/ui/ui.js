@@ -19,7 +19,7 @@ import ShipConfig from '@void/ui/lib/components/ShipConfig'
 import ShipConfigIcon from '@void/ui/lib/components/icons/ShipConfig'
 import HelpIcon from '@void/ui/lib/components/icons/Help'
 
-import { starTypes } from '-/bodies/star'
+import { starTypes } from '-/models/bodies/star'
 import { getUser, createUser, updateUser } from '-/net/api-client'
 import state from '-/state'
 import sceneState from '-/state/branches/scene'

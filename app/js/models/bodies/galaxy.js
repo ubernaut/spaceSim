@@ -7,7 +7,7 @@ import {
 } from 'three'
 import Point from '@void/core/system-builder/Point'
 
-import { createRandomDistantStar } from '-/bodies/star'
+import { createRandomDistantStar } from './star'
 import { randomUniform } from '-/utils'
 
 class Galaxy {
