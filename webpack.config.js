@@ -2,33 +2,58 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin
+const TerserPlugin = require('terser-webpack-plugin')
 
 const resolve = p => path.join(__dirname, p)
 
 const isProd = process.env.NODE_ENV === 'production'
 
-const devPlugins = [ new webpack.HotModuleReplacementPlugin() ]
+const plugins = [
+  new HtmlWebpackPlugin({
+    filename: 'index.html',
+    template: 'app/index.html'
+  }),
+  new CopyWebpackPlugin([
+    { from: 'app/lib', to: 'app/lib' },
+    { from: 'app/assets', to: 'app/assets' }
+  ]),
+  new webpack.ProvidePlugin({
+    THREE: 'three'
+  })
+]
+
+if (!isProd) {
+  plugins.push(
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
+  )
+}
+
+if (process.env.ANALYZE === 'true') {
+  plugins.push(new BundleAnalyzerPlugin())
+}
 
 module.exports = {
-  mode: isProd ? ' production' : 'development',
+  mode: isProd ? 'production' : 'development',
 
   context: path.resolve(__dirname),
 
   entry: {
-    bundle: resolve('app/js/app.js')
+    app: resolve('app/js/app.js')
   },
 
   output: {
     path: resolve('dist'),
-    filename: '[name].js',
+    filename: '[name].[hash].js',
+    chunkFilename: '[name].[hash].js',
     globalObject: 'this'
   },
 
-  devtool: 'cheap-module-eval-source-map',
-
   resolve: {
     modules: [ 'node_modules' ],
-    extensions: [ '*', '.json', '.js' ],
+    extensions: [ '.mjs', '.js', '.jsx', '.json' ],
     alias: {
       '-': resolve('app/js'),
       app: resolve('app'),
@@ -38,6 +63,20 @@ module.exports = {
         __dirname,
         'node_modules/three/examples/js/loaders/OBJLoader.js'
       )
+    }
+  },
+
+  optimization: {
+    noEmitOnErrors: true,
+    minimize: false,
+    splitChunks: {
+      cacheGroups: {
+        vendors: {
+          test: /node_modules/,
+          name: 'common',
+          chunks: 'all'
+        }
+      }
     }
   },
 
@@ -58,34 +97,27 @@ module.exports = {
       },
       {
         test: /\.worker.js$/,
-        loader: 'worker-loader?inline'
+        loader: 'worker-loader',
+        options: {
+          name: '[name].[hash].js'
+        }
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
+        test: /\.(gif|png|jpe?g|svg)$/i,
         loaders: [
-          'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
-          'image-webpack-loader?bypassOnDebug'
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[hash].[ext]'
+            }
+          },
+          'image-webpack-loader'
         ]
       }
     ]
   },
 
-  plugins: [
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'app/index.html'
-    }),
-    new CopyWebpackPlugin([
-      { from: 'app/lib', to: 'app/lib' },
-      { from: 'app/assets', to: 'app/assets' }
-    ]),
-    new webpack.ProvidePlugin({
-      THREE: 'three'
-    }),
-    ...(isProd ? [] : devPlugins),
-    new webpack.NamedModulesPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  ],
+  plugins,
 
   devServer: {
     host: '0.0.0.0',

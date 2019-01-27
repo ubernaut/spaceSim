@@ -1,5 +1,6 @@
 import React from 'react'
-import { FaQuestionCircle } from 'react-icons/fa'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
 import HudElement from '../HudElement'
 
 const style = () => ({
@@ -17,7 +18,7 @@ const style = () => ({
 const ShipConfig = () => (
   <HudElement>
     <div style={style()}>
-      <FaQuestionCircle />
+      <FontAwesomeIcon icon={faQuestionCircle} />
     </div>
   </HudElement>
 )

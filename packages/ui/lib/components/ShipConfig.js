@@ -1,6 +1,7 @@
 import React from 'react'
 import HudElement from './HudElement'
-import { FaRegWindowClose } from 'react-icons/fa'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faWindowClose } from '@fortawesome/free-solid-svg-icons'
 
 const style = props => ({
   fontSize: '1em',
@@ -55,7 +56,7 @@ const ShipConfig = ({
           }}
           onClick={() => close()}
         >
-          <FaRegWindowClose />
+          <FontAwesomeIcon icon={faWindowClose} />
         </a>
         <div style={style()}>
           <label style={{ fontWeight: 'bold' }}>Ship Config</label>
