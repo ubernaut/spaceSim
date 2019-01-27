@@ -1,6 +1,5 @@
 import FlyControls from './fly-controls'
 import { createGamepadControls } from './gamepad-controls'
-import { deployDrone } from '-/player/ship'
 
 export const createFlyControls = ({ ship, camera, el, scene }, handlers) => {
   const onScroll = ({ camera, controls, event }) => {
@@ -34,7 +33,7 @@ const createControls = (
 ) => {
   el = el || document.getElementById('root')
   if (type === 'gamepad') {
-    return createGamepadControls(ship, el, deployDrone(ship))
+    return createGamepadControls(ship, el, null)
   }
   return createFlyControls(
     {

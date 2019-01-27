@@ -1,5 +1,3 @@
-import { createAgent } from '-/ai/agent'
-
 const createDrone = ({ quaternion, position }) => {
   const geometry = new THREE.IcosahedronGeometry(1, 2)
   const material = new THREE.MeshPhongMaterial({

@@ -12,11 +12,9 @@ import {
   SphereGeometry
 } from 'three'
 
-import lavaMaterial from '-/materials/lava'
+import * as lavaMaterial from '-/materials/lava'
 import createCoronaMaterial from '-/materials/corona'
 import { randomUniform } from '-/utils'
-
-import uniforms from '-/uniforms'
 
 const starTypes = {
   O5: [ 157, 180, 255 ],
@@ -173,13 +171,11 @@ const createRandomDistantStar = ({ radius, position, simple = true }) => {
 
 const createStar = ({ radius, position, color, time = 0 }) => {
   const rgb = starTypes.K7
-
-  // const photosphere = createPhotosphere(radius, rgb, time)
   const chromosphere = createChromosphere(radius, rgb, time)
   const corona = createCorona(radius, rgb, time)
 
   const pointLight = new PointLight(rgb2hex(starTypes[color]), 1.7, 0, 2)
-  pointLight.castShadow = true
+
   ;[ chromosphere, corona, pointLight ].map(s => {
     s.position.x = position.x
     s.position.y = position.y
@@ -188,7 +184,7 @@ const createStar = ({ radius, position, color, time = 0 }) => {
 
   const animate = (delta, tick) => {
     ;[ chromosphere ].map(mesh => {
-      mesh.rotation.z -= 0.0005
+      mesh.rotation.z -= 0.001
     })
   }
 
@@ -209,8 +205,7 @@ const createCorona = (radius, rgb, time) => {
   geometry.addAttribute('position', new Float32BufferAttribute([ 0, 0, 0 ], 3))
 
   const material = createCoronaMaterial({ radius })
-  material.uniforms = getUniforms(radius, rgb, time)
-  // material.color.setRGB(0.9, 0.7, 0.7)
+  material.uniforms = lavaMaterial.getUniforms(radius, rgb, time)
 
   const mesh = new Points(geometry, material)
   mesh.frustumCulled = false
@@ -222,54 +217,12 @@ const createCorona = (radius, rgb, time) => {
 const createChromosphere = (radius, rgb, time) => {
   const geometry = new SphereGeometry(radius, 64, 64)
 
-  const material = lavaMaterial.clone()
-  material.uniforms = getUniforms(radius, rgb, time)
+  const material = lavaMaterial.material.clone()
+  material.uniforms = lavaMaterial.getUniforms(radius, rgb, time)
 
   const mesh = new Mesh(geometry, material)
   mesh.name = 'Chromosphere'
-  mesh.renderOrder = 0
   return mesh
-}
-
-// const createPhotosphere = (radius, rgb, time) => {
-//   const geometry = new THREE.SphereGeometry(radius * 0.99, 16, 16)
-//   const material = new THREE.ShaderMaterial({
-//     uniforms: getUniforms(radius, rgb, time),
-//     vertexShader,
-//     fragmentShader,
-//     transparent: true,
-//     depthTest: false,
-//     opacity: 0.5
-//   })
-//   material.side = THREE.DoubleSide
-//   const mesh = new THREE.Mesh(geometry, material)
-//   mesh.name = 'Photosphere'
-//   return mesh
-// }
-
-const getUniforms = (radius, rgb, time = 0) => {
-  uniforms.sun.color.red.value = (rgb[0] / 255.0) * 0.7
-  uniforms.sun.color.green.value = (rgb[1] / 255.0) * 0.7
-  uniforms.sun.color.blue.value = (rgb[2] / 255.0) * 0.7
-
-  return {
-    noiseScale: {
-      value: 35 / radius
-    },
-    noiseJitter: {
-      value: 2
-    },
-    manhattanDistance: {
-      value: true
-    },
-    noiseStrength: {
-      value: 1
-    },
-    baseColorRed: uniforms.sun.color.red,
-    baseColorGreen: uniforms.sun.color.green,
-    baseColorBlue: uniforms.sun.color.blue,
-    time
-  }
 }
 
 export { createStar, createRandomStar, starTypes, createRandomDistantStar }
