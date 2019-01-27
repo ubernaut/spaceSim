@@ -3,8 +3,43 @@ import {
   MeshBasicMaterial,
   Mesh,
   GridHelper,
-  AmbientLight
+  AmbientLight,
+  PolarGridHelper
 } from 'three'
+
+import { computeRadiusStellarToMetric } from '@void/core/system-builder/utils'
+import { createRandomStar } from '-/objects/stars/standard-star'
+import { createPlanet } from '-/objects/planet'
+
+const createScaleGrid = () => {
+  return [
+    new PolarGridHelper(58000000000, 1, 1, 128, 0x000000, 0x999999),
+    new PolarGridHelper(108000000000, 1, 1, 128, 0x000000, 0xff5555),
+    new PolarGridHelper(150000000000, 1, 1, 128, 0x000000, 0x9999ff),
+    new PolarGridHelper(227000000000, 1, 1, 128, 0x000000, 0xff9900f),
+    new PolarGridHelper(778000000000, 1, 1, 128, 0x000000, 0xff9999),
+    new PolarGridHelper(1427000000000, 1, 1, 128, 0x000000, 0xffff99),
+    new PolarGridHelper(2871000000000, 1, 1, 128, 0x000000, 0x99ffff),
+    new PolarGridHelper(4497000000000, 1, 1, 128, 0x000000, 0x0000ff),
+    new PolarGridHelper(5913000000000, 1, 1, 128, 0x000000, 0xffffff)
+  ].map(grid => {
+    grid.name = 'PolarGridHelper'
+    grid.rotation.x = Math.PI / 2
+    return grid
+  })
+}
+
+const createStar = ({ radius, position }) => {
+  const star = createRandomStar({
+    radius: 1,
+    position,
+    time: { value: 0 }
+  })
+  star.chromosphere.scale.set(radius, radius, radius)
+  star.chromosphere.add(star.pointLight)
+  star.corona.scale.set(radius, radius, radius)
+  return star
+}
 
 /**
  * add default lights to a scene
@@ -42,4 +77,46 @@ const createUniverse = scene => {
   return [ oort, galaxy, universe ]
 }
 
-export { addLights, createUniverse, squareGrid }
+const mkBody = async systemBody => {
+  const bodies = []
+  const animations = []
+
+  systemBody.radius = computeRadiusStellarToMetric(systemBody.mass)
+
+  if (systemBody.name === 'star') {
+    const gridObjects = createScaleGrid()
+    bodies.push(...gridObjects)
+
+    const star = createStar({
+      radius: systemBody.radius,
+      position: systemBody.position
+    })
+    systemBody.object = star.chromosphere
+    bodies.push(star.chromosphere)
+
+    if (star.corona) {
+      bodies.push(star.corona)
+    }
+    animations.push(star.animate)
+    return { bodies, animations }
+  }
+
+  if (systemBody.name) {
+    const planet = await createPlanet({
+      radius: systemBody.radius,
+      position: systemBody.position
+    })
+    if (planet) {
+      systemBody.object = planet
+      bodies.push(planet)
+    }
+    return { bodies, animations }
+  }
+
+  return {
+    bodies,
+    animations
+  }
+}
+
+export { addLights, createUniverse, squareGrid, mkBody }

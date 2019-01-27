@@ -1,8 +1,9 @@
+import Promise from 'bluebird'
 import { updateSystemCPU, loadSystem } from './system'
 import { createUniverse } from '-/objects/universe'
 import { createGalaxy } from '-/objects/galaxy'
 import { initOimoPhysics } from './physics'
-import { addLights } from './scene'
+import { addLights, mkBody } from './scene'
 
 const defaultConfig = {
   system: {
@@ -26,7 +27,7 @@ const init = async (scene, config) => {
   createGalaxy(scene)
   createUniverse(scene).map(body => scene.add(body))
 
-  const { systemWorker, systemBodies, systemAnimations } = await loadSystem({
+  const { systemWorker, systemBodies } = await loadSystem({
     scene,
     bodyCount: config.system.bodyCount,
     bodyDistance: config.system.bodyDistance,
@@ -52,7 +53,17 @@ const init = async (scene, config) => {
     updateSystemCPU(scene, systemWorker.physics)
   }
 
-  systemBodies.map(body => scene.add(body))
+  const systemAnimations = []
+  Promise.map(
+    systemBodies,
+    async body => {
+      const { bodies, animations } = await mkBody(body)
+      scene.add(...bodies)
+      systemAnimations.push(...animations)
+      return Promise.resolve().delay(100)
+    },
+    { concurrency: 8 }
+  )
 
   const animate = delta => {
     systemWorker.postMessage([ 'fetch' ])

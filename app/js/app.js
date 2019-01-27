@@ -39,8 +39,7 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
       bodySpeed: 0.05,
       deltaT: 0.001,
       gpuCollisions: true
-    },
-    addAnimateCallback
+    }
   })
 
   logger.debug(addMessage('init: creating player ship...'))
