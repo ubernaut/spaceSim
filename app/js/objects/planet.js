@@ -20,6 +20,8 @@ import saturn from 'app/assets/images/planets/saturn.jpg'
 import uranus from 'app/assets/images/planets/uranus.jpg'
 import venus from 'app/assets/images/planets/venus.jpg'
 
+import { pickRand } from '-/utils'
+
 const basicPlanetTextures = [
   jupiter,
   mars,
@@ -31,11 +33,14 @@ const basicPlanetTextures = [
   venus
 ]
 
-const loadTextures = textureUrls => {
+const loadTextures = async textureUrls => {
   const loader = new TextureLoader()
-  return textureUrls.map(
-    url => new Promise(resolve => loader.load(url, resolve))
-  )
+  const textures = []
+  for (const url of textureUrls) {
+    const texture = await new Promise(resolve => loader.load(url, resolve))
+    textures.push(texture)
+  }
+  return textures
 }
 
 const loadEarthMesh = () => {
@@ -61,39 +66,29 @@ const loadEarthMesh = () => {
 }
 
 /**
- * Get a random planet mesh to add the scene
- */
-const randomMesh = meshes => meshes[Math.floor(Math.random() * meshes.length)]
-
-/**
  * Pre-load the planets
  */
 const planetsMeshes = []
 
-const loadPlanets = () => {
+export const loadPlanets = async () => {
   const geometry = new IcosahedronGeometry(1, 2)
 
-  return Promise.all(loadTextures(basicPlanetTextures))
-    .then(textures => textures.map(map => new MeshPhongMaterial({ map })))
-    .then(materials =>
-      materials.map(
-        mat => new Mesh(geometry.clone(), mat, { castShadow: false })
-      )
-    )
-    .then(meshes => [ ...meshes, loadEarthMesh() ])
+  const textures = await loadTextures(basicPlanetTextures)
+  const meshes = textures.map(texture => {
+    const material = new MeshPhongMaterial({ map: texture })
+    return new Mesh(geometry.clone(), material, { castShadow: false })
+  })
+
+  planetsMeshes.push(...meshes, await loadEarthMesh())
+
+  return planetsMeshes
 }
 
 /**
  * Main creation method
  */
-const createPlanet = async ({ radius, position }) => {
-  if (planetsMeshes.length === 0) {
-    console.log('here')
-    await Promise.all(loadPlanets()).then(meshes => {
-      planetsMeshes.push(...meshes)
-    })
-  }
-  const planetMesh = randomMesh(planetsMeshes)
+export const createPlanet = async ({ radius, position }) => {
+  const planetMesh = pickRand(planetsMeshes)
 
   if (planetMesh) {
     const planet = planetMesh.clone()
@@ -113,5 +108,3 @@ const createPlanet = async ({ radius, position }) => {
     return planet
   }
 }
-
-export { createPlanet }

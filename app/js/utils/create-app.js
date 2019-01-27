@@ -26,7 +26,7 @@ const createApp = async options => {
    */
   let preload
   if (options.scene.preload) {
-    preload = options.scene.preload()
+    preload = await options.scene.preload()
   }
 
   /**

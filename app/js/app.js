@@ -5,6 +5,7 @@ import { debounce } from 'throttle-debounce'
 import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
 import { createShip } from '-/player/ship'
+import { loadPlanets } from '-/objects/planet'
 import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
 import logger from '-/utils/logger'
@@ -84,7 +85,10 @@ document.addEventListener('DOMContentLoaded', () =>
   createApp({
     root: '#root',
     scene: {
-      preload: null,
+      preload: async () => {
+        logger.debug(addMessage('init: preloading assets...'))
+        await loadPlanets()
+      },
       create,
       update: null
     }
