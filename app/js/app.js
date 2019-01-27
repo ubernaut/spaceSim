@@ -61,9 +61,6 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
     }
   )
 
-  logger.debug(addMessage('init: creating dat.gui elements...'))
-  createBasicUI()
-
   logger.debug(addMessage('init: opening websocket...'))
   await net.init({ ship, scene })
 
@@ -86,6 +83,9 @@ document.addEventListener('DOMContentLoaded', () =>
     root: '#root',
     scene: {
       preload: async () => {
+        logger.debug(addMessage('init: creating GUI elements...'))
+        createBasicUI()
+
         logger.debug(addMessage('init: preloading assets...'))
         await loadPlanets()
       },
