@@ -26,7 +26,7 @@ const init = async (scene, config) => {
   createGalaxy(scene)
   createUniverse(scene).map(body => scene.add(body))
 
-  const { systemWorker, systemAnimations } = await loadSystem({
+  const { systemWorker, systemBodies, systemAnimations } = await loadSystem({
     scene,
     bodyCount: config.system.bodyCount,
     bodyDistance: config.system.bodyDistance,
@@ -51,6 +51,8 @@ const init = async (scene, config) => {
 
     updateSystemCPU(scene, systemWorker.physics)
   }
+
+  systemBodies.map(body => scene.add(body))
 
   const animate = delta => {
     systemWorker.postMessage([ 'fetch' ])

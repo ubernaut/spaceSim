@@ -83,14 +83,16 @@ const loadPlanets = () => {
     .then(meshes => [ ...meshes, loadEarthMesh() ])
 }
 
-Promise.all(loadPlanets()).then(meshes => {
-  planetsMeshes.push(...meshes)
-})
-
 /**
  * Main creation method
  */
-const createPlanet = ({ radius, position }) => {
+const createPlanet = async ({ radius, position }) => {
+  if (planetsMeshes.length === 0) {
+    console.log('here')
+    await Promise.all(loadPlanets()).then(meshes => {
+      planetsMeshes.push(...meshes)
+    })
+  }
   const planetMesh = randomMesh(planetsMeshes)
 
   if (planetMesh) {

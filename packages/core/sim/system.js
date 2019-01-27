@@ -42,7 +42,7 @@ const createStar = ({ radius, position }) => {
   return star
 }
 
-const mkBody = systemBody => {
+const mkBody = async systemBody => {
   const bodies = []
   const animations = []
 
@@ -67,7 +67,7 @@ const mkBody = systemBody => {
   }
 
   if (systemBody.name) {
-    const planet = createPlanet({
+    const planet = await createPlanet({
       radius: systemBody.radius,
       position: systemBody.position
     })
@@ -87,14 +87,12 @@ const mkBody = systemBody => {
 let system = null
 
 const loadSystem = ({
-  scene,
   bodyCount = 0,
   bodyDistance = 1,
   bodySpeed = 0.05,
   deltaT = 0.005,
   useCuda = true,
   gpuCollisions,
-  concurrency = 24,
   addAnimateCallback
 }) => {
   let systemWorker = new SystemBuilderWorker()
@@ -106,7 +104,7 @@ const loadSystem = ({
     bodySpeed
   ])
   return new Promise((resolve, reject) => {
-    systemWorker.onmessage = e => {
+    systemWorker.onmessage = async e => {
       system = e.data
 
       const metersBodies = convertSystemToMeters(system)
@@ -131,18 +129,15 @@ const loadSystem = ({
         systemWorker.physics.initGPUStuff()
       }
 
+      const systemBodies = []
       const systemAnimations = []
-      Promise.map(
-        system.bodies,
-        systemBody => {
-          const { bodies, animations } = mkBody(systemBody)
-          bodies.map(b => scene.add(b))
-          systemAnimations.push(...animations)
-        },
-        { concurrency }
-      )
+      for (const body of system.bodies) {
+        const { bodies, animations } = await mkBody(body)
+        systemBodies.push(...bodies)
+        systemAnimations.push(...animations)
+      }
 
-      resolve({ systemWorker, systemAnimations })
+      resolve({ systemWorker, systemBodies, systemAnimations })
     }
   })
 }
