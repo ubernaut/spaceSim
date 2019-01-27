@@ -81,11 +81,13 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
   }
 }
 
-createApp({
-  root: '#root',
-  scene: {
-    preload: null,
-    create,
-    update: null
-  }
-})
+document.addEventListener('DOMContentLoaded', () =>
+  createApp({
+    root: '#root',
+    scene: {
+      preload: null,
+      create,
+      update: null
+    }
+  })
+)
