@@ -1,5 +1,5 @@
 import { ShaderMaterial, NormalBlending, FrontSide } from 'three'
-import shader from 'app/shaders/lava'
+import shader from '-/shaders/lava'
 import uniforms from '-/uniforms'
 
 export const material = new ShaderMaterial({
