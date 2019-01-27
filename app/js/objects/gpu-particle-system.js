@@ -12,8 +12,8 @@ import {
   Points
 } from 'three'
 
-import vertexShader from 'app/shaders/particles.vs.glsl'
-import fragmentShader from 'app/shaders/particles.fs.glsl'
+import vertexShader from '-/shaders/particles.vs.glsl'
+import fragmentShader from '-/shaders/particles.fs.glsl'
 
 import perlinImage from 'app/assets/images/perlin-512.png'
 import particleImage from 'app/assets/images/particle2.png'
