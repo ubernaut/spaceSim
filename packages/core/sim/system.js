@@ -7,7 +7,7 @@ import {
   computeRadiusStellarToMetric
 } from '@void/core/system-builder/utils'
 
-import { createRandomStar } from '-/objects/bodies/star'
+import { createRandomStar } from '-/objects/bodies/stars/standard-star'
 import { createPlanet } from '-/objects/bodies/planet'
 import { randomUniform } from '-/utils'
 import SystemBuilderWorker from '-/workers/systemBuilder.worker'

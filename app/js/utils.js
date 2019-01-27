@@ -17,4 +17,10 @@ const s4 = () => {
 
 const guid = () => [ s4() + s4(), s4(), s4(), s4(), s4() + s4() + s4() ].join('-')
 
-export { onProgress, onError, randomUniform, guid }
+const rgb2hex = rgb => {
+  return parseInt('0x' + rgb.map(x => parseInt(x).toString(16)).join(''), 16)
+}
+
+const pickRand = items => items[Math.round(randomUniform(1, items.length)) - 1]
+
+export { onProgress, onError, randomUniform, guid, rgb2hex, pickRand }

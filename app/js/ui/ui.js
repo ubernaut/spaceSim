@@ -19,11 +19,10 @@ import ShipConfig from '@void/ui/lib/components/ShipConfig'
 import ShipConfigIcon from '@void/ui/lib/components/icons/ShipConfig'
 import HelpIcon from '@void/ui/lib/components/icons/Help'
 
-import { starTypes } from '-/objects/bodies/star'
+import { starTypes } from '-/constants'
 import { getUser, createUser, updateUser } from '-/net/api-client'
 import state from '-/state'
 import sceneState from '-/state/branches/scene'
-import uniforms from '-/uniforms'
 
 const guiState = state.get('gui')
 
@@ -44,7 +43,6 @@ const handleCommand = ({ command, clear }) => {
     '/clear': cmd => clear(),
     '/ship': cmd => {
       const [_, ...args] = cmd.split(' ')
-      console.log(args)
       for (const arg of args) {
         const [key, val] = arg.split('=')
         if (!key || !val) {
@@ -62,7 +60,7 @@ const handleCommand = ({ command, clear }) => {
     },
     '/speed': cmd => {
       const [_, speed] = cmd.split(' ')
-      sceneState.set(['player', 'movementSpeed'], parseFloat(speed, 10))
+      sceneState.set(['player', 'ship', 'movementSpeed'], parseFloat(speed, 10))
       return `set speed to ${speed}`
     },
     '/shipconfig': cmd => state.set(['gui', 'shipConfig', 'isOpen'], true),
@@ -92,7 +90,6 @@ const handleCommand = ({ command, clear }) => {
         return `User ${username} already exists`
       } else {
         const result = await createUser(username)
-        console.log(result)
       }
     }
   }

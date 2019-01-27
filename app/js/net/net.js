@@ -59,7 +59,6 @@ const broadcastUpdate = (socket, payload) => {
   socket.emit('events', msgpack.encode(payload))
 }
 
-let once = false
 /**
  * Set position, orientation, etc
  */
@@ -73,10 +72,6 @@ const setShipProps = ({ ship, player, quaternion, position }) => {
   ship.quaternion._z = quaternion._z
 
   const hull = ship.children.find(c => c.name === 'Icosahedron_Standard')
-  if (!once) {
-    console.log(hull)
-    once = true
-  }
   hull.children[0].children[0].material.color = new Color(
     player.ship.hull.color
   )
@@ -106,8 +101,7 @@ const updatePlayer = ({ scene, player, quaternion, position }) => {
 }
 
 const loadNewPlayer = async ({ scene, player }) => {
-  console.log('loading new player...', { scene, player })
-  addMessage(`loading player ${player.uuid}...`)
+  addMessage(`loading player ${player.username}...`)
 
   const { ship, animate } = await createShip()
   ship.uuid = player.ship.uuid

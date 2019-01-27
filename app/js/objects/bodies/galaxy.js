@@ -1,7 +1,7 @@
 import { Vector3, Geometry, PointsMaterial, Points } from 'three'
 import Point from '@void/core/system-builder/Point'
 
-import { createRandomDistantStar } from './star'
+import { createRandomDistantStar } from '-/objects/bodies/stars/distant-star'
 
 class Galaxy {
   constructor () {

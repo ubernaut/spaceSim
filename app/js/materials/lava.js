@@ -1,6 +1,5 @@
 import { ShaderMaterial, NormalBlending, FrontSide } from 'three'
 import shader from '-/shaders/lava'
-import uniforms from '-/uniforms'
 
 export const material = new ShaderMaterial({
   ...shader,
@@ -10,10 +9,12 @@ export const material = new ShaderMaterial({
   side: FrontSide
 })
 
-export const getUniforms = (radius, rgb, time = 0) => {
-  uniforms.sun.color.red.value = (rgb[0] / 255.0) * 0.7
-  uniforms.sun.color.green.value = (rgb[1] / 255.0) * 0.7
-  uniforms.sun.color.blue.value = (rgb[2] / 255.0) * 0.7
+export const getUniforms = ({ radius, rgb, time = 0 }) => {
+  const sunColor = [
+    (rgb[0] / 255.0) * 0.7,
+    (rgb[1] / 255.0) * 0.7,
+    (rgb[2] / 255.0) * 0.7
+  ]
 
   return {
     noiseScale: {
@@ -28,9 +29,15 @@ export const getUniforms = (radius, rgb, time = 0) => {
     noiseStrength: {
       value: 1
     },
-    baseColorRed: uniforms.sun.color.red,
-    baseColorGreen: uniforms.sun.color.green,
-    baseColorBlue: uniforms.sun.color.blue,
+    baseColorRed: {
+      value: sunColor[0]
+    },
+    baseColorGreen: {
+      value: sunColor[1]
+    },
+    baseColorBlue: {
+      value: sunColor[2]
+    },
     time
   }
 }

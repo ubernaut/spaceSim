@@ -149,7 +149,6 @@ export default class KeyboardControls {
           this.selection = null
         }
       } else {
-        console.log(obj)
         if (this.selection !== null) {
           const markers = this.selection.object.children.filter(
             c => c.name === 'selection'

@@ -27,7 +27,6 @@ self.onmessage = function (e) {
   }
 }
 const init = function () {
-  console.log(physics)
   physics.gridSystem.rad.map((_, i) => {
     physics.gridSystem.rad[i] = computeRadiusStellarToMetric(
       physics.gridSystem.mass[i]
