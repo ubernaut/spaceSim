@@ -1,20 +1,19 @@
 import React from 'react'
+import { css } from 'emotion'
+import classnames from 'classnames'
+import { colors } from './theme'
 
-const style = props => ({
-  background: '#222222bb',
-  border: '2px solid #44ee4433',
-  color: '#44ff44cc',
-  width: '100%',
-  height: '100%',
-  borderRadius: '5px'
-})
+const style = css`
+  background: #222222bb;
+  border: 2px solid #44ee4433;
+  color: ${colors.primary || 'white'};
+  width: 100%;
+  height: 100%;
+  borderradius: 5px;
+`
 
 const HudElement = ({ className = '', children }) => {
-  return (
-    <div className={className} style={style()}>
-      {children}
-    </div>
-  )
+  return <div className={classnames(className, style)}>{children}</div>
 }
 
 export default HudElement

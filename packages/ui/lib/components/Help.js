@@ -1,6 +1,8 @@
 import React from 'react'
-import HudElement from './HudElement'
 import { compose, withState } from 'recompose'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faWindowClose } from '@fortawesome/free-solid-svg-icons'
+import HudElement from './HudElement'
 
 const style = props => ({
   padding: '1em'
@@ -62,7 +64,21 @@ const Help = ({ isHidden, setIsHidden }) => {
       <HudElement>
         <div style={style()}>
           <div id="help">
-            <h3 onClick={() => setIsHidden(true)}>Help (click here to hide)</h3>
+            <h3>Help</h3>
+            <a
+              style={{
+                cursor: 'pointer',
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                textDecoration: 'none',
+                color: 'inherit',
+                fontSize: '1.5em'
+              }}
+              onClick={() => setIsHidden(true)}
+            >
+              <FontAwesomeIcon icon={faWindowClose} />
+            </a>
             <HelpContents />
           </div>
         </div>

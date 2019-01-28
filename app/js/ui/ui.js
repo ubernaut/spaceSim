@@ -6,7 +6,6 @@ import dat from 'app/lib/dat.gui.js'
 import { debounce, throttle } from 'throttle-debounce'
 
 import Speedometer from '@void/ui/lib/components/Speedometer'
-import BodyCounter from '@void/ui/lib/components/BodyCounter'
 import Messages from '@void/ui/lib/components/Messages'
 import Console from '@void/ui/lib/components/Console'
 import Reticle from '@void/ui/lib/components/Reticle'
@@ -23,80 +22,8 @@ import { starTypes } from '-/constants'
 import { getUser, createUser, updateUser } from '-/net/api-client'
 import state from '-/state'
 import sceneState from '-/state/branches/scene'
-
-const guiState = state.get('gui')
-
-const handleCommand = ({ command, clear }) => {
-  const [cmd, ...args] = command.split(' ')
-  const handlers = {
-    '/help': cmd => state.set(['gui', 'help', 'hidden'], false),
-    '/whoami': cmd => `Your UUID is ${state.get(['scene', 'player', 'id'])}`,
-    '/players': cmd => {
-      const players = state.get(['scene', 'players']).map(p => p.playerId)
-      if (!players || players.length === 0) {
-        return "You're the only player"
-      }
-      return players
-    },
-    '/bodies': cmd =>
-      `There area ${state.get(['scene', 'bodyCount'])} sim bodies`,
-    '/clear': cmd => clear(),
-    '/ship': cmd => {
-      const [_, ...args] = cmd.split(' ')
-      for (const arg of args) {
-        const [key, val] = arg.split('=')
-        if (!key || !val) {
-          return 'invalid arguments format'
-        }
-        if (key === 'thrust') {
-          sceneState.set(
-            ['player', 'ship', 'thrust', 'color'],
-            parseInt(val, 16)
-          )
-          return `set ship thrust color to ${val}`
-        }
-        return 'unknown key'
-      }
-    },
-    '/speed': cmd => {
-      const [_, speed] = cmd.split(' ')
-      sceneState.set(['player', 'ship', 'movementSpeed'], parseFloat(speed, 10))
-      return `set speed to ${speed}`
-    },
-    '/shipconfig': cmd => state.set(['gui', 'shipConfig', 'isOpen'], true),
-    '/login': async cmd => {
-      const [_, username, ...rest] = cmd.split(' ')
-      const userData = await getUser(username)
-      if (userData && userData.payload) {
-        sceneState.set(
-          ['player', 'ship', 'thrust', 'color'],
-          userData.payload.options.ship.thrust.color
-        )
-        sceneState.set(
-          ['player', 'ship', 'hull', 'color'],
-          userData.payload.options.ship.hull.color
-        )
-        sceneState.set(['player', 'isLoggedIn'], true)
-        sceneState.set(['player', 'username'], userData.payload.username)
-        return `Logged in as ${username}`
-      } else {
-        return `Unknown user ${username}`
-      }
-    },
-    '/newuser': async cmd => {
-      const [_, username, ...rest] = cmd.split(' ')
-      const userData = await getUser(username)
-      if (userData && userData.payload) {
-        return `User ${username} already exists`
-      } else {
-        const result = await createUser(username)
-      }
-    }
-  }
-  const handler = handlers[cmd] || (() => `command not found: ${cmd}`)
-
-  return handler(command)
-}
+import guiState, { toggleHelp } from '-/state/branches/gui'
+import { handleCommand } from './command-handler'
 
 const updateUserOptions = debounce(250, ({ username, options }) =>
   updateUser(username, options)

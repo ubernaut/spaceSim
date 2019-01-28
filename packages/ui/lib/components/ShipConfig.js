@@ -45,8 +45,8 @@ const ShipConfig = ({
     isOpen && (
       <HudElement>
         <a
-          href="#"
           style={{
+            cursor: 'pointer',
             position: 'absolute',
             top: '15px',
             right: '15px',

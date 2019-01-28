@@ -10,7 +10,7 @@ import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
 import logger from '-/utils/logger'
 import sceneState, { addMessage } from '-/state/branches/scene'
-import { toggleConsole, toggleHelp } from '-/state/branches/gui'
+import { toggleConsole, toggleGui } from '-/state/branches/gui'
 import createApp, {
   createCamera,
   createPostprocessing
@@ -57,7 +57,7 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
     { type: 'fly', ship, camera, scene },
     {
       toggleConsole: debounce(100, toggleConsole),
-      toggleHelp: debounce(100, toggleHelp)
+      toggleGui: debounce(100, toggleGui)
     }
   )
 

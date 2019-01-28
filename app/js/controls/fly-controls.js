@@ -20,6 +20,9 @@ const defaultMap = {
     [Keyboard.E]: 'rollRight'
   },
   guiState: {
+    toggleGui: {
+      keys: [ Keyboard.TAB ]
+    },
     toggleConsole: {
       keys: [ Keyboard.ESC ]
     }
