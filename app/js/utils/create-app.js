@@ -50,6 +50,7 @@ const createApp = async options => {
    */
   const clock = new Clock()
   const animate = animateOptions => {
+    renderer.clear()
     requestAnimationFrame(() => animate(animateOptions))
 
     const delta = clock.getDelta()
@@ -92,7 +93,8 @@ export const createPostprocessing = ({ renderer, scene, camera }) => {
 export const createRenderer = () => {
   const renderer = new WebGLRenderer({
     antialias: true,
-    logarithmicDepthBuffer: true
+    logarithmicDepthBuffer: true,
+    sortObjects: true
   })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth, window.innerHeight)

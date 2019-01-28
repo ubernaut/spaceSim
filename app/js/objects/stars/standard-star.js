@@ -4,7 +4,7 @@ import {
   PointLight,
   BufferGeometry,
   Float32BufferAttribute,
-  SphereGeometry
+  SphereBufferGeometry
 } from 'three'
 
 import * as lavaMaterial from '-/materials/lava'
@@ -15,7 +15,8 @@ import constants from '-/constants'
 
 export const createStar = ({ radius, position, starType, time = 0 }) => {
   const rgb = constants.starTypes[starType]
-  const chromosphere = createChromosphere(radius, rgb, time)
+  const uniforms = lavaMaterial.getUniforms({ radius, rgb, time })
+  const chromosphere = createChromosphere(radius, rgb, time, uniforms)
   const corona = createCorona(radius, rgb, time)
   const pointLight = new PointLight(rgb2hex(rgb), 1.7, 0, 2)
 
@@ -31,6 +32,7 @@ export const createStar = ({ radius, position, starType, time = 0 }) => {
     pointLight,
     animate: (delta, tick) => {
       chromosphere.rotation.z -= 0.025 * delta
+      uniforms.time.value += delta
     }
   }
 }
@@ -39,17 +41,16 @@ const createCorona = (radius, rgb, time) => {
   const geometry = new BufferGeometry()
   geometry.addAttribute('position', new Float32BufferAttribute([ 0, 0, 0 ], 3))
   const material = createCoronaMaterial({ radius })
-  material.uniforms = lavaMaterial.getUniforms({ radius, rgb, time })
   const mesh = new Points(geometry, material)
   mesh.frustumCulled = false
   mesh.name = 'Corona'
   return mesh
 }
 
-const createChromosphere = (radius, rgb, time) => {
-  const geometry = new SphereGeometry(radius, 64, 64)
+const createChromosphere = (radius, rgb, time, uniforms) => {
+  const geometry = new SphereBufferGeometry(radius, 64, 64)
   const material = lavaMaterial.material.clone()
-  material.uniforms = lavaMaterial.getUniforms({ radius, rgb, time })
+  material.uniforms = uniforms
   const mesh = new Mesh(geometry, material)
   mesh.name = 'Chromosphere'
   return mesh

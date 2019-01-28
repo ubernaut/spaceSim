@@ -1,12 +1,10 @@
-import { ShaderMaterial, NormalBlending, FrontSide } from 'three'
+import { ShaderMaterial } from 'three'
 import shader from '-/shaders/lava'
 
+// export const material = new MeshStandardMaterial({ color: 0xffff00 })
 export const material = new ShaderMaterial({
   ...shader,
-  blending: NormalBlending,
-  depthTest: false,
-  transparent: false,
-  side: FrontSide
+  depthTest: false
 })
 
 export const getUniforms = ({ radius, rgb, time = 0 }) => {
@@ -38,6 +36,8 @@ export const getUniforms = ({ radius, rgb, time = 0 }) => {
     baseColorBlue: {
       value: sunColor[2]
     },
-    time
+    time: {
+      value: 0
+    }
   }
 }
