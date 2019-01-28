@@ -3,6 +3,11 @@
  */
 const distances = { au: 1.495978707e11, ly: 9.4607e15, pc: 3.0857e16 }
 
+const misc = {
+  // speed of light (m/s)
+  c: 2.99792458e8
+}
+
 /**
  * Mathematical constants
  */
@@ -43,6 +48,7 @@ const starTypes = {
 
 export default {
   ...distances,
+  ...misc,
   ...math,
   starTypes
 }

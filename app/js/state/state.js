@@ -33,6 +33,11 @@ const state = new Baobab(
             type: 'basic',
             color: '#0055ff'
           },
+          weapon: {
+            type: 'laser',
+            color: '#0000ff'
+          },
+          energy: 100,
           movementSpeed: 0
         }
       },

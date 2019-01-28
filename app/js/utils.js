@@ -1,3 +1,5 @@
+import Promise from 'bluebird'
+
 const onProgress = xhr => {
   if (xhr.lengthComputable) {
     const percentComplete = (xhr.loaded / xhr.total) * 100
@@ -21,6 +23,24 @@ const rgb2hex = rgb => {
   return parseInt('0x' + rgb.map(x => parseInt(x).toString(16)).join(''), 16)
 }
 
+// Pick a random item from a list
 const pickRand = items => items[Math.round(randomUniform(1, items.length)) - 1]
 
-export { onProgress, onError, randomUniform, guid, rgb2hex, pickRand }
+// Call a function (f) n times
+const doTimes = (n, f) => Array.from(new Array(n)).map(i => f(i))
+// Using promises
+const doTimesP = (n, f, options = {}) =>
+  Promise.map(Array.from(new Array(n)), i => f(i), {
+    concurrency: options.concurrency || 1
+  })
+
+export {
+  onProgress,
+  onError,
+  randomUniform,
+  guid,
+  rgb2hex,
+  pickRand,
+  doTimes,
+  doTimesP
+}

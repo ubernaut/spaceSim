@@ -68,7 +68,7 @@ const UI = branch(
             <Shields shields={10} maxShields={10} />
           </div>
           <div className="energy-bar">
-            <Energy energy={10} maxEnergy={10} />
+            <Energy energy={player.ship.energy} maxEnergy={100} />
           </div>
           <div className="speedometer">
             <Speedometer speed={player.ship.movementSpeed} />

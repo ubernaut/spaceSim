@@ -10,6 +10,8 @@ const Ship = struct({
     type: 'string',
     color: 'string'
   },
+  weapon: 'object?',
+  energy: 'number?',
   movementSpeed: 'number'
 })
 
