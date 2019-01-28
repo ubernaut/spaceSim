@@ -1,6 +1,6 @@
 import '@babel/polyfill'
 import '../styles/app.css'
-import { debounce } from 'throttle-debounce'
+import { throttle } from 'throttle-debounce'
 
 import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
@@ -56,8 +56,8 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
   const controls = createControls(
     { type: 'fly', ship, camera, scene },
     {
-      toggleConsole: debounce(100, toggleConsole),
-      toggleGui: debounce(100, toggleGui)
+      toggleConsole: throttle(300, true, toggleConsole),
+      toggleGui: throttle(300, true, toggleGui)
     }
   )
 
