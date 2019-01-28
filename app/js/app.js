@@ -5,6 +5,7 @@ import { throttle } from 'throttle-debounce'
 import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
 import { createShip } from '-/player/ship'
+import { createLaser, shootLaser, animateLaser } from '-/objects/weapons/laser'
 import { loadPlanets } from '-/objects/planet'
 import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
@@ -49,15 +50,30 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
 
   logger.debug(addMessage('init: adding ship and camera to scene...'))
   ship.add(camera)
-  camera.position.set(0, 10, 30)
+  camera.position.set(0, 7, 30)
   scene.add(ship)
+
+  const { laser: laser1, emitter: laser1Emitter } = createLaser()
+  const { laser: laser2, emitter: laser2Emitter } = createLaser()
+  ship.add(laser1)
+  ship.add(laser2)
+  laser1.position.set(1.25, 0, 0)
+  laser2.position.set(-1.25, 0, 0)
 
   logger.debug(addMessage('init: registering controls...'))
   const controls = createControls(
     { type: 'fly', ship, camera, scene },
     {
       toggleConsole: throttle(300, true, toggleConsole),
-      toggleGui: throttle(300, true, toggleGui)
+      toggleGui: throttle(300, true, toggleGui),
+      shoot: throttle(100, true, () => {
+        const energy = sceneState.get([ 'player', 'ship', 'energy' ])
+        if (energy >= 2) {
+          shootLaser({ emitter: laser1Emitter })
+          shootLaser({ emitter: laser2Emitter })
+          sceneState.set([ 'player', 'ship', 'energy' ], energy - 2)
+        }
+      })
     }
   )
 
@@ -72,6 +88,20 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
     animateCallbacks: [
       animateSystem,
       animateShip,
+      (delta, tick) =>
+        animateLaser({
+          emitter: laser1Emitter,
+          tick
+        }),
+      (delta, tick) =>
+        animateLaser({
+          emitter: laser2Emitter,
+          tick
+        }),
+      delta =>
+        sceneState.apply([ 'player', 'ship', 'energy' ], e =>
+          Math.min(100, e + 10 * delta)
+        ),
       delta => controls.update(delta),
       delta => composer.render(delta)
     ]

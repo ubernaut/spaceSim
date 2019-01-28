@@ -26,6 +26,11 @@ const defaultMap = {
     toggleConsole: {
       keys: [ Keyboard.ESC ]
     }
+  },
+  misc: {
+    shoot: {
+      keys: [ Keyboard.SPACEBAR ]
+    }
   }
 }
 
@@ -87,6 +92,7 @@ export default class KeyboardControls {
       setSelected(null)
     }
 
+    // Only update moveState if the console is closed
     if (guiState.get([ 'console', 'isOpen' ]) !== true) {
       Object.keys(this.keymap.moveState).map(key => {
         if (this.keyboard.keyPressed(key)) {
@@ -95,9 +101,21 @@ export default class KeyboardControls {
       })
     }
 
+    // GUI handlers
     Object.keys(this.keymap.guiState).map(funcName => {
       if (
         this.keymap.guiState[funcName].keys.every(key =>
+          this.keyboard.keyPressed(key)
+        )
+      ) {
+        this.handlers[funcName]()
+      }
+    })
+
+    // Misc handlers
+    Object.keys(this.keymap.misc).map(funcName => {
+      if (
+        this.keymap.misc[funcName].keys.every(key =>
           this.keyboard.keyPressed(key)
         )
       ) {
