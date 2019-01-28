@@ -2,7 +2,14 @@ import Keyboard from 'syncinput/Keyboard'
 import Mouse from 'syncinput/Mouse'
 import sceneState, { setSelected } from '-/state/branches/scene'
 import guiState from '-/state/branches/gui'
-import { calcObjectDistance, calcDistances } from './utils'
+import { throttle } from 'throttle-debounce'
+import {
+  calcObjectDistance,
+  calcDistances,
+  mouseToSceneCoords,
+  testIntersections,
+  highlightMesh
+} from './utils'
 
 const defaultMap = {
   moveState: {
@@ -49,10 +56,18 @@ export default class KeyboardControls {
     this.keymap = Object.assign({}, defaultMap)
     this.acceleration = 0.65
     this.movementSpeed = 1.0
-    this.rollSpeed = 0.3
+    this.rollSpeed = 0.4
     this.moveVector = new THREE.Vector3(0, 0, 0)
     this.rotationVector = new THREE.Vector3(0, 0, 0)
     this.resetMoveState()
+    this.raycaster = new THREE.Raycaster()
+    this.selectionHighlight = highlightMesh
+    this.throttledTestIntersections = throttle(
+      100,
+      false,
+      this.testIntersections
+    )
+    this.throttledUpdateSelection = throttle(100, true, this.updateSelection)
   }
 
   updateMovementSpeed () {
@@ -69,28 +84,9 @@ export default class KeyboardControls {
   update (delta) {
     this.keyboard.update()
     this.mouse.update()
-
     this.movementSpeed = sceneState.get([ 'player', 'ship', 'movementSpeed' ])
-
-    if (this.selection) {
-      setSelected({
-        name: this.selection.object.name,
-        id: this.selection.object.id,
-        uuid: this.selection.object.uuid,
-        type: this.selection.object.type,
-        distance: calcDistances(
-          calcObjectDistance(this.selection.object, this.object)
-        ),
-        position: {
-          x: parseFloat(this.selection.object.position.x).toFixed(2),
-          y: parseFloat(this.selection.object.position.y).toFixed(2),
-          z: parseFloat(this.selection.object.position.z).toFixed(2)
-        },
-        userData: this.selection.object.userData
-      })
-    } else {
-      setSelected(null)
-    }
+    this.throttledTestIntersections()
+    this.throttledUpdateSelection()
 
     // Only update moveState if the console is closed
     if (guiState.get([ 'console', 'isOpen' ]) !== true) {
@@ -123,98 +119,6 @@ export default class KeyboardControls {
       }
     })
 
-    if (
-      this.mouse.buttonPressed(Mouse.LEFT) &&
-      this.testingIntersections === false
-    ) {
-      this.testingIntersections = true
-      const mouse = new THREE.Vector2()
-      mouse.x = (this.mouse.position.x / window.innerWidth) * 2 - 1
-      mouse.y = -(this.mouse.position.y / window.innerHeight) * 2 + 1
-
-      const raycaster = new THREE.Raycaster()
-      raycaster.setFromCamera(mouse, this.camera)
-
-      const objects = this.scene.children.filter(
-        x => x.name === 'Planet' || x.name === 'Chromosphere'
-      )
-
-      const spaceShips = this.scene.children
-        .filter(x => x.name === 'spaceShip')
-        .map(
-          ship =>
-            ship.children.find(c => c.name === 'Icosahedron_Standard')
-              .children[0].children[0]
-        )
-
-      const intersects = raycaster.intersectObjects([ ...objects, ...spaceShips ])
-
-      let obj = intersects[0]
-
-      if (
-        obj &&
-        obj.object &&
-        obj.object.name &&
-        obj.object.name === 'Icosahedron_Standard_0'
-      ) {
-        obj = { object: obj.object.parent.parent.parent }
-      }
-
-      if (!obj) {
-        if (this.selection !== null) {
-          const markers = this.selection.object.children.filter(
-            c => c.name === 'selection'
-          )
-          markers.map(m => this.selection.object.remove(m))
-          setSelected(null)
-          this.selection = null
-        }
-      } else {
-        if (this.selection !== null) {
-          const markers = this.selection.object.children.filter(
-            c => c.name === 'selection'
-          )
-          markers.map(m => this.selection.object.remove(m))
-          setSelected(null)
-          this.selection = null
-        }
-        const sprite = new THREE.TextureLoader().load(
-          'app/assets/images/corona.png'
-        )
-        const geometry = new THREE.BufferGeometry()
-        geometry.addAttribute(
-          'position',
-          new THREE.Float32BufferAttribute([ 0, 0, 0 ], 3)
-        )
-        const material = new THREE.PointsMaterial({
-          size: obj.object.scale.x * 4,
-          sizeAttenuation: true,
-          map: sprite,
-          alphaTest: 0.05,
-          transparent: true,
-          blending: THREE.AdditiveBlending
-        })
-        // const uniforms = getUniforms(radius, rgb, time)
-        material.color.setRGB(0, 0, 1)
-
-        const mesh = new THREE.Points(geometry, material)
-        mesh.frustumCulled = false
-        mesh.name = 'selection'
-
-        this.selectionMarker = mesh
-        obj.object.add(mesh)
-
-        const pointLight = new THREE.PointLight(0x0000ff, 1.25, 0, 2)
-        pointLight.name = 'selection'
-        obj.object.add(pointLight)
-
-        this.selection = obj
-        this.lastSelected = new Date().valueOf()
-      }
-
-      this.testingIntersections = false
-    }
-
     if (this.mouse.buttonPressed(Mouse.RIGHT)) {
       this.mousemove(this.mouse.position.x, this.mouse.position.y)
     }
@@ -238,6 +142,82 @@ export default class KeyboardControls {
     )
 
     this.resetMoveState()
+  }
+
+  updateSelection () {
+    if (this.selection) {
+      setSelected({
+        name: this.selection.object.name,
+        id: this.selection.object.id,
+        uuid: this.selection.object.uuid,
+        type: this.selection.object.type,
+        distance: calcDistances(
+          calcObjectDistance(this.selection.object, this.object)
+        ),
+        position: {
+          x: parseFloat(this.selection.object.position.x).toFixed(2),
+          y: parseFloat(this.selection.object.position.y).toFixed(2),
+          z: parseFloat(this.selection.object.position.z).toFixed(2)
+        },
+        userData: this.selection.object.userData
+      })
+    } else {
+      setSelected(null)
+    }
+  }
+
+  testIntersections () {
+    if (!this.mouse.buttonPressed(Mouse.LEFT)) {
+      return
+    }
+
+    this.raycaster.setFromCamera(
+      mouseToSceneCoords(this.mouse.position.x, this.mouse.position.y),
+      this.camera
+    )
+    const intersects = testIntersections({
+      scene: this.scene,
+      raycaster: this.raycaster
+    })
+
+    let obj = intersects[0]
+
+    // The player's ship (the GLB gets loaded with some deep nesting)
+    if (
+      obj &&
+      obj.object &&
+      obj.object.name &&
+      obj.object.name === 'Icosahedron_Standard_0'
+    ) {
+      obj = { object: obj.object.parent.parent.parent }
+    }
+
+    if (!obj) {
+      if (this.selection !== null) {
+        const markers = this.selection.object.children.filter(
+          c => c.name === 'selection'
+        )
+        markers.map(m => this.selection.object.remove(m))
+        setSelected(null)
+        this.selection = null
+      }
+    } else {
+      if (this.selection !== null) {
+        const markers = this.selection.object.children.filter(
+          c => c.name === 'selection'
+        )
+        markers.map(m => this.selection.object.remove(m))
+        setSelected(null)
+        this.selection = null
+      }
+
+      this.selectionHighlight.material.size = obj.object.scale.x * 4
+      obj.object.add(this.selectionHighlight)
+
+      this.selectionMarker = this.selectionHighlight
+      this.selection = obj
+      this.lastSelected = new Date().valueOf()
+    }
   }
 
   getContainerDimensions () {

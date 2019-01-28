@@ -9,6 +9,7 @@ import { createLaser, shootLaser, animateLaser } from '-/objects/weapons/laser'
 import { loadPlanets } from '-/objects/planet'
 import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
+import { loadHighlightMesh } from '-/controls/utils'
 import logger from '-/utils/logger'
 import sceneState, { addMessage } from '-/state/branches/scene'
 import { toggleConsole, toggleGui } from '-/state/branches/gui'
@@ -118,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () =>
 
         logger.debug(addMessage('init: preloading assets...'))
         await loadPlanets()
+        await loadHighlightMesh()
       },
       create,
       update: null
