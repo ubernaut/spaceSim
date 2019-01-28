@@ -60,5 +60,6 @@ const sendSystemState = function () {
     physics.gpuCollisions,
     physics.biggestBody
   ])
+  physics.collisions = []
   physicsLoop()
 }
