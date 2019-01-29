@@ -35,8 +35,11 @@ const defaultMap = {
     }
   },
   misc: {
-    shoot: {
+    laser: {
       keys: [ Keyboard.SPACEBAR ]
+    },
+    cannon: {
+      keys: [ Keyboard.C ]
     }
   }
 }
@@ -131,9 +134,12 @@ export default class KeyboardControls {
     const rotMult = delta * this.rollSpeed
 
     this.translateObject(
-      this.moveVector.x * Math.abs(moveMult),
-      this.moveVector.y * Math.abs(moveMult),
-      this.moveVector.z * Math.abs(moveMult)
+      (this.moveVector.x === 0 ? 0 : this.moveVector.x > 1 ? 1 : -1) *
+        Math.abs(moveMult),
+      (this.moveVector.y === 0 ? 0 : this.moveVector.y > 1 ? 1 : -1) *
+        Math.abs(moveMult),
+      (this.moveVector.z === 0 ? 0 : this.moveVector.z > 1 ? 1 : -1) *
+        Math.abs(moveMult)
     )
     this.rotateObject(
       this.rotationVector.x * rotMult,

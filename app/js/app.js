@@ -59,14 +59,14 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
   camera.position.set(0, 7, 30)
   scene.add(ship)
 
-  const { emitter: cannon } = createCannon()
+  const { emitter: cannon } = createCannon({ scene })
   ship.add(cannon)
-  // const { laser: laser1, emitter: laser1Emitter } = createLaser()
-  // const { laser: laser2, emitter: laser2Emitter } = createLaser()
-  // ship.add(laser1)
-  // ship.add(laser2)
-  // laser1.position.set(1.25, 0, 0)
-  // laser2.position.set(-1.25, 0, 0)
+  const { laser: laser1, emitter: laser1Emitter } = createLaser()
+  const { laser: laser2, emitter: laser2Emitter } = createLaser()
+  ship.add(laser1)
+  ship.add(laser2)
+  laser1.position.set(1.25, 0, 0)
+  laser2.position.set(-1.25, 0, 0)
 
   logger.debug(addMessage('init: registering controls...'))
   const controls = createControls(
@@ -74,12 +74,24 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
     {
       toggleConsole: throttle(300, true, toggleConsole),
       toggleGui: throttle(300, true, toggleGui),
-      shoot: throttle(100, true, () => {
+      cannon: throttle(100, true, () => {
         const energy = sceneState.get([ 'player', 'ship', 'energy' ])
         if (energy >= 2) {
-          // shootLaser({ emitter: laser1Emitter })
-          // shootLaser({ emitter: laser2Emitter })
-          shootCannon({ emitter: cannon, scene, position: ship.position })
+          shootCannon({
+            emitter: cannon,
+            scene,
+            position: ship.position,
+            quaternion: ship.quaternion,
+            speed: sceneState.get([ 'player', 'ship', 'movementSpeed' ])
+          })
+          sceneState.set([ 'player', 'ship', 'energy' ], energy - 2)
+        }
+      }),
+      laser: throttle(100, true, () => {
+        const energy = sceneState.get([ 'player', 'ship', 'energy' ])
+        if (energy >= 2) {
+          shootLaser({ emitter: laser1Emitter })
+          shootLaser({ emitter: laser2Emitter })
           sceneState.set([ 'player', 'ship', 'energy' ], energy - 2)
         }
       })
@@ -97,17 +109,17 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
     animateCallbacks: [
       animateSystem,
       animateShip,
-      (delta, tick) => animateCannon({ emitter: cannon, tick }),
-      // (delta, tick) =>
-      //   animateLaser({
-      //     emitter: laser1Emitter,
-      //     tick
-      //   }),
-      // (delta, tick) =>
-      //   animateLaser({
-      //     emitter: laser2Emitter,
-      //     tick
-      //   }),
+      (delta, tick) => animateCannon({ emitter: cannon, delta, tick }),
+      (delta, tick) =>
+        animateLaser({
+          emitter: laser1Emitter,
+          tick
+        }),
+      (delta, tick) =>
+        animateLaser({
+          emitter: laser2Emitter,
+          tick
+        }),
       delta =>
         sceneState.apply([ 'player', 'ship', 'energy' ], e =>
           Math.min(100, e + 10 * delta)
