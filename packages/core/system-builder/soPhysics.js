@@ -1,6 +1,6 @@
 import GridSystem from './GridSystem'
 import { evaluate, computeRadius } from './utils'
-import GPU from 'gpu.js'
+import { GPU } from 'gpu.js'
 
 const G = 2.93558 * Math.pow(10, -4)
 const epsilon = 0.01
@@ -82,7 +82,7 @@ class soPhysics {
     this.GPUcomputeCollisions = this.gpu.createKernel(
       function (pos, mass, acc, rad) {
         var result = -1
-        var i = 0
+        // var i = 0
         for (var i = this.constants.size - 1; i >= 0; i--) {
           // this.constants.size
           var d_x = Math.abs(pos[this.thread.x][0] - pos[i][0])

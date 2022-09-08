@@ -7,6 +7,6 @@ services:
     command:
     - bash
     - -c
-    - pwd && cd /srv && npm install && npm run dev
+    - pwd && cd /srv && apt update && apt install -y libgl-dev libxi-dev && npm install && npm run dev
     ports:
     - "9090:9090"
