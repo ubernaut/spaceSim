@@ -1,12 +1,8 @@
 version: '3'
 services:
   app:
-    image: node:11
-    volumes:
-    - .:/srv
-    command:
-    - bash
-    - -c
-    - pwd && cd /srv && apt update && apt install -y libgl-dev libxi-dev && npm install && npm run dev
+    build:
+      context: .
+    container_name: web
     ports:
     - "9090:9090"

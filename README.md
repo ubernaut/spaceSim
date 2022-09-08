@@ -23,3 +23,13 @@ Then hit http://localhost:9000 in your browser
 ```
 npm run build
 ```
+
+## Build & Release for Heroku
+
+```console
+heroku login
+heroku container:login
+docker build . -t registry.heroku.com/void-client-0/web
+docker push registry.heroku.com/void-client-0/web
+heroku container:release web --app=void-client-0
+```
