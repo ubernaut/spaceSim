@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    image: node:11
+    volumes:
+    - .:/srv
+    command:
+    - bash
+    - -c
+    - pwd && cd /srv && npm install && npm run dev
+    ports:
+    - "9090:9090"

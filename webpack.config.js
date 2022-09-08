@@ -124,7 +124,7 @@ module.exports = {
     contentBase: __dirname,
     publicPath: '/',
     compress: true,
-    port: 9000,
+    port: 9090,
     hot: true,
     historyApiFallback: false
   }
