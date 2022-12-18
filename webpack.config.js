@@ -23,15 +23,12 @@ const plugins = [
   new webpack.ProvidePlugin({
     THREE: 'three',
     process: 'process/browser'
+  }),
+  new webpack.DefinePlugin({
+    "process.env.API_HOST": JSON.stringify(process.env.API_HOST),
+    "process.env.API_PORT": JSON.stringify(process.env.API_PORT)
   })
 ]
-
-if (!isProd) {
-  plugins.push(
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  )
-}
 
 if (process.env.ANALYZE === 'true') {
   plugins.push(new BundleAnalyzerPlugin())
@@ -69,7 +66,7 @@ module.exports = {
   },
 
   optimization: {
-    noEmitOnErrors: true,
+    emitOnErrors: false,
     minimize: false,
     splitChunks: {
       cacheGroups: {
