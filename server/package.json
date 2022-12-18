@@ -1,20 +1,14 @@
 {
-  "name": "nm",
+  "name": "void-api",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
-  "repository": "fdesjardins/nm",
-  "author": {
-    "name": "Forrest Desjardins",
-    "email": "desjardinsfg@gmail.com",
-    "url": "github.com/fdesjardins"
-  },
+  "repository": "ubernaut/void",
   "engines": {
-    "node": ">=7"
+    "node": ">=18"
   },
   "scripts": {
-    "start": "nodemon -w server server/server.js",
-    "test": "eslint *.js && nyc ./node_modules/.bin/mocha --opts mocha.opts test.js"
+    "start": "nodemon -w server server/server.js"
   },
   "files": [
     "index.js"
@@ -22,30 +16,20 @@
   "keywords": [],
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.5.3",
-    "body-parser": "^1.18.3",
-    "compression": "^1.7.3",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.20.1",
+    "compression": "^1.7.4",
     "cors": "^2.8.5",
-    "express": "^4.16.4",
-    "lodash": "^4.17.11",
+    "express": "^4.18.2",
+    "lodash": "^4.17.21",
     "msgpack-lite": "^0.1.26",
-    "nodemon": "^1.18.9",
+    "nodemon": "^2.0.20",
     "redis": "^2.8.0",
     "socket.io": "^2.2.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "coveralls": "^3.0.2",
-    "mocha": "^5.2.0",
-    "nyc": "^13.1.0",
     "standard": "^12.0.1"
-  },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text"
-    ]
   },
   "eslintConfig": {
     "extends": "standard",
