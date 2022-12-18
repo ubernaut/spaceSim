@@ -1,6 +1,6 @@
-FROM node:11
+FROM node:18
 
-RUN apt update && apt install -y libgl-dev libxi-dev
+RUN apt update && apt install -y libgl-dev libxi-dev python
 
 WORKDIR /srv
 
