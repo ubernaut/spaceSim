@@ -8,8 +8,9 @@ import {
   BufferAttribute,
   Vector3,
   Color,
-  Math as ThreeMath,
-  Points
+  MathUtils as ThreeMath,
+  Points,
+  DynamicDrawUsage
 } from 'three'
 
 import vertexShader from '-/shaders/particles.vs.glsl'
@@ -165,56 +166,64 @@ class GPUParticleContainer extends Object3D {
     this.particleShaderGeo = new BufferGeometry()
 
     // attributes
-    this.particleShaderGeo.addAttribute(
+    this.particleShaderGeo.setAttribute(
       'position',
       new BufferAttribute(
         new Float32Array(this.PARTICLE_COUNT * 3),
         3
-      ).setDynamic(true)
+      ).setUsage(
+        DynamicDrawUsage
+      )
     )
-    this.particleShaderGeo.addAttribute(
+    this.particleShaderGeo.setAttribute(
       'positionStart',
       new BufferAttribute(
         new Float32Array(this.PARTICLE_COUNT * 3),
         3
-      ).setDynamic(true)
-    )
-    this.particleShaderGeo.addAttribute(
-      'startTime',
-      new BufferAttribute(new Float32Array(this.PARTICLE_COUNT), 1).setDynamic(
-        true
+      ).setUsage(
+        DynamicDrawUsage
       )
     )
-    this.particleShaderGeo.addAttribute(
+    this.particleShaderGeo.setAttribute(
+      'startTime',
+      new BufferAttribute(new Float32Array(this.PARTICLE_COUNT), 1).setUsage(
+        DynamicDrawUsage
+      )
+    )
+    this.particleShaderGeo.setAttribute(
       'velocity',
       new BufferAttribute(
         new Float32Array(this.PARTICLE_COUNT * 3),
         3
-      ).setDynamic(true)
-    )
-    this.particleShaderGeo.addAttribute(
-      'turbulence',
-      new BufferAttribute(new Float32Array(this.PARTICLE_COUNT), 1).setDynamic(
-        true
+      ).setUsage(
+        DynamicDrawUsage
       )
     )
-    this.particleShaderGeo.addAttribute(
+    this.particleShaderGeo.setAttribute(
+      'turbulence',
+      new BufferAttribute(new Float32Array(this.PARTICLE_COUNT), 1).setUsage(
+        DynamicDrawUsage
+      )
+    )
+    this.particleShaderGeo.setAttribute(
       'color',
       new BufferAttribute(
         new Float32Array(this.PARTICLE_COUNT * 3),
         3
-      ).setDynamic(true)
-    )
-    this.particleShaderGeo.addAttribute(
-      'size',
-      new BufferAttribute(new Float32Array(this.PARTICLE_COUNT), 1).setDynamic(
-        true
+      ).setUsage(
+        DynamicDrawUsage
       )
     )
-    this.particleShaderGeo.addAttribute(
+    this.particleShaderGeo.setAttribute(
+      'size',
+      new BufferAttribute(new Float32Array(this.PARTICLE_COUNT), 1).setUsage(
+        DynamicDrawUsage
+      )
+    )
+    this.particleShaderGeo.setAttribute(
       'lifeTime',
-      new BufferAttribute(new Float32Array(this.PARTICLE_COUNT), 1).setDynamic(
-        true
+      new BufferAttribute(new Float32Array(this.PARTICLE_COUNT), 1).setUsage(
+        DynamicDrawUsage
       )
     )
 

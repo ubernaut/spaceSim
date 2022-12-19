@@ -3,7 +3,6 @@ import {
   TextureLoader,
   MeshPhongMaterial,
   IcosahedronGeometry,
-  IcosahedronBufferGeometry,
   Mesh
 } from 'three'
 
@@ -56,7 +55,7 @@ const loadEarthMesh = () => {
             specular: 0xeeddaa,
             shininess: 1
           })
-          const geometry = new IcosahedronBufferGeometry(1, 2)
+          const geometry = new IcosahedronGeometry(1, 2)
           const mesh = new Mesh(geometry, material, { castShadow: false })
           resolve(mesh)
         })

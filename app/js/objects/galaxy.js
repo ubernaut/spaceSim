@@ -1,4 +1,4 @@
-import { Vector3, Geometry, PointsMaterial, Points } from 'three'
+import { Vector3, BufferGeometry, PointsMaterial, Points } from 'three'
 import Point from '@void/core/system-builder/Point'
 
 import { createRandomDistantStar } from '-/objects/stars/distant-star'
@@ -101,7 +101,7 @@ const addStars = scene => {
   let i = 0
   let r = radius
 
-  let starsGeometry = [ new Geometry(), new Geometry() ]
+  let starsGeometry = [ new BufferGeometry(), new BufferGeometry() ]
   for (i = 0; i < 5000; i++) {
     const vertex = new Vector3()
     vertex.x = Math.random() * (2 - 1)

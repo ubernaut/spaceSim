@@ -40,8 +40,7 @@ export const testIntersections = ({ scene, raycaster }) => {
     .filter(x => x.name === 'spaceShip')
     .map(
       ship =>
-        ship.children.find(c => c.name === 'Icosahedron_Standard').children[0]
-          .children[0]
+        ship.children.find(c => c.name === 'Icosahedron_Standard')
     )
 
   return raycaster.intersectObjects([ ...bodies, ...spaceShips ])
@@ -56,7 +55,7 @@ export const loadHighlightMesh = async () => {
     )
   })
   const geometry = new THREE.BufferGeometry()
-  geometry.addAttribute(
+  geometry.setAttribute(
     'position',
     new THREE.Float32BufferAttribute([ 0, 0, 0 ], 3)
   )
