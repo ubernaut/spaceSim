@@ -3,23 +3,15 @@ version: '3'
 services:
 
   api:
-    image: node:alpine
+    build:
+      context: .
     hostname: api
     depends_on:
-      # - database
       - redis
     ports:
       - 1137:1137
-    expose:
-      - "1137"
-    volumes:
-      - yarn:/root/.cache/yarn
-      - ./:/usr/src/app
-    user: node
-    working_dir: /usr/src/app
-    command: node server/server.js
     environment:
-      - REDIS_URL=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379
 
   # database:
   #   image: postgres:alpine

@@ -1,16 +1,15 @@
-# voidServer
+# void-api
 
-## install
+## Install
+
+```bash
 sudo apt install docker docker-compose
-
-#source /etc/profile OR open a new terminal
-
+# source /etc/profile OR open a new terminal
 npm install
-
 npm start
+```
 
-
-## todo
+## Todo
 
 - [ ] switch to binary message format
 - [ ] msgpack or similar compression

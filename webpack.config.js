@@ -15,21 +15,20 @@ const plugins = [
     filename: 'index.html',
     template: 'app/index.html'
   }),
-  new CopyWebpackPlugin([
-    { from: 'app/lib', to: 'app/lib' },
-    { from: 'app/assets', to: 'app/assets' }
-  ]),
+  new CopyWebpackPlugin({
+    patterns: [
+      { from: 'app/lib', to: 'app/lib' },
+      { from: 'app/assets', to: 'app/assets' }
+  ]}),
   new webpack.ProvidePlugin({
-    THREE: 'three'
+    THREE: 'three',
+    process: 'process/browser'
+  }),
+  new webpack.DefinePlugin({
+    "process.env.API_HOST": JSON.stringify(process.env.API_HOST),
+    "process.env.API_PORT": JSON.stringify(process.env.API_PORT)
   })
 ]
-
-if (!isProd) {
-  plugins.push(
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  )
-}
 
 if (process.env.ANALYZE === 'true') {
   plugins.push(new BundleAnalyzerPlugin())
@@ -67,7 +66,7 @@ module.exports = {
   },
 
   optimization: {
-    noEmitOnErrors: true,
+    emitOnErrors: false,
     minimize: false,
     splitChunks: {
       cacheGroups: {
@@ -89,22 +88,22 @@ module.exports = {
       },
       {
         test: /\.(js|jsx)$/,
-        loaders: [ 'babel-loader' ]
+        use: [ 'babel-loader' ]
       },
       {
         test: /\.(glsl|md|obj)$/,
-        loaders: [ 'raw-loader' ]
+        use: [ 'raw-loader' ]
       },
       {
         test: /\.worker.js$/,
         loader: 'worker-loader',
         options: {
-          name: '[name].[hash].js'
+          filename: '[name].[hash].js'
         }
       },
       {
         test: /\.(gif|png|jpe?g|svg)$/i,
-        loaders: [
+        use: [
           {
             loader: 'file-loader',
             options: {
@@ -121,10 +120,10 @@ module.exports = {
 
   devServer: {
     host: '0.0.0.0',
-    contentBase: __dirname,
-    publicPath: '/',
+    // contentBase: __dirname,
+    // publicPath: '/',
     compress: true,
-    port: 9090,
+    port: 9000,
     hot: true,
     historyApiFallback: false
   }

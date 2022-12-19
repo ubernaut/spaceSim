@@ -1,0 +1,36 @@
+## docker/podman
+
+```bash
+# Build the website and start a server to serve it
+podman build . --file dockerfile -t void
+podman run -it -p 9000:9000 void
+```
+
+```bash
+# Create a shared network: redis <-> void-api
+podman network create void
+
+podman run --name redis --net void redis
+
+cd server
+podman build . --file Dockerfile -t void-api
+podman run -it --net void -p 1137:1137 -e REDIS_URL="redis://redis" void-api
+```
+
+http://localhost:9000/
+
+## Fedora 37 toolbox w/ node 18.12
+
+```bash
+sudo dnf install libX11-devel libXi-devel mesa-libGL-devel python-unversioned-command
+```
+
+## TODO
+
+- [x] update dockerfiles
+- [x] see if we can use node 18+
+- [x] update minor/patch deps
+- [ ] update README to make starting easier
+- [x] figure out the `API_HOST` envvar issue
+- [x] replace sass with emotion
+- [ ] update three to current version

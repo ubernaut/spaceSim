@@ -5,4 +5,4 @@ services:
       context: .
     container_name: web
     ports:
-    - "9090:9090"
+    - "9000:9000"
