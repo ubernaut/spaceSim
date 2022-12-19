@@ -1,6 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import { hot } from 'react-hot-loader/root'
+import { createRoot } from 'react-dom/client'
 import { root, branch } from 'baobab-react/higher-order'
 import dat from 'app/lib/dat.gui.js'
 import { debounce, throttle } from 'throttle-debounce'
@@ -143,14 +142,15 @@ const UI = branch(
 )
 
 const RootedUI = root(state, UI)
-const HotRootedUI = hot(RootedUI)
 
 /**
  * Create a basic set of configurable options in a dat.gui element
  */
 const createBasicUI = () => {
   createFpsWidget()
-  ReactDOM.render(<HotRootedUI />, document.getElementById('ui'))
+  const container = document.getElementById('ui')
+  const root = createRoot(container)
+  root.render(<RootedUI />)
 }
 
 /**

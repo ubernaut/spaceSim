@@ -5,6 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin
 const TerserPlugin = require('terser-webpack-plugin')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const resolve = p => path.join(__dirname, p)
 
@@ -27,7 +28,8 @@ const plugins = [
   new webpack.DefinePlugin({
     "process.env.API_HOST": JSON.stringify(process.env.API_HOST),
     "process.env.API_PORT": JSON.stringify(process.env.API_PORT)
-  })
+  }),
+  ...[!isProd && new ReactRefreshWebpackPlugin()].filter(Boolean),
 ]
 
 if (process.env.ANALYZE === 'true') {
@@ -45,8 +47,8 @@ module.exports = {
 
   output: {
     path: resolve('dist'),
-    filename: '[name].[hash].js',
-    chunkFilename: '[name].[hash].js',
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].[chunkhash].js',
     globalObject: 'this'
   },
 
@@ -88,7 +90,15 @@ module.exports = {
       },
       {
         test: /\.(js|jsx)$/,
-        use: [ 'babel-loader' ]
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: require.resolve('babel-loader'),
+            options: {
+              plugins: [!isProd && require.resolve('react-refresh/babel')].filter(Boolean)
+            }
+          }
+        ]
       },
       {
         test: /\.(glsl|md|obj)$/,
@@ -98,7 +108,7 @@ module.exports = {
         test: /\.worker.js$/,
         loader: 'worker-loader',
         options: {
-          filename: '[name].[hash].js'
+          filename: '[name].[fullhash].js'
         }
       },
       {
@@ -120,8 +130,6 @@ module.exports = {
 
   devServer: {
     host: '0.0.0.0',
-    // contentBase: __dirname,
-    // publicPath: '/',
     compress: true,
     port: 9000,
     hot: true,
