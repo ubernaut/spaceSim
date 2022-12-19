@@ -1,4 +1,3 @@
-import '@babel/polyfill'
 import '../styles/app.css'
 import { throttle } from 'throttle-debounce'
 
