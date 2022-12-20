@@ -4,7 +4,7 @@ import {
   PointLight,
   BufferGeometry,
   Float32BufferAttribute,
-  SphereBufferGeometry
+  SphereGeometry
 } from 'three'
 
 import * as lavaMaterial from '-/materials/lava'
@@ -39,7 +39,7 @@ export const createStar = ({ radius, position, starType, time = 0 }) => {
 
 const createCorona = (radius, rgb, time) => {
   const geometry = new BufferGeometry()
-  geometry.addAttribute('position', new Float32BufferAttribute([ 0, 0, 0 ], 3))
+  geometry.setAttribute('position', new Float32BufferAttribute([ 0, 0, 0 ], 3))
   const material = createCoronaMaterial({ radius })
   const mesh = new Points(geometry, material)
   mesh.frustumCulled = false
@@ -48,7 +48,7 @@ const createCorona = (radius, rgb, time) => {
 }
 
 const createChromosphere = (radius, rgb, time, uniforms) => {
-  const geometry = new SphereBufferGeometry(radius, 64, 64)
+  const geometry = new SphereGeometry(radius, 64, 64)
   const material = lavaMaterial.material.clone()
   material.uniforms = uniforms
   const mesh = new Mesh(geometry, material)

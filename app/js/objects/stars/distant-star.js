@@ -1,11 +1,11 @@
 import {
-  IcosahedronBufferGeometry,
+  IcosahedronGeometry,
   MeshBasicMaterial,
   Mesh,
-  Vector3,
-  Geometry,
+  BufferGeometry,
   PointsMaterial,
-  Points
+  Points,
+  BufferAttribute
 } from 'three'
 import { rgb2hex } from '-/utils'
 import constants from '-/constants'
@@ -22,8 +22,13 @@ export const createRandomDistantStar = ({
   star.color = constants.starTypes[star.type]
 
   if (simple) {
-    const geometry = new Geometry()
-    geometry.vertices.push(new Vector3(...[ position.x, position.y, position.z ]))
+    const geometry = new BufferGeometry()
+
+    const vertices = new Float32Array([
+      position.x, position.y, position.z
+    ])
+    geometry.setAttribute('position', new BufferAttribute(vertices, 3))
+
     const material = new PointsMaterial({
       color: rgb2hex(star.color),
       size: 2,
@@ -36,7 +41,7 @@ export const createRandomDistantStar = ({
     return star
   }
 
-  const geometry = new IcosahedronBufferGeometry(radius, 0)
+  const geometry = new IcosahedronGeometry(radius, 0)
   const material = new MeshBasicMaterial({
     color: rgb2hex(star.color)
   })

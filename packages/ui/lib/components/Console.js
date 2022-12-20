@@ -1,7 +1,5 @@
 import React from 'react'
-import { compose, withState, withHandlers } from 'recompose'
 import { css } from 'emotion'
-import classnames from 'classnames'
 import HudElement from './HudElement'
 
 const style = () => css`
@@ -33,14 +31,36 @@ const style = () => css`
 
 const Console = ({
   isHidden = false,
-  output,
-  onChange,
-  onKeyPress,
-  command
+  handleCommand
 }) => {
   if (isHidden) {
     return false
   }
+
+  const [command, setCommand] = React.useState('')
+  const [output, setOutput] = React.useState([
+    'Press ESC to toggle this console',
+    'Type /help to see instructions and available commands'
+  ])
+
+  const onChange = (event) => setCommand(event.target.value)
+  const onKeyPress = async (event) => {
+    if (event.key === 'Enter') {
+      try {
+        const result = await handleCommand({
+          command,
+          clear: () => setOutput([])
+        })
+        if (result) {
+          setOutput([...output, result])
+        }
+        setCommand('')
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }
+
   return (
     <HudElement className="scene-console">
       <div className={style()}>
@@ -61,37 +81,4 @@ const Console = ({
   )
 }
 
-const enhance = compose(
-  withState('command', 'setCommand', ''),
-  withState('output', 'setOutput', [
-    'Press ESC to toggle this console',
-    'Type /help to see instructions and available commands'
-  ]),
-  withHandlers({
-    onChange: ({ setCommand }) => event => setCommand(event.target.value),
-    onKeyPress: ({
-      command,
-      output,
-      setCommand,
-      setOutput,
-      handleCommand
-    }) => async event => {
-      if (event.key === 'Enter') {
-        try {
-          const result = await handleCommand({
-            command,
-            clear: () => setOutput([])
-          })
-          if (result) {
-            setOutput([...output, result])
-          }
-          setCommand('')
-        } catch (err) {
-          console.error(err)
-        }
-      }
-    }
-  })
-)
-
-export default enhance(Console)
+export default Console

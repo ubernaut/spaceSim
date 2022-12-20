@@ -1,9 +1,9 @@
 import { Vector3 } from 'three'
 import { GPUParticleSystem } from '-/objects/gpu-particle-system'
-import 'three/examples/js/loaders/GLTFLoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export const create = ({ position, scale, rotation, loader }) => {
-  loader = loader || new THREE.GLTFLoader()
+  loader = loader || new GLTFLoader()
   return new Promise(resolve => {
     loader.load('app/assets/models/ship.glb', ship => {
       ship.scene.position.set(position.x, position.y, position.z)

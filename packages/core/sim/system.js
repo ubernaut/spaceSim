@@ -79,7 +79,7 @@ const updateSystemCPU = (scene, physics) => {
         if (body.name !== 'star') {
           scene.remove(body.object)
           body.radius = physics.gridSystem.rad[i]
-          const bodyGeometry = new THREE.IcosahedronBufferGeometry(1, 2)
+          const bodyGeometry = new THREE.IcosahedronGeometry(1, 2)
           let bodyMaterial = new THREE.MeshPhongMaterial({
             color: randomUniform(0.5, 1) * 0xffffff
           })

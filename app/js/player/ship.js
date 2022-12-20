@@ -39,11 +39,9 @@ const createShip = async options => {
       })
 
       const hull = ship.children.find(c => c.name === 'Icosahedron_Standard')
-      if (hull.children.length > 0) {
-        hull.children[0].children[0].material.color = new Color(
-          shipState.bodyColor
-        )
-      }
+      hull.material.color = new Color(
+        shipState.bodyColor
+      )
     }
   }
 }

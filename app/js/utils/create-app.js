@@ -1,5 +1,5 @@
 import { WebGLRenderer, PerspectiveCamera, Scene, Clock } from 'three'
-import { EffectComposer, BloomPass, RenderPass } from 'postprocessing'
+import { EffectComposer, BloomEffect, RenderPass, EffectPass} from 'postprocessing'
 
 const createApp = async options => {
   const root = document.querySelector(options.root)
@@ -76,16 +76,14 @@ export const createPostprocessing = ({ renderer, scene, camera }) => {
   const composer = new EffectComposer(renderer)
   composer.addPass(new RenderPass(scene, camera))
 
-  const bloomPass = new BloomPass({
-    resolutionScale: 0.05,
-    kernelSize: 3.0,
-    intensity: 0.5,
-    distinction: 1
+  const bloomPass = new BloomEffect({
+    mipmapBlur: true,
+    intensity: 0.5
   })
   bloomPass.renderToScreen = true
-  bloomPass.combineMaterial.defines.SCREEN_MODE = '1'
-  bloomPass.combineMaterial.needsUpdate = true
-  composer.addPass(bloomPass)
+  // bloomPass.combineMaterial.defines.SCREEN_MODE = '1'
+  // bloomPass.combineMaterial.needsUpdate = true
+  composer.addPass(new EffectPass(camera, bloomPass))
 
   return composer
 }

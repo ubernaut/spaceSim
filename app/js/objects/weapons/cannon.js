@@ -1,5 +1,4 @@
 import { Vector3, Object3D } from 'three'
-import 'three/examples/js/loaders/GLTFLoader'
 import { doTimesP } from '-/utils'
 import Promise from 'bluebird'
 import { createRandomStar } from '-/objects/stars/standard-star'

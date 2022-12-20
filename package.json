@@ -17,7 +17,7 @@
       "@babel/preset-react"
     ],
     "plugins": [
-      "react-hot-loader/babel"
+      "react-refresh/babel"
     ]
   },
   "engines": {
@@ -26,9 +26,9 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.12",
     "@fortawesome/free-solid-svg-icons": "^5.6.3",
-    "@fortawesome/react-fontawesome": "^0.1.4",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "baobab": "^2.6.1",
-    "baobab-react": "^3.0.0",
+    "baobab-react": "^4.0.2",
     "bluebird": "^3.7.2",
     "browser-bunyan": "^0.4.0",
     "classnames": "^2.3.2",
@@ -37,21 +37,20 @@
     "express": "^4.18.2",
     "gpu.js": "^2.16.0",
     "msgpack-lite": "^0.1.26",
-    "postprocessing": "^4.10.0",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "recompose": "^0.30.0",
+    "postprocessing": "^6.29.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "socket.io": "^2.0.3",
     "superstruct": "^0.6.0",
-    "three": "^0.89.0",
+    "three": "^0.146.0",
     "throttle-debounce": "^2.0.1",
-    "uuid": "^3.1.0"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",
-    "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "babel-loader": "^9.1.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
@@ -59,8 +58,9 @@
     "graceful-fs": "^4.2.10",
     "html-webpack-plugin": "^5.5.0",
     "image-webpack-loader": "^8.1.0",
+    "process": "^0.11.10",
     "raw-loader": "^4.0.2",
-    "react-hot-loader": "^4.13.1",
+    "react-refresh": "^0.14.0",
     "standard": "^12.0.1",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.3.6",
@@ -114,7 +114,7 @@
     }
   },
   "scripts": {
-    "build": "NODE_ENV=production webpack --progress",
+    "build": "webpack --progress",
     "clean": "rm -rf dist/*",
     "dev": "webpack-dev-server",
     "start": "node app/server.js",
