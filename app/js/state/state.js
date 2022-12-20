@@ -6,8 +6,8 @@ const state = new Baobab(
   {
     config: {
       server: {
-        host: process.env.API_HOST || 'http://localhost',
-        port: parseInt(process.env.API_PORT) || 1137
+        host: process.env.API_HOST || 'https://secretworkshop.net',
+        port: parseInt(process.env.API_PORT) || 443
       },
       threejs: {
         assetPath: 'app/assets/models/'

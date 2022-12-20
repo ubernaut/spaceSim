@@ -72,7 +72,7 @@ const setShipProps = ({ ship, player, quaternion, position }) => {
   ship.quaternion._z = quaternion._z
 
   const hull = ship.children.find(c => c.name === 'Icosahedron_Standard')
-  hull.children[0].children[0].material.color = new Color(
+  hull.material.color = new Color(
     player.ship.hull.color
   )
   ship.userData = Object.assign({}, player)
