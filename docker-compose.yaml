@@ -1,8 +1,27 @@
-version: '3'
 services:
   app:
-    build:
-      context: .
-    container_name: web
+    build: .
+    container_name: void
     ports:
     - "9000:9000"
+    env_file: .env
+
+  api:
+    build:
+      context: server
+    container_name: void-api
+    ports:
+    - "1137:1137"
+    env_file: .env
+    depends_on:
+    - redis
+
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+    - redis:/data
+    user: redis
+
+volumes:
+  redis: {}

@@ -1,4 +1,4 @@
-import bunyan from 'browser-bunyan'
+import * as bunyan from 'browser-bunyan'
 import state from '-/state'
 
 const loggingConfig = state.get([ 'config', 'logging' ])

@@ -1,14 +1,14 @@
+require('dotenv').config()
+
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin
-const TerserPlugin = require('terser-webpack-plugin')
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const resolve = p => path.join(__dirname, p)
 
+const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
 
 const plugins = [
@@ -27,19 +27,22 @@ const plugins = [
   }),
   new webpack.DefinePlugin({
     "process.env.API_HOST": JSON.stringify(process.env.API_HOST),
-    "process.env.API_PORT": JSON.stringify(process.env.API_PORT)
-  }),
-  ...[!isProd && new ReactRefreshWebpackPlugin()].filter(Boolean),
+    "process.env.API_PORT": JSON.stringify(process.env.API_PORT),
+    "process.env.LOGGING_LEVEL": JSON.stringify(process.env.LOGGING_LEVEL),
+    "process.env.SOCKET_IO_HOST": JSON.stringify(process.env.SOCKET_IO_HOST)
+  })
 ]
 
-if (process.env.ANALYZE === 'true') {
-  plugins.push(new BundleAnalyzerPlugin())
+if (isDev) {
+  plugins.push(new ReactRefreshWebpackPlugin())
 }
 
 module.exports = {
   mode: isProd ? 'production' : 'development',
 
   context: path.resolve(__dirname),
+
+  devtool: isProd ? 'source-map' : 'eval-source-map',
 
   entry: {
     app: resolve('app/js/app.js')
@@ -59,11 +62,7 @@ module.exports = {
       '-': resolve('app/js'),
       app: resolve('app'),
       '@void': resolve('packages'),
-      syncinput: resolve('app/lib/syncinput'),
-      'three/OBJLoader': path.join(
-        __dirname,
-        'node_modules/three/examples/js/loaders/OBJLoader.js'
-      )
+      syncinput: resolve('app/lib/syncinput')
     }
   },
 
@@ -95,7 +94,7 @@ module.exports = {
           {
             loader: require.resolve('babel-loader'),
             options: {
-              plugins: [!isProd && require.resolve('react-refresh/babel')].filter(Boolean)
+              plugins: [isDev && require.resolve('react-refresh/babel')].filter(Boolean)
             }
           }
         ]

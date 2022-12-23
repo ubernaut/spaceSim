@@ -6,15 +6,16 @@ const state = new Baobab(
   {
     config: {
       server: {
-        host: process.env.API_HOST || 'https://secretworkshop.net',
-        port: parseInt(process.env.API_PORT) || 443
+        host: process.env.API_HOST,
+        port: parseInt(process.env.API_PORT),
+        socketHost: process.env.SOCKET_IO_HOST
       },
       threejs: {
         assetPath: 'app/assets/models/'
       },
       logging: {
         name: 'void',
-        level: 'debug'
+        level: process.env.LOGGING_LEVEL
       }
     },
     scene: {
