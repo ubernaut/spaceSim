@@ -6,27 +6,22 @@ A physics-based space simulation and multiplayer game.
 
 ## Getting Started
 
+This project currently consists of a website and an API/websocket server. Redis is also used for pub/sub to broadcast socket events to all connected browsers/clients.
+
 ### Docker compose
 
-In this directory, build the site and start a web server:
+In this directory, you can fire up the system using `docker-compose`:
 
 ```console
+cp .example.env .env
 docker-compose up
 ```
 
-Then, in a separate shell, start the API server:
-
-```console
-cd server
-docker-compose up
-```
-
-The site should be accessible at http://localhost:9000 in your browser
-
+The site should then be accessible at http://localhost:9000 in your browser.
 
 ### Node
 
-This project requires Node.js `18.x` and `npm`.
+If you want to develop new features and take advantage of auto-reloading, this project requires Node.js `18.x` and `npm`.
 
 If you're in Ubuntu:
 
@@ -57,8 +52,14 @@ The API depends on redis for events. If you don't want to use `docker` install a
 REDIS_HOST=redis://remote npm start
 ```
 
-**Build**
+## Static site builds
+
+You can produce a static build of the website using webpack:
 
 ```
-npm run build
+NODE_ENV=production npm run build
 ```
+
+Environment variables are read from `.env` by default. See the example file for details on what each variable does.
+
+You can also override variables on the command line as in the build example above.
