@@ -52,62 +52,27 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "dotenv": "^16.0.3",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.31.11",
     "file-loader": "^6.2.0",
     "graceful-fs": "^4.2.10",
     "html-webpack-plugin": "^5.5.0",
     "image-webpack-loader": "^8.1.0",
+    "prettier": "^2.8.1",
     "process": "^0.11.10",
     "raw-loader": "^4.0.2",
     "react-refresh": "^0.14.0",
-    "standard": "^12.0.1",
     "style-loader": "^3.3.1",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1",
     "worker-loader": "^3.0.8"
-  },
-  "eslintConfig": {
-    "extends": [
-      "standard",
-      "plugin:react/recommended"
-    ],
-    "globals": {
-      "THREE": false,
-      "OIMO": false,
-      "postMessage": false,
-      "self": true,
-      "requestAnimationFrame": false
-    },
-    "rules": {
-      "object-curly-spacing": [
-        2,
-        "always"
-      ],
-      "array-bracket-spacing": [
-        2,
-        "always"
-      ],
-      "func-style": [
-        2,
-        "expression"
-      ],
-      "prefer-arrow-callback": [
-        2,
-        {
-          "allowNamedFunctions": false
-        }
-      ],
-      "react/jsx-curly-spacing": [
-        2,
-        "always"
-      ],
-      "jsx-quotes": [
-        "error",
-        "prefer-single"
-      ],
-      "react/prop-types": 0,
-      "react/display-name": 0
-    }
   },
   "scripts": {
     "build": "webpack --progress",
