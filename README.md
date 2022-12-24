@@ -19,6 +19,27 @@ docker-compose up
 
 The site should then be accessible at http://localhost:9000 in your browser.
 
+### Plain docker/podman
+
+```bash
+# Build the website and start a server to serve it
+podman build . --file dockerfile -t void
+podman run -it -p 9000:9000 void
+```
+
+```bash
+# Create a shared network: redis <--> void-api
+podman network create void
+
+podman run --name redis --net void redis
+
+cd server
+podman build . --file Dockerfile -t void-api
+podman run -it --net void -p 1137:1137 -e REDIS_URL="redis://redis" void-api
+```
+
+The site should then be accessible at http://localhost:9000 in your browser.
+
 ### Node
 
 If you want to develop new features and take advantage of auto-reloading, this project requires Node.js `18.x` and `npm`.
