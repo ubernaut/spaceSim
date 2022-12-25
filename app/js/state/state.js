@@ -6,16 +6,17 @@ const state = new Baobab(
   {
     config: {
       server: {
-        host: process.env.API_HOST || 'https://secretworkshop.net',
-        port: parseInt(process.env.API_PORT) || 443
+        host: process.env.API_HOST,
+        port: parseInt(process.env.API_PORT),
+        socketHost: process.env.SOCKET_IO_HOST,
       },
       threejs: {
-        assetPath: 'app/assets/models/'
+        assetPath: 'app/assets/models/',
       },
       logging: {
         name: 'void',
-        level: 'debug'
-      }
+        level: process.env.LOGGING_LEVEL,
+      },
     },
     scene: {
       player: {
@@ -27,37 +28,37 @@ const state = new Baobab(
         ship: {
           hull: {
             type: 'basic',
-            color: '#ffffff'
+            color: '#ffffff',
           },
           thrust: {
             type: 'basic',
-            color: '#0055ff'
+            color: '#0055ff',
           },
           weapon: {
             type: 'laser',
-            color: '#0000ff'
+            color: '#0000ff',
           },
           energy: 100,
-          movementSpeed: 0
-        }
+          movementSpeed: 0,
+        },
       },
       players: [],
       bodyCount: 0,
       messages: [],
-      selected: ''
+      selected: '',
     },
     gui: {
       isEnabled: true,
       console: {
-        isOpen: false
+        isOpen: false,
       },
       help: {
-        isOpen: false
+        isOpen: false,
       },
       shipConfig: {
-        isOpen: false
-      }
-    }
+        isOpen: false,
+      },
+    },
   },
   {
     validate: (previousState, newState, affectedPaths) => {
@@ -69,7 +70,7 @@ const state = new Baobab(
       } catch (err) {
         console.error(err)
       }
-    }
+    },
   }
 )
 

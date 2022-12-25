@@ -1,8 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { root, branch } from 'baobab-react/higher-order'
-import dat from 'app/lib/dat.gui.js'
-import { debounce, throttle } from 'throttle-debounce'
+import { debounce } from 'throttle-debounce'
 
 import Speedometer from '@void/ui/lib/components/Speedometer'
 import Messages from '@void/ui/lib/components/Messages'
@@ -17,11 +16,8 @@ import ShipConfig from '@void/ui/lib/components/ShipConfig'
 import ShipConfigIcon from '@void/ui/lib/components/icons/ShipConfig'
 import HelpIcon from '@void/ui/lib/components/icons/Help'
 
-import { starTypes } from '-/constants'
-import { getUser, createUser, updateUser } from '-/net/api-client'
+import { updateUser } from '-/net/api-client'
 import state from '-/state'
-import sceneState from '-/state/branches/scene'
-import guiState, { toggleHelp } from '-/state/branches/gui'
 import { handleCommand } from './command-handler'
 
 const updateUserOptions = debounce(250, ({ username, options }) =>

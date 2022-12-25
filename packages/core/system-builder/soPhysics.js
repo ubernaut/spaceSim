@@ -41,7 +41,7 @@ class soPhysics {
   initGPUStuff () {
     this.gpu = new GPU()
     this.GPUcomputeAcceleration = this.gpu.createKernel(
-      function (pos, mass, acc, rad) {
+      `function (pos, mass, acc, rad) {
         var result = 0
         for (var i = 0; i < this.constants.size; i++) {
           var d_x = pos[this.thread.x][0] - pos[i][0]
@@ -72,7 +72,7 @@ class soPhysics {
           }
         }
         return result
-      },
+      }`,
       {
         output: [ this.gridSystem.pos.length, 3 ],
         constants: { size: this.gridSystem.pos.length, G }
@@ -80,7 +80,7 @@ class soPhysics {
     )
 
     this.GPUcomputeCollisions = this.gpu.createKernel(
-      function (pos, mass, acc, rad) {
+      `function (pos, mass, acc, rad) {
         var result = -1
         // var i = 0
         for (var i = this.constants.size - 1; i >= 0; i--) {
@@ -101,7 +101,7 @@ class soPhysics {
           }
         }
         return result
-      },
+      }`,
       {
         output: [ this.gridSystem.pos.length ],
         constants: { size: this.gridSystem.pos.length }
@@ -112,7 +112,7 @@ class soPhysics {
   initTransposeKernel () {
     this.gpu = new GPU()
     this.GPUcomputeAcceleration = this.gpu.createKernel(
-      function (pos, mass, acc, rad) {
+      `function (pos, mass, acc, rad) {
         var result = 0
         for (var i = 0; i < this.constants.size; i++) {
           var d_x = pos[this.thread.x][0] - pos[i][0]
@@ -143,7 +143,7 @@ class soPhysics {
           }
         }
         return result
-      },
+      }`,
       {
         output: [ 3, this.gridSystem.pos.length ],
         constants: { size: this.gridSystem.pos.length, G }

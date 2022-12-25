@@ -4,15 +4,15 @@ const Ship = struct({
   uuid: 'string?',
   hull: {
     type: 'string',
-    color: 'string'
+    color: 'string',
   },
   thrust: {
     type: 'string',
-    color: 'string'
+    color: 'string',
   },
   weapon: 'object?',
   energy: 'number?',
-  movementSpeed: 'number'
+  movementSpeed: 'number',
 })
 
 const Player = struct({
@@ -21,44 +21,45 @@ const Player = struct({
   userId: 'string',
   username: 'string?',
   displayName: 'string',
-  ship: Ship
+  ship: Ship,
 })
 
 const GUI = struct({
   isEnabled: 'boolean',
   console: {
-    isOpen: 'boolean'
+    isOpen: 'boolean',
   },
   help: {
-    isOpen: 'boolean'
+    isOpen: 'boolean',
   },
   shipConfig: {
-    isOpen: 'boolean'
-  }
+    isOpen: 'boolean',
+  },
 })
 
 const Schema = struct({
   config: {
     server: {
       host: 'string',
-      port: 'number'
+      port: 'number',
+      socketHost: 'string',
     },
     threejs: {
-      assetPath: 'string'
+      assetPath: 'string',
     },
     logging: {
       name: 'string',
-      level: 'string'
-    }
+      level: 'string',
+    },
   },
   scene: {
     player: Player,
-    players: [ Player ],
+    players: [Player],
     bodyCount: 'number',
-    messages: [ 'string' ],
-    selected: 'string?'
+    messages: ['string'],
+    selected: 'string?',
   },
-  gui: GUI
+  gui: GUI,
 })
 
 export default Schema

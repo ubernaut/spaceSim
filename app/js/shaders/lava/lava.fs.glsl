@@ -192,4 +192,5 @@ void main() {
   );
 
   gl_FragColor = finalColor;
+  gl_FragDepth = vPosition.z;
 }

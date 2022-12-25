@@ -15,6 +15,7 @@ import { createBasicUI } from '-/ui/ui'
 import { createControls } from '-/controls/controls'
 import { loadHighlightMesh } from '-/controls/utils'
 import logger from '-/utils/logger'
+import state from '-/state/state'
 import sceneState, { addMessage } from '-/state/branches/scene'
 import { toggleConsole, toggleGui } from '-/state/branches/gui'
 import createApp, {
@@ -97,7 +98,10 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
     }
   )
 
-  logger.debug(addMessage('init: opening websocket...'))
+  logger.debug(
+    { obj: state.get('config') },
+    addMessage('init: opening websocket...')
+  )
   await net.init({ ship, scene })
 
   return {
