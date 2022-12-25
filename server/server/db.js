@@ -1,7 +1,8 @@
-const fs = require('fs').promises
-const path = require('path')
-const config = require('./config')
-const _ = require('lodash')
+import fs from 'fs/promises'
+import path from 'path'
+import _ from 'lodash'
+
+import * as config from './config.js'
 
 /**
  * Database helpers
@@ -23,19 +24,17 @@ const update = async (tableName, data) => {
 /**
  * DAL
  */
-const getUsers = () => select('users')
-exports.getUsers = getUsers
+export const getUsers = () => select('users')
 
-const getUser = async username => {
+export const getUser = async username => {
   const users = await getUsers()
   if (!users) {
     return
   }
   return users.find(u => u.username === username) || null
 }
-exports.getUser = getUser
 
-const createUser = async username => {
+export const createUser = async username => {
   const users = await getUsers()
   const newUser = {
     username: username,
@@ -50,9 +49,8 @@ const createUser = async username => {
 
   return newUser
 }
-exports.createUser = createUser
 
-const updateUser = async ({ username, options }) => {
+export const updateUser = async ({ username, options }) => {
   const users = await getUsers()
   if (!users) {
     return {
@@ -75,4 +73,3 @@ const updateUser = async ({ username, options }) => {
     user
   }
 }
-exports.updateUser = updateUser

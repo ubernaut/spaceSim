@@ -1,11 +1,11 @@
-const path = require('path')
+import path from 'path'
 
-exports.redis = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+export const redis = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 
-exports.server = {
+export const server = {
   port: process.env.PORT || 1137
 }
 
-exports.directories = {
-  data: path.join(__dirname, '../data')
+export const directories = {
+  data: path.dirname('../data')
 }

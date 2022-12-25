@@ -1,25 +1,33 @@
-const express = require('express')
-const http = require('http')
-const compression = require('compression')
-const cors = require('cors')
-const socketio = require('socket.io')
-const redis = require('redis')
-const Promise = require('bluebird')
-const uuid = require('uuid/v4')
-const msgpack = require('msgpack-lite')
-const bodyParser = require('body-parser')
+import express from 'express'
+import http from 'http'
+import compression from 'compression'
+import cors from 'cors'
+import * as socketio from 'socket.io'
+import { createAdapter } from '@socket.io/redis-adapter'
+import * as redis from 'redis'
+import Promise from 'bluebird'
+import { v4 as uuid } from 'uuid'
+import msgpack from 'msgpack-lite'
+import bodyParser from 'body-parser'
+import bunyan from 'bunyan'
 
-const config = require('./config')
-const users = require('./controllers/users')
+import * as config from './config.js'
+import * as users from './controllers/users.js'
 
-Promise.promisifyAll(redis.RedisClient.prototype)
-Promise.promisifyAll(redis.Multi.prototype)
+// Promise.promisifyAll(redis.RedisClient.prototype)
+// Promise.promisifyAll(redis.Multi.prototype)
 
-module.exports = async config => {
+const main = async (config) => {
+// Promise.promisifyAll(redis.Multi.prototype){
   const app = express()
   app.use(compression())
   app.use(cors())
-  app.all('*', cors())
+  // app.all('*', cors())
+
+  const log = bunyan.createLogger({
+    name: 'void-api',
+    level: 'debug'
+  })
 
   const server = http.Server(app)
 
@@ -53,33 +61,53 @@ module.exports = async config => {
   /**
    * Realtime API
    */
-  const io = socketio(server)
+  const io = new socketio.Server(server, {
+    cors: {
+      origin: '*'
+    }
+  })
 
-  const pub = redis.createClient(config.redis)
-  const sub = redis.createClient(config.redis)
-  sub.subscribe('events')
+  const pubClient = redis.createClient(config.redis)
+  const subClient = pubClient.duplicate()
 
-  pub.on('error', err => console.error(err))
-  sub.on('error', err => console.error(err))
+  await pubClient.connect()
+  await subClient.connect()
+
+  pubClient.on('error', err => console.error(err))
+  subClient.on('error', err => console.error(err))
+
+  // Store a list of connected sockets to broadcast on
+  // TODO: Remove inactive sockets
+  const sockets = []
+
+  // Broadcast events to all connected sockets
+  subClient.subscribe('events', (message) => {
+    sockets.map(socket =>
+      socket.emit('event', msgpack.encode(JSON.parse(message)))
+    )
+  })
 
   io.on('connection', socket => {
     let time = 0
     const clientId = uuid()
+
+    log.debug({
+      handshake: socket.handshake
+    }, 'Websocket client connected')
+
     socket.on('events', data => {
+      // console.log('sock:events', data)
       const message = msgpack.decode(data)
-      pub.publish('events', JSON.stringify(message))
+      // console.log(message)
+      pubClient.publish('events', JSON.stringify(message))
     })
-    sub.on('message', (channel, message) => {
-      socket.emit('event', msgpack.encode(JSON.parse(message)))
-    })
+    sockets.push(socket)
   })
 
   server.listen(config.server.port)
-  console.log(`listening on port ${config.server.port}...`)
+  log.info(`Listening on port ${config.server.port}...`)
 
   return { app, server }
 }
 
-if (!module.parent) {
-  module.exports(config)
-}
+main(config)
