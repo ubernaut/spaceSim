@@ -1,17 +1,16 @@
 import React from 'react'
 import HudElement from './HudElement'
 
-const style = props => ({
-  fontSize: '1em',
+const style = (props) => ({
+  fontSize: '0.8em',
   display: 'flex',
   alignItems: 'start',
   flexFlow: 'column',
   justifyContent: 'flex-start',
-  fontSize: '1em',
   width: '100%',
   height: '100%',
   overflowY: 'auto',
-  padding: '1em'
+  padding: '1em',
 })
 
 const Selection = ({ data }) => {
