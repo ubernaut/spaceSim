@@ -1,8 +1,10 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWindowClose } from '@fortawesome/free-solid-svg-icons'
-import HudElement from './HudElement'
 import { css } from '@emotion/css'
+import PropTypes from 'prop-types'
+
+import HudElement from './HudElement'
 
 const HelpContents = () => (
   <div>
@@ -88,6 +90,11 @@ const Help = ({ isHidden, setIsHidden }) => {
       </HudElement>
     )
   )
+}
+
+Help.propTypes = {
+  isHidden: PropTypes.bool,
+  setIsHidden: PropTypes.func,
 }
 
 export default Help

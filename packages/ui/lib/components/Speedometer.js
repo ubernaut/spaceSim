@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 import HudElement from './HudElement'
 
 const style = ({ speed }) => ({
@@ -37,6 +39,10 @@ const Speedometer = ({ speed }) => {
       </div>
     </HudElement>
   )
+}
+
+Speedometer.propTypes = {
+  speed: PropTypes.number,
 }
 
 export default Speedometer

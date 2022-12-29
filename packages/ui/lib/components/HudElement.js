@@ -1,6 +1,8 @@
 import React from 'react'
 import { css } from '@emotion/css'
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
+
 import { colors } from './theme'
 
 const style = css`
@@ -33,6 +35,14 @@ const style = css`
 
 const HudElement = ({ className = '', children }) => {
   return <div className={classnames(className, style)}>{children}</div>
+}
+
+HudElement.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]),
 }
 
 export default HudElement

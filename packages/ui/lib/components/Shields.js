@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 import HudElement from './HudElement'
 
 const style = () => ({
@@ -32,6 +34,11 @@ const Shields = ({ shields, maxShields }) => {
       </div>
     </HudElement>
   )
+}
+
+Shields.propTypes = {
+  shields: PropTypes.number,
+  maxShields: PropTypes.number,
 }
 
 export default Shields

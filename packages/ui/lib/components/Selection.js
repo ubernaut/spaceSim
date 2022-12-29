@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 import HudElement from './HudElement'
 
 const style = (props) => ({
@@ -13,6 +15,21 @@ const style = (props) => ({
   padding: '1em',
 })
 
+const shipPropType = PropTypes.shape({
+  name: PropTypes.string,
+  distance: PropTypes.shape({
+    km: PropTypes.number,
+  }),
+  userData: PropTypes.shape({
+    displayName: PropTypes.string,
+    ship: PropTypes.shape({
+      hull: PropTypes.object,
+      thrust: PropTypes.number,
+      movementSpeed: PropTypes.number,
+    }),
+  }),
+})
+
 const Selection = ({ data }) => {
   return !data || data === '' ? null : (
     <HudElement>
@@ -25,6 +42,10 @@ const Selection = ({ data }) => {
   )
 }
 
+Selection.propTypes = {
+  data: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+}
+
 const Default = ({ data }) => (
   <div style={style()}>
     <label style={{ fontWeight: 'bold' }}>Selected Object</label>
@@ -33,6 +54,10 @@ const Default = ({ data }) => (
     </pre>
   </div>
 )
+
+Default.propTypes = {
+  data: PropTypes.object,
+}
 
 const ShipInfo = ({ data }) => (
   <div style={style()}>
@@ -53,5 +78,9 @@ const ShipInfo = ({ data }) => (
     </ul>
   </div>
 )
+
+ShipInfo.propTypes = {
+  data: shipPropType,
+}
 
 export default Selection

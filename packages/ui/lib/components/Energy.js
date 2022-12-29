@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 import HudElement from './HudElement'
 
 const style = () => ({
@@ -32,6 +34,11 @@ const Energy = ({ energy, maxEnergy }) => {
       </div>
     </HudElement>
   )
+}
+
+Energy.propTypes = {
+  energy: PropTypes.number,
+  maxEnergy: PropTypes.number,
 }
 
 export default Energy
