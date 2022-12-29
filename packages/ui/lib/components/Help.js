@@ -2,10 +2,7 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWindowClose } from '@fortawesome/free-solid-svg-icons'
 import HudElement from './HudElement'
-
-const style = props => ({
-  padding: '1em'
-})
+import { css } from '@emotion/css'
 
 const HelpContents = () => (
   <div>
@@ -57,25 +54,32 @@ const HelpContents = () => (
   </div>
 )
 
+const style = css`
+  padding: 0 1em;
+  // TODO: 450px => ship button + system messages
+  max-height: calc(100vh - 450px);
+  overflow: auto;
+  font-size: 0.8rem;
+
+  a {
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    text-decoration: none;
+    color: inherit;
+    font-size: 1.5em;
+  }
+`
+
 const Help = ({ isHidden, setIsHidden }) => {
   return (
     !isHidden && (
       <HudElement>
-        <div style={style()}>
+        <div className={style}>
           <div id="help">
             <h3>Help</h3>
-            <a
-              style={{
-                cursor: 'pointer',
-                position: 'absolute',
-                top: '15px',
-                right: '15px',
-                textDecoration: 'none',
-                color: 'inherit',
-                fontSize: '1.5em'
-              }}
-              onClick={() => setIsHidden(true)}
-            >
+            <a onClick={() => setIsHidden(true)}>
               <FontAwesomeIcon icon={faWindowClose} />
             </a>
             <HelpContents />

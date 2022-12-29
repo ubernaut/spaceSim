@@ -2,15 +2,14 @@ import React from 'react'
 import HudElement from './HudElement'
 
 const style = () => ({
-  fontSize: '1em',
+  fontSize: '.8em',
   display: 'flex',
   alignItems: 'center',
   flexFlow: 'column',
   justifyContent: 'center',
-  fontSize: '1em',
   width: '100%',
   height: '100%',
-  padding: '0 1em'
+  padding: '0 1em',
 })
 
 const Energy = ({ energy, maxEnergy }) => {
@@ -26,7 +25,7 @@ const Energy = ({ energy, maxEnergy }) => {
               width: `${(energy / maxEnergy) * 100}%`,
               height: '10px',
               background: '#bce237cc',
-              display: 'block'
+              display: 'block',
             }}
           />
         </span>

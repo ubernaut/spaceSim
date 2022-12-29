@@ -2,15 +2,14 @@ import React from 'react'
 import HudElement from './HudElement'
 
 const style = ({ speed }) => ({
-  fontSize: '1em',
+  fontSize: '.8em',
   display: 'flex',
   alignItems: 'center',
   flexFlow: 'column',
   justifyContent: 'center',
-  fontSize: '1em',
   width: '100%',
   height: '100%',
-  color: speed >= 0 ? 'inherit' : '#ee4444cc'
+  color: speed >= 0 ? 'inherit' : '#ee4444cc',
 })
 
 const Speedometer = ({ speed }) => {

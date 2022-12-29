@@ -7,10 +7,10 @@ const style = () => ({
   alignItems: 'center',
   flexFlow: 'column',
   justifyContent: 'center',
-  fontSize: '1em',
+  fontSize: '.8em',
   width: '100%',
   height: '100%',
-  padding: '0 1em'
+  padding: '0 1em',
 })
 
 const Health = ({ hp, maxHp }) => {
@@ -26,7 +26,7 @@ const Health = ({ hp, maxHp }) => {
               width: `${(hp / maxHp) * 100}%`,
               height: '10px',
               background: '#ee4444cc',
-              display: 'block'
+              display: 'block',
             }}
           />
         </span>
