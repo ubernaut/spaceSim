@@ -67,7 +67,9 @@ const main = async (config) => {
     }
   })
 
-  const pubClient = redis.createClient(config.redis)
+  const pubClient = redis.createClient({
+    url: config.redis
+  })
   const subClient = pubClient.duplicate()
 
   await pubClient.connect()
