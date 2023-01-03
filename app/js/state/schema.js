@@ -1,63 +1,63 @@
-import { struct } from 'superstruct'
+import { define, optional, string, number, object, boolean } from 'superstruct'
 
-const Ship = struct({
-  uuid: 'string?',
+const Ship = define({
+  uuid: optional(string()),
   hull: {
-    type: 'string',
-    color: 'string',
+    type: string(),
+    color: string(),
   },
   thrust: {
-    type: 'string',
-    color: 'string',
+    type: string(),
+    color: string(),
   },
-  weapon: 'object?',
-  energy: 'number?',
-  movementSpeed: 'number',
+  weapon: optional(object()),
+  energy: optional(number()),
+  movementSpeed: number(),
 })
 
-const Player = struct({
-  isLoggedIn: 'boolean',
-  isLocalPlayer: 'boolean',
-  userId: 'string',
-  username: 'string?',
-  displayName: 'string',
+const Player = define({
+  isLoggedIn: boolean(),
+  isLocalPlayer: boolean(),
+  userId: string(),
+  username: optional(string()),
+  displayName: string(),
   ship: Ship,
 })
 
-const GUI = struct({
-  isEnabled: 'boolean',
+const GUI = define({
+  isEnabled: boolean(),
   console: {
-    isOpen: 'boolean',
+    isOpen: boolean(),
   },
   help: {
-    isOpen: 'boolean',
+    isOpen: boolean(),
   },
   shipConfig: {
-    isOpen: 'boolean',
+    isOpen: boolean(),
   },
 })
 
-const Schema = struct({
+const Schema = define({
   config: {
     server: {
-      host: 'string',
-      port: 'number',
-      socketHost: 'string',
+      host: string(),
+      port: number(),
+      socketHost: string(),
     },
     threejs: {
-      assetPath: 'string',
+      assetPath: string(),
     },
     logging: {
-      name: 'string',
-      level: 'string',
+      name: string(),
+      level: string(),
     },
   },
   scene: {
     player: Player,
     players: [Player],
-    bodyCount: 'number',
-    messages: ['string'],
-    selected: 'string?',
+    bodyCount: number(),
+    messages: [string()],
+    selected: optional(string()),
   },
   gui: GUI,
 })

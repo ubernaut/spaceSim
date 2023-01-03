@@ -1,6 +1,8 @@
 import React from 'react'
-import HudElement from './HudElement'
 import { css } from '@emotion/css'
+import PropTypes from 'prop-types'
+
+import HudElement from './HudElement'
 
 const style = css`
   font-size: 0.8em;
@@ -27,6 +29,10 @@ const Messages = ({ messages }) => {
       </div>
     </HudElement>
   )
+}
+
+Messages.propTypes = {
+  messages: PropTypes.arrayOf(PropTypes.string),
 }
 
 export default Messages

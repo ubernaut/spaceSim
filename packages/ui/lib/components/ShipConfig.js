@@ -1,23 +1,24 @@
 import React from 'react'
-import HudElement from './HudElement'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWindowClose } from '@fortawesome/free-solid-svg-icons'
 
-const style = props => ({
+import PropTypes from 'prop-types'
+import HudElement from './HudElement'
+
+const style = (props) => ({
   fontSize: '1em',
   display: 'flex',
   alignItems: 'start',
   flexFlow: 'column',
   justifyContent: 'flex-start',
-  fontSize: '1em',
   width: '100%',
   height: '100%',
   overflowY: 'auto',
-  padding: '1em'
+  padding: '1em',
 })
 
 const formStyle = {
-  width: '100%'
+  width: '100%',
 }
 
 const inputStyle = {
@@ -27,19 +28,18 @@ const inputStyle = {
   border: 'inherit',
   width: '100%',
   marginTop: '0.5em',
-  marginBottom: '1.5em'
+  marginBottom: '1.5em',
 }
 
 const ShipConfig = ({
   close,
   displayName,
-  hull,
   hullColor,
   isOpen,
   setDisplayName,
   setHullColor,
   setThrustColor,
-  thrustColor
+  thrustColor,
 }) => {
   return (
     isOpen && (
@@ -52,7 +52,7 @@ const ShipConfig = ({
             right: '15px',
             textDecoration: 'none',
             color: 'inherit',
-            fontSize: '1.5em'
+            fontSize: '1.5em',
           }}
           onClick={() => close()}
         >
@@ -66,7 +66,7 @@ const ShipConfig = ({
             <input
               style={inputStyle}
               defaultValue={displayName}
-              onChange={event => setDisplayName(event.target.value)}
+              onChange={(event) => setDisplayName(event.target.value)}
             />
 
             <label>Hull Type</label>
@@ -79,7 +79,7 @@ const ShipConfig = ({
               style={inputStyle}
               type="color"
               defaultValue={hullColor}
-              onChange={event => setHullColor(event.target.value)}
+              onChange={(event) => setHullColor(event.target.value)}
             />
 
             <label>Thrust Color</label>
@@ -87,13 +87,24 @@ const ShipConfig = ({
               style={inputStyle}
               type="color"
               defaultValue={thrustColor}
-              onChange={event => setThrustColor(event.target.value)}
+              onChange={(event) => setThrustColor(event.target.value)}
             />
           </form>
         </div>
       </HudElement>
     )
   )
+}
+
+ShipConfig.propTypes = {
+  close: PropTypes.func,
+  displayName: PropTypes.string,
+  hullColor: PropTypes.string,
+  isOpen: PropTypes.bool,
+  setDisplayName: PropTypes.func,
+  setHullColor: PropTypes.func,
+  setThrustColor: PropTypes.func,
+  thrustColor: PropTypes.string,
 }
 
 export default ShipConfig

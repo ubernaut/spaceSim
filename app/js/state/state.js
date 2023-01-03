@@ -1,4 +1,6 @@
 import Baobab from 'baobab'
+import { validate } from 'superstruct'
+
 import Schema from './schema'
 import { guid } from '-/utils'
 
@@ -66,7 +68,7 @@ const state = new Baobab(
         return
       }
       try {
-        Schema(newState)
+        validate(newState, Schema)
       } catch (err) {
         console.error(err)
       }

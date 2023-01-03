@@ -1,5 +1,7 @@
 import React from 'react'
 import { css } from '@emotion/css'
+import PropTypes from 'prop-types'
+
 import HudElement from './HudElement'
 
 const style = () => css`
@@ -29,10 +31,7 @@ const style = () => css`
   }
 `
 
-const Console = ({
-  isHidden = false,
-  handleCommand
-}) => {
+const Console = ({ isHidden = false, handleCommand }) => {
   if (isHidden) {
     return false
   }
@@ -40,7 +39,7 @@ const Console = ({
   const [command, setCommand] = React.useState('')
   const [output, setOutput] = React.useState([
     'Press ESC to toggle this console',
-    'Type /help to see instructions and available commands'
+    'Type /help to see instructions and available commands',
   ])
 
   const onChange = (event) => setCommand(event.target.value)
@@ -49,7 +48,7 @@ const Console = ({
       try {
         const result = await handleCommand({
           command,
-          clear: () => setOutput([])
+          clear: () => setOutput([]),
         })
         if (result) {
           setOutput([...output, result])
@@ -79,6 +78,11 @@ const Console = ({
       </div>
     </HudElement>
   )
+}
+
+Console.propTypes = {
+  isHidden: PropTypes.bool,
+  handleCommand: PropTypes.func,
 }
 
 export default Console
