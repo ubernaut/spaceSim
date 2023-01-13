@@ -3,7 +3,7 @@ import { throttle } from 'throttle-debounce'
 
 import { createViewer } from '@void/core/viewer'
 import * as net from '-/net/net'
-import { createShip } from '-/player/ship'
+import { createShip, accelerateShip } from '-/player/ship'
 import { createLaser, shootLaser, animateLaser } from '-/objects/weapons/laser'
 import {
   create as createCannon,
@@ -41,12 +41,13 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
   })
 
   logger.debug(addMessage('init: creating viewer...'))
-  const { physics, animate: animateSystem } = await createViewer(scene, {
+
+  const { physics, systemWorker, animate: animateSystem } = await createViewer(scene, {
     system: {
       bodyCount: 256,
-      bodyDistance: 0.25,
+      bodyDistance: .25,
       bodySpeed: 0.05,
-      deltaT: 0.001,
+      deltaT: 0.0005,
       gpuCollisions: true,
     },
   })
@@ -139,7 +140,9 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
       sceneState.apply(['player', 'ship', 'energy'], (e) =>
         Math.min(100, e + 10 * delta)
       ),
+
     (delta) => controls.update(delta),
+    (delta) => accelerateShip(delta, physics, ship),
     (delta) => composer.render(delta),
   ].forEach((cb) => animateCallbacks.push(cb))
 
