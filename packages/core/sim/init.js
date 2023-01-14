@@ -70,7 +70,7 @@ const init = async (scene, config) => {
     systemAnimations.map(a => a(delta))
   }
 
-  return { systemWorker, animate }
+  return {physics: systemWorker.physics, systemWorker, animate }
 }
 
 export default init
