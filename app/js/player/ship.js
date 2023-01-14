@@ -14,24 +14,24 @@ const defaults = {
   scale: new Vector3(20, 20, 20),
   rotation: new Vector3(1, -0.25, -0.25),
 }
-const accelerateShip = (delta, physics, ship) => {
+const accelerateShip = (delta, physics, ship, controls) => {
 
   const star = physics.system.bodies.find(item => item.name === 'star')
   console.log(ship)
-  console.log(star)
-  console.log(physics)
+  //console.log(star)
+  //console.log(physics)
+  console.log(controls)
 
   const distance = ship.position.distanceTo(star.position)
   const shipMass = 0.0000000000000000000000000228059635249
   const dt = physics.dt
   const G = 0.000000000066743
   const Fg=(G*(shipMass*star.mass))/(distance^2)
-  console.log('Fg='+Fg)
   const As = Fg/shipMass
 
-  ship.position.x -= 10000000001000000000*As
-  ship.position.y -= 10000000001000000000*As
-  ship.position.z -= 10000000001000000000*As
+  controls.moveVector.x -= 10000000001000000000*As
+  controls.moveVector.y -= 10000000001000000000*As
+  controls.moveVector.z -= 10000000001000000000*As
    //Vs = As +Vs
    //Ps = Vs + Ps
 
@@ -39,7 +39,7 @@ const accelerateShip = (delta, physics, ship) => {
 
 
 
-  return ship
+  return controls
 }
 
 const createShip = async (options) => {

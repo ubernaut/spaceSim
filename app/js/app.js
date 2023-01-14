@@ -140,9 +140,9 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
       sceneState.apply(['player', 'ship', 'energy'], (e) =>
         Math.min(100, e + 10 * delta)
       ),
-
+    //controls.moveVector = accelerateShip( physics, ship, controls),
+    (delta) => accelerateShip(delta, physics, ship, controls),
     (delta) => controls.update(delta),
-    (delta) => accelerateShip(delta, physics, ship),
     (delta) => composer.render(delta),
   ].forEach((cb) => animateCallbacks.push(cb))
 
