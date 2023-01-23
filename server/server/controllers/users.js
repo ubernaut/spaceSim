@@ -1,4 +1,5 @@
 import * as  db from '../db.js'
+import msgpack from 'msgpack-lite'
 
 export const get = async (req, res) => {
   const users = await db.getUsers()
@@ -24,4 +25,16 @@ export const updateUser = async (req, res) => {
     return res.wrap(error)
   }
   res.wrap(user)
+}
+
+export const addUserMessage = async (req, res) => {
+  const { sockets } = req.app.get('socket')
+  const { body } = req.body
+  sockets.map(socket =>
+    socket.emit('event', msgpack.encode({
+      type: 'CHAT',
+      body
+    }))
+  )
+  res.wrap({})
 }

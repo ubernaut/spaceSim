@@ -1,6 +1,6 @@
 import state from '-/state'
 
-const serverConfig = state.get([ 'config', 'server' ])
+const serverConfig = state.get(['config', 'server'])
 const apiUrl = `${serverConfig.host}:${serverConfig.port}`
 
 /**
@@ -14,25 +14,36 @@ export const client = {
     const result = await fetch(`${apiUrl}${route}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
     return result
-  }
+  },
 }
 
 /**
  * API Methods
  */
-export const getUser = async username => {
+export const getUser = async (username) => {
   return client.get(`/users/${username}`)
 }
 
-export const createUser = async username => {
+export const createUser = async (username) => {
   return client.post('/users', { username })
 }
 
 export const updateUser = async (username, options) => {
   return client.post(`/users/${username}`, { options })
+}
+
+export const messageUser = async (userId, message) => {
+  return client.post(`/users/${userId}/messages`, {
+    type: 'CHAT',
+    body: {
+      message,
+      to: userId,
+      from: state.get(['scene', 'player', 'username']),
+    },
+  })
 }
