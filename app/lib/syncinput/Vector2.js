@@ -1,0 +1,1 @@
+export default function Vector2(t,o){this.x=void 0!==t?t:0,this.y=void 0!==o?o:0}Vector2.prototype.set=function(t,o){this.x=t,this.y=o};
