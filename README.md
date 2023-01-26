@@ -48,6 +48,8 @@ If you're in Ubuntu:
 
 **Dev**
 
+If you're using `python3` and you get `node-gyp` errors during `npm install` you might need to `apt install python-is-python3` or similar.
+
 ```console
 sudo apt install -y build-essential libgl-dev libxi-dev python
 npm install

@@ -24,6 +24,7 @@ import createApp, {
 } from '-/utils/create-app'
 import constants from '-/constants'
 import { broadcastUpdate } from './net/net'
+import { TYPES } from './net/message-schema'
 
 const create = async ({ scene, renderer, addAnimateCallback }) => {
   logger.debug(addMessage('init: creating camera...'))
@@ -41,7 +42,11 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
   })
 
   logger.debug(addMessage('init: creating viewer...'))
-  const { physics, animate: animateSystem } = await createViewer(scene, {
+  const {
+    physics,
+    systemBodies,
+    animate: animateSystem,
+  } = await createViewer(scene, {
     system: {
       bodyCount: 256,
       bodyDistance: 0.25,
@@ -50,6 +55,7 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
       gpuCollisions: true,
     },
   })
+  sceneState.set(['bodyCount'], systemBodies.length)
 
   logger.debug(addMessage('init: creating player ship...'))
   const { ship, animate: animateShip } = await createShip()
@@ -96,8 +102,7 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
         const player = sceneState.get(['player'])
         const energy = sceneState.get(['player', 'ship', 'energy'])
         if (energy >= 2) {
-          broadcastUpdate(socket, {
-            type: 'cannon',
+          broadcastUpdate(socket, TYPES.CANNON, {
             player,
           })
           shootCannon({

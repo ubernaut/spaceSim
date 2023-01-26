@@ -11,9 +11,9 @@ const defaultConfig = {
     bodyDistance: 1,
     bodySpeed: 0.05,
     deltaT: 0.001,
-    gpuCollisions: true
+    gpuCollisions: true,
   },
-  oimo: false
+  oimo: false,
 }
 
 const init = async (scene, config) => {
@@ -25,7 +25,7 @@ const init = async (scene, config) => {
 
   addLights(scene)
   createGalaxy(scene)
-  createUniverse(scene).map(body => scene.add(body))
+  createUniverse(scene).map((body) => scene.add(body))
 
   const { systemWorker, systemBodies } = await loadSystem({
     scene,
@@ -33,10 +33,10 @@ const init = async (scene, config) => {
     bodyDistance: config.system.bodyDistance,
     bodySpeed: config.system.bodySpeed,
     deltaT: config.system.deltaT,
-    gpuCollisions: config.system.gpuCollisions
+    gpuCollisions: config.system.gpuCollisions,
   })
 
-  systemWorker.onmessage = e => {
+  systemWorker.onmessage = (e) => {
     systemWorker.physics.dt = e.data[0]
     systemWorker.physics.metric = e.data[2]
     systemWorker.physics.collisions = e.data[3]
@@ -56,7 +56,7 @@ const init = async (scene, config) => {
   const systemAnimations = []
   Promise.map(
     systemBodies,
-    async body => {
+    async (body) => {
       const { bodies, animations } = await mkBody(body)
       scene.add(...bodies)
       systemAnimations.push(...animations)
@@ -65,12 +65,12 @@ const init = async (scene, config) => {
     { concurrency: 8 }
   )
 
-  const animate = delta => {
-    systemWorker.postMessage([ 'fetch' ])
-    systemAnimations.map(a => a(delta))
+  const animate = (delta) => {
+    systemWorker.postMessage(['fetch'])
+    systemAnimations.map((a) => a(delta))
   }
 
-  return { systemWorker, animate }
+  return { systemWorker, systemBodies, animate }
 }
 
 export default init
