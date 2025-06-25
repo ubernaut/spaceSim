@@ -82,16 +82,30 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: [
-          {
-            loader: require.resolve('babel-loader'),
-            options: {
-              plugins: [isDev && require.resolve('react-refresh/babel')].filter(
-                Boolean
-              ),
-            },
-          },
-        ],
+        use: [{
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  "shippedProposals": true,
+                  "targets": {
+                    "browsers": [
+                      ">50%"
+                    ]
+                  }
+                }
+              ],
+              "@babel/preset-react"
+            ],
+            plugins: [
+              ["@babel/plugin-transform-runtime", {
+                "regenerator": true
+              }]
+            ]
+          }
+        }],
       },
       {
         test: /\.(glsl|md|obj)$/,

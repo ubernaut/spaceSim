@@ -9,7 +9,7 @@ import {
 let physics = null
 let system = null
 let ticks = 0
-self.onmessage = function (e) {
+self.onmessage = async function (e) {
   if (e.data[0] == 'init') {
     const bodyCount = e.data[1]
     const bodyDistance = e.data[2]
@@ -19,7 +19,8 @@ self.onmessage = function (e) {
     system = new System(1, 1, bodyCount, bodyDistance, bodySpeed)
     const metersBodies = convertSystemToMeters(system)
     system.bodies = metersBodies
-    physics = new soPhysics(system, 0, deltaT, false, true, gpuCollisions)
+    physics = new soPhysics(system, 0, deltaT, false, gpuCollisions)
+    await physics.init()
     init()
     postMessage(system)
   } else if (e.data[0] == 'fetch') {
@@ -32,19 +33,18 @@ const init = function () {
       physics.gridSystem.mass[i]
     )
   })
-  physics.initGPUStuff()
   physicsLoop()
 }
 
-const physicsLoop = function () {
+const physicsLoop = async function () {
   // while (ticks < 10000) {
-  physics.GPUAccelerate(true)
+  await physics.GPUAccelerate(true)
   // }
 }
 
 const stepPhysics = function (system, physics) {}
 
-const sendSystemState = function () {
+const sendSystemState = async function () {
   postMessage([
     physics.dt,
     physics.system,
@@ -61,5 +61,5 @@ const sendSystemState = function () {
     physics.biggestBody
   ])
   physics.collisions = []
-  physicsLoop()
+  await physicsLoop()
 }

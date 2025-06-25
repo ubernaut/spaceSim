@@ -97,8 +97,24 @@ class GridSystem {
     this.pos.push([ 0.0, 0.0, 0.0 ])
     this.ori.push([ 0.0, 0.0, 0.0 ])
     this.vel.push([ 0.0, 0.0, 0.0 ])
-    this.acc.push([ 0.0, 0.0, 0.0 ])
+    this.acc.push([ 0.0, 0.0, 0.0 ]);
+  }
+
+  getBodies() {
+    const bodies = [];
+    for (let i = 0; i < this.count; i++) {
+      bodies.push({
+        name: this.names[i],
+        mass: this.mass[i],
+        rad: this.rad[i],
+        pos: this.pos[i],
+        ori: this.ori[i],
+        vel: this.vel[i],
+        acc: this.acc[i],
+      });
+    }
+    return bodies;
   }
 }
 
-export default GridSystem
+export default GridSystem;

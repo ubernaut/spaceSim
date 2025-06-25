@@ -47,10 +47,6 @@ const loadSystem = ({
         )
       })
 
-      if (useCuda) {
-        systemWorker.physics.initGPUStuff()
-      }
-
       resolve({ systemWorker, systemBodies })
     }
   })

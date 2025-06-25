@@ -1,9 +1,7 @@
-import GridSystem from './GridSystem'
-import { evaluate, computeRadius } from './utils'
-import { GPU } from 'gpu.js'
-
-const G = 2.93558 * Math.pow(10, -4)
-const epsilon = 0.01
+import GridSystem from './GridSystem';
+import { evaluate, computeRadius } from './utils';
+import soPhysicsCPU from './soPhysicsCPU';
+import soPhysicsWebGPU from './soPhysicsWebGPU';
 
 class soPhysics {
   constructor (
@@ -11,204 +9,100 @@ class soPhysics {
     maxMark = 100000,
     dt = 0.002,
     metric = false,
-    GPGPU = false,
-    gpuCollisions = true
+    useWebGPU = false
   ) {
-    this.dt = dt
-    this.system = system
-    this.metric = metric
-    this.collisions = []
-    this.gridSystem = new GridSystem(system.bodies)
-    this.maxMark = maxMark
-    this.fitness = evaluate(this.system.bodies)
-    this.sumFit = this.fitness
-    this.t = 0
-    this.count = 1
-    this.tryCount = 0
-    this.gpuCollisions = gpuCollisions
-    this.biggestBody = 0
+    this.dt = dt;
+    this.system = system;
+    this.metric = metric;
+    this.useWebGPU = useWebGPU;
+    this.collisions = [];
+    this.gridSystem = new GridSystem(system.bodies);
+    this.maxMark = maxMark;
+    this.fitness = evaluate(this.system.bodies);
+    this.sumFit = this.fitness;
+    this.t = 0;
+    this.count = 1;
+    this.tryCount = 0;
+    this.biggestBody = 0;
+  }
 
-    if (GPGPU) {
+  async init() {
+    if (this.useWebGPU) {
       try {
-        this.initGPUStuff()
-        // this.initGPU()
-      } catch (except) {
-        console.log(except)
+        this.webGPURenderer = new soPhysicsWebGPU(this.system);
+        await this.webGPURenderer.init();
+      } catch (error) {
+        console.error("Failed to initialize WebGPU, falling back to CPU", error);
+        this.useWebGPU = false;
+        this.cpuPhysics = new soPhysicsCPU(this.system);
       }
+    } else {
+      this.cpuPhysics = new soPhysicsCPU(this.system);
     }
-  }
+  };
 
-  initGPUStuff () {
-    this.gpu = new GPU()
-    this.GPUcomputeAcceleration = this.gpu.createKernel(
-      `function (pos, mass, acc, rad) {
-        var result = 0
-        for (var i = 0; i < this.constants.size; i++) {
-          var d_x = pos[this.thread.x][0] - pos[i][0]
-          var d_y = pos[this.thread.x][1] - pos[i][1]
-          var d_z = pos[this.thread.x][2] - pos[i][2]
-          var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
-          var rad2 = Math.sqrt(radius)
-          var grav_mag = 0.0
-          var grav = 0
-          if (
-            this.thread.x != 0 &&
-            this.thread.x != i &&
-            rad2 > 0.666 * (rad[i] + rad[this.thread.x])
-          ) {
-            grav_mag = this.constants.G / Math.pow(radius, 3.0 / 2.0)
-            if (this.thread.y == 0) {
-              grav = grav_mag * d_x
-            } else if (this.thread.y == 1) {
-              grav = grav_mag * d_y
-            } else if (this.thread.y == 2) {
-              grav = grav_mag * d_z
-            } else {
-              // this should never happen
-            }
-            result += 0 - (acc[this.thread.x][this.thread.y] + grav * mass[i])
-          } else {
-            // collision detected
-          }
-        }
-        return result
-      }`,
-      {
-        output: [ this.gridSystem.pos.length, 3 ],
-        constants: { size: this.gridSystem.pos.length, G }
-      }
-    )
+  async accelerate() {
+    this.convertToStellar();
+    this.gridSystem.collisions = [];
 
-    this.GPUcomputeCollisions = this.gpu.createKernel(
-      `function (pos, mass, acc, rad) {
-        var result = -1
-        // var i = 0
-        for (var i = this.constants.size - 1; i >= 0; i--) {
-          // this.constants.size
-          var d_x = Math.abs(pos[this.thread.x][0] - pos[i][0])
-          var d_y = Math.abs(pos[this.thread.x][1] - pos[i][1])
-          var d_z = Math.abs(pos[this.thread.x][2] - pos[i][2])
-          var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
-          var distance = Math.sqrt(radius)
-          var bothRads = rad[i] + rad[this.thread.x]
-          if (this.thread.x != i) {
-            if (distance < 0.66 * bothRads) {
-              // Collision Detected.
-              result = i
-            } else {
-            }
-          } else {
-          }
-        }
-        return result
-      }`,
-      {
-        output: [ this.gridSystem.pos.length ],
-        constants: { size: this.gridSystem.pos.length }
-      }
-    )
-  }
+    let newAcc;
+    let collisionList;
 
-  initTransposeKernel () {
-    this.gpu = new GPU()
-    this.GPUcomputeAcceleration = this.gpu.createKernel(
-      `function (pos, mass, acc, rad) {
-        var result = 0
-        for (var i = 0; i < this.constants.size; i++) {
-          var d_x = pos[this.thread.x][0] - pos[i][0]
-          var d_y = pos[this.thread.x][1] - pos[i][1]
-          var d_z = pos[this.thread.x][2] - pos[i][2]
-          var radius = Math.pow(d_x, 2) + Math.pow(d_y, 2) + Math.pow(d_z, 2)
-          var rad2 = Math.sqrt(radius)
-          var grav_mag = 0.0
-          var grav = 0
-          if (
-            this.thread.x != 0 &&
-            this.thread.x != i &&
-            rad2 > 0.333 * (rad[i] + rad[this.thread.x])
-          ) {
-            grav_mag = this.constants.G / Math.pow(radius, 3.0 / 2.0)
-            if (this.thread.y == 0) {
-              grav = grav_mag * d_x
-            } else if (this.thread.y == 1) {
-              grav = grav_mag * d_y
-            } else if (this.thread.y == 2) {
-              grav = grav_mag * d_z
-            } else {
-              // this should never happen
-            }
-            result += 0 - (acc[this.thread.x][this.thread.y] + grav * mass[i])
-          } else {
-            // collision detected
-          }
-        }
-        return result
-      }`,
-      {
-        output: [ 3, this.gridSystem.pos.length ],
-        constants: { size: this.gridSystem.pos.length, G }
-      }
-    )
-  }
+    if (this.useWebGPU) {
+        newAcc = await this.webGPURenderer.computeAcceleration(this.gridSystem.getBodies());
+        collisionList = await this.webGPURenderer.computeCollisions(this.gridSystem.getBodies());
+    } else {
+        newAcc = this.cpuPhysics.computeAcceleration(
+            this.gridSystem.pos,
+            this.gridSystem.mass,
+            this.gridSystem.acc,
+            this.gridSystem.rad
+        );
+        collisionList = this.cpuPhysics.computeCollisions(
+            this.gridSystem.pos,
+            this.gridSystem.mass,
+            this.gridSystem.acc,
+            this.gridSystem.rad
+        );
+    }
 
-  GPUAccelerate (useGpuCollisions) {
-    this.convertToStellar()
-    this.gridSystem.collisions = []
-    var result = this.GPUcomputeAcceleration(
-      this.gridSystem.pos,
-      this.gridSystem.mass,
-      this.gridSystem.acc,
-      this.gridSystem.rad
-    )
+    this.gridSystem.acc = newAcc;
 
-    if (useGpuCollisions) {
-      var GPUcollisionList = this.GPUcomputeCollisions(
-        this.gridSystem.pos,
-        this.gridSystem.mass,
-        this.gridSystem.acc,
-        this.gridSystem.rad
-      )
-      for (var i = 0; i < GPUcollisionList.length; i++) {
-        if (GPUcollisionList[i] !== -1) {
-          if (
-            this.gridSystem.names[i] !== 'DELETED' &&
-            this.gridSystem.names[GPUcollisionList[i]] !== 'DELETED'
-          ) {
-            this.collisionDetected(
-              this.gridSystem.player,
-              this.gridSystem.names,
-              this.gridSystem.mass,
-              this.gridSystem.pos,
-              this.gridSystem.vel,
-              this.gridSystem.acc,
-              this.gridSystem.rad,
-              i,
-              GPUcollisionList[i]
-            )
-          }
-        }
-        if (this.biggestBody !== 0) {
-          this.detectCollision(0, this.biggestBody)
+    for (let i = 0; i < collisionList.length; i++) {
+      if (collisionList[i] !== -1) {
+        if (
+          this.gridSystem.names[i] !== 'DELETED' &&
+          this.gridSystem.names[collisionList[i]] !== 'DELETED'
+        ) {
+          this.collisionDetected(
+            this.gridSystem.player,
+            this.gridSystem.names,
+            this.gridSystem.mass,
+            this.gridSystem.pos,
+            this.gridSystem.vel,
+            this.gridSystem.acc,
+            this.gridSystem.rad,
+            i,
+            collisionList[i]
+          );
         }
       }
     }
-    // result.map(x => { bottom = bottom.concat(Array(3), Array(3), Array(3)) })
-    let bottom = []
-    for (let i = 0; i < this.gridSystem.pos.length; i++) {
-      bottom.push([ result[0][i], result[1][i], result[2][i] ])
-    }
-    // this.calVelPosCuda()
 
-    this.gridSystem.acc = bottom
-    this.calVelPosCuda()
-
-    this.gridSystem.resetAcc()
-    this.convertToMetric()
-
-    // console.log("GPU:")
-    // console.log(bottom)
-    // this.gridSystem.resetAcc()
+    this.calVelPosCuda();
+    this.gridSystem.resetAcc();
+    this.convertToMetric();
   }
+
+  async GPUAccelerate() {
+    await this.accelerate();
+  }
+
+  
+
+  
+
+  
 
   collisionDetected (player, names, mass, pos, vel, acc, rad, ith, jth) {
     if (names[jth] != 'player' && names[ith] != 'player') {
@@ -334,29 +228,29 @@ class soPhysics {
     this.gridSystem.getPlayerIndex()
   }
 
-  evaluateStep () {
-    this.accelerate()
+  async evaluateStep () {
+    await this.accelerate();
     for (let body of this.system.bodies) {
-      this.calculate_velocity(body, this.dt)
-      this.calculate_position(body, this.dt)
-      body.acceleration.reset()
-      this.sumFit += evaluate(this.system.bodies)
-      this.t += this.dt
+      this.calculate_velocity(body, this.dt);
+      this.calculate_position(body, this.dt);
+      body.acceleration.reset();
+      this.sumFit += evaluate(this.system.bodies);
+      this.t += this.dt;
     }
-    this.count += 1
+    this.count += 1;
   }
 
-  evaluate () {
-    this.t = 0
-    this.count = 1
-    this.accelerate()
-    this.sumFit = 0
+  async evaluate () {
+    this.t = 0;
+    this.count = 1;
+    await this.accelerate();
+    this.sumFit = 0;
     while (this.count < this.maxMark) {
-      this.evaluateStep()
+      await this.evaluateStep();
     }
-    this.fitness = evaluate(this.bodies)
-    this.avgStability = this.sumFit / this.count
-    return this.avgStability
+    this.fitness = evaluate(this.bodies);
+    this.avgStability = this.sumFit / this.count;
+    return this.avgStability;
   }
 
   accGravSingle (player, names, mass, pos, vel, acc, rad, ith, jth) {
