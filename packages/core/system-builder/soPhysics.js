@@ -9,7 +9,7 @@ class soPhysics {
     maxMark = 100000,
     dt = 0.002,
     metric = false,
-    useWebGPU = false
+    useWebGPU = true
   ) {
     this.dt = dt;
     this.system = system;
