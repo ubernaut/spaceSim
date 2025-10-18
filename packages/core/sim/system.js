@@ -37,8 +37,7 @@ const loadSystem = ({
         0,
         deltaT,
         true,
-        true,
-        gpuCollisions
+        true
       )
 
       systemWorker.physics.gridSystem.rad.map((_, i) => {

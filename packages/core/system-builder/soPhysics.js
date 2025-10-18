@@ -14,7 +14,7 @@ class soPhysics {
     this.dt = dt;
     this.system = system;
     this.metric = metric;
-    this.useWebGPU = useWebGPU;
+    this.useWebGPU = false;
     this.collisions = [];
     this.gridSystem = new GridSystem(system.bodies);
     this.maxMark = maxMark;
@@ -49,8 +49,10 @@ class soPhysics {
     let collisionList;
 
     if (this.useWebGPU) {
-        newAcc = await this.webGPURenderer.computeAcceleration(this.gridSystem.getBodies());
-        collisionList = await this.webGPURenderer.computeCollisions(this.gridSystem.getBodies());
+        // Get bodies snapshot once for both operations
+        const bodies = this.gridSystem.getBodies();
+        newAcc = await this.webGPURenderer.computeAcceleration(bodies);
+        collisionList = await this.webGPURenderer.computeCollisions(bodies);
     } else {
         newAcc = this.cpuPhysics.computeAcceleration(
             this.gridSystem.pos,
@@ -187,13 +189,17 @@ class soPhysics {
       names[ith] = 'DELETED'
       mass[ith] = 0
       rad[ith] = 0
-      pos[ith] = [ 0, 0, 0 ]
+      // Don't create new array - modify existing one
+      pos[ith][0] = 0
+      pos[ith][1] = 0
+      pos[ith][2] = 0
       this.gridSystem.removed.push(ith)
+    } else {
+      // Keep ith zeroed out after the check
+      pos[ith][0] = 0
+      pos[ith][1] = 0
+      pos[ith][2] = 0
     }
-
-    pos[ith][0] = 0
-    pos[ith][1] = 0
-    pos[ith][2] = 0
     vel[ith][0] = 0
     vel[ith][1] = 0
     vel[ith][2] = 0
@@ -282,6 +288,9 @@ class soPhysics {
   }
 
   convertToMetric () {
+    // Only convert if not already in metric units
+    if (this.metric) return;
+    
     this.metric = true
     for (let i = 0; i < this.gridSystem.count; i++) {
       this.gridSystem.rad[i] *= 149600000000
@@ -301,6 +310,9 @@ class soPhysics {
   }
 
   convertToStellar () {
+    // Only convert if not already in stellar units
+    if (!this.metric) return;
+    
     this.metric = false
     for (let i = 0; i < this.gridSystem.count; i++) {
       this.gridSystem.rad[i] /= 149600000000
@@ -321,6 +333,11 @@ class soPhysics {
 
   calVelPosCuda () {
     for (let i = 0; i < this.gridSystem.count; i++) {
+      // Skip the star (index 0) - it should remain at origin
+      if (this.gridSystem.names[i] === 'star') {
+        continue;
+      }
+      
       this.gridSystem.vel[i][0] += this.dt * this.gridSystem.acc[i][0]
       this.gridSystem.vel[i][1] += this.dt * this.gridSystem.acc[i][1]
       this.gridSystem.vel[i][2] += this.dt * this.gridSystem.acc[i][2]

@@ -7,7 +7,8 @@ class soPhysicsCPU {
 
   computeAcceleration(pos, mass, acc, rad) {
     const size = pos.length;
-    let result = acc.map(a => [...a]);
+    // Initialize with zeros, not existing acc values
+    let result = new Array(size).fill(0).map(() => [0, 0, 0]);
 
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {

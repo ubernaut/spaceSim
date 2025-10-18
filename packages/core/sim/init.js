@@ -8,7 +8,6 @@ import { addLights, mkBody } from './scene'
 const defaultConfig = {
   system: {
     bodyCount: 512,
-    bodyDistance: 1,
     bodySpeed: 0.05,
     deltaT: 0.001,
     gpuCollisions: true,
@@ -18,7 +17,8 @@ const defaultConfig = {
 
 const init = async (scene, config) => {
   config = Object.assign({}, defaultConfig, config)
-
+console.log("config:");
+  console.log(config);
   if (config.oimo) {
     initOimoPhysics()
   }
@@ -38,7 +38,8 @@ const init = async (scene, config) => {
 
   systemWorker.onmessage = (e) => {
     systemWorker.physics.dt = e.data[0]
-    systemWorker.physics.metric = e.data[2]
+    // Data from worker is always in metric units after conversion
+    systemWorker.physics.metric = true
     systemWorker.physics.collisions = e.data[3]
     systemWorker.physics.gridSystem = e.data[4]
     systemWorker.physics.maxMark = e.data[5]

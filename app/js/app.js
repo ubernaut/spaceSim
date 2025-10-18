@@ -48,7 +48,7 @@ const create = async ({ scene, renderer, addAnimateCallback }) => {
     animate: animateSystem,
   } = await createViewer(scene, {
     system: {
-      bodyCount: 256,
+      bodyCount: 1024,
       bodyDistance: 0.25,
       bodySpeed: 0.05,
       deltaT: 0.001,

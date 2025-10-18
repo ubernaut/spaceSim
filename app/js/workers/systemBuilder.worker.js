@@ -19,7 +19,7 @@ self.onmessage = async function (e) {
     system = new System(1, 1, bodyCount, bodyDistance, bodySpeed)
     const metersBodies = convertSystemToMeters(system)
     system.bodies = metersBodies
-    physics = new soPhysics(system, 0, deltaT, false, gpuCollisions)
+    physics = new soPhysics(system, 0, deltaT, true, gpuCollisions)
     await physics.init()
     init()
     postMessage(system)
